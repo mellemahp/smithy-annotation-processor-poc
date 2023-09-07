@@ -12,10 +12,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.PACKAGE)
 public @interface SmithyProcess {
     String NAME = "com.hmellema.smithy.processor.annotations.SmithyProcess";
-
-    String[] models() default "model/**.smithy";
-
-    String smithyBuild() default "smithy-build.json";
-
-    String projection() default "source";
 }

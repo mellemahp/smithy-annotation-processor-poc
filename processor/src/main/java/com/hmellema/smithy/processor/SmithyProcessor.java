@@ -7,17 +7,16 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.*;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import com.hmellema.smithy.processor.annotations.SmithyProcess;
 import software.amazon.smithy.build.SmithyBuild;
 import software.amazon.smithy.build.SmithyBuildResult;
+import software.amazon.smithy.build.model.SmithyBuildConfig;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.ModelAssembler;
 
@@ -25,16 +24,16 @@ import software.amazon.smithy.model.loader.ModelAssembler;
 @SupportedAnnotationTypes(SmithyProcess.NAME)
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class SmithyProcessor extends AbstractProcessor {
+    private static final String MANIFEST_PATH = "META-INF/smithy/manifest";
+    private static final String SMITHY_PREFIX = "META-INF/smithy/";
     private Messager messager;
     private Filer filer;
-    private Path root;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         messager = processingEnv.getMessager();
         filer = processingEnv.getFiler();
-        root = findRootPath(filer);
         messager.printMessage(Diagnostic.Kind.NOTE,
                 "initialized processor: " + this.getClass().getSimpleName() + "...");
     }
@@ -48,7 +47,7 @@ public class SmithyProcessor extends AbstractProcessor {
             }
             return false;
         }
-        
+
         SmithyProcess annotation = getAnnotation(elements);
         SmithyBuildResult buildResult = executeSmithyBuild(annotation);
 
@@ -64,11 +63,13 @@ public class SmithyProcessor extends AbstractProcessor {
         assembler.discoverModels(SmithyProcessor.class.getClassLoader());
 
         // Load specified model files from the annotation
-        getFiles(annotation.models()).forEach(assembler::addImport);
+        getFiles().forEach(assembler::addImport);
 
         SmithyBuild smithyBuild = SmithyBuild.create(SmithyProcessor.class.getClassLoader());
         smithyBuild.model(assembler.assemble().unwrap());
-        smithyBuild.config(root.resolve(annotation.smithyBuild()));
+        // Create a temp build config with the desired plugins
+        SmithyBuildConfig buildConfig = SmithyBuildConfig.builder().version("1.0").build();
+        smithyBuild.config(buildConfig);
 
         return smithyBuild.build();
     }
@@ -80,39 +81,21 @@ public class SmithyProcessor extends AbstractProcessor {
                 .orElseThrow(() -> new IllegalStateException("No annotation found on element"));
     }
 
-    private List<Path> getFiles(String[] modelLocations) {
+    private List<Path> getFiles() {
         List<Path> modelFiles = new ArrayList<>();
-        for (String location : modelLocations) {
-            PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + location);
-            try (Stream<Path> files = Files.walk(root)) {
-                files.map(root::relativize).filter(matcher::matches).map(root::resolve).forEach(modelFiles::add);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return modelFiles;
-    }
-
-    // TODO: There should be a better way?
-    private static Path findRootPath(Filer filer) {
-        final FileObject temp;
         try {
-            temp = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "Dummy");
-            Path tempPath = Paths.get(temp.toUri());
-            temp.delete();
-            return walkUp(tempPath);
+            // First, get the root manifest file. Then we will use that to discover the other smithy files in the
+            // META-INF directory
+            FileObject manifest = filer.getResource(StandardLocation.SOURCE_PATH, "", MANIFEST_PATH);
+            // read each manifest entry and add to the list
+            for (String line : Files.readAllLines(Paths.get(manifest.toUri()))) {
+                FileObject resource = filer.getResource(StandardLocation.SOURCE_PATH, "",
+                        SMITHY_PREFIX + line.trim());
+                modelFiles.add(Paths.get(resource.toUri()));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static Path walkUp(Path path) {
-        while(!new File(path.toString(), "smithy-build.json").exists()) {
-            path = path.getParent();
-            if (path == null) {
-                throw new RuntimeException("Could not find a root path in the project");
-            }
-        }
-        return path;
+        return modelFiles;
     }
 }
