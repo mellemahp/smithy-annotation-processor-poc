@@ -1,4 +1,4 @@
-description = "Annotation processor that executes Smithy build plugins"
+description = "Test of Annotation processor that executes Trait code generation"
 
 plugins {
     id("smithy.annotation.processor.java-library-conventions")
@@ -6,12 +6,8 @@ plugins {
 }
 
 dependencies {
-    compileOnly(project(":annotations"))
-    annotationProcessor(project(":processor"))
-    annotationProcessor("software.amazon.smithy:smithy-aws-traits:1.37.0")
-    annotationProcessor(files("models", "smithy-build.json"))
-
-    implementation("software.amazon.smithy:smithy-aws-traits:1.37.0")
+    annotationProcessor(project(":trait-processor:processor"))
+    compileOnly(project(":trait-processor:annotation"))
 }
 
 tasks.withType<JavaCompile>().configureEach {
