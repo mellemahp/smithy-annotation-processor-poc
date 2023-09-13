@@ -40,9 +40,13 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         // Set up generator visitor
         ShapeVisitor<Void>  generator = new TraitCodegenGenerator(codegenContext);
 
+        // TODO: Needs to exclude prelude
         // Generate all shapes with the Trait smithy trait
         for (Shape shape : model.getShapesWithTrait(TraitDefinition.class)) {
-            shape.accept(generator);
+            // Do not process prelude shapes
+            if (!shape.getId().getNamespace().contains("smithy.api")) {
+                shape.accept(generator);
+            }
         }
 
         // Write all to files

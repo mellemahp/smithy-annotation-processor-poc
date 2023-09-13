@@ -103,6 +103,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
 
     private SmithyBuildResult executeSmithyBuild(SmithyBuildConfig config) {
         ModelAssembler assembler = Model.assembler();
+
         // Discover any models on the annotation processor classpath
         assembler.discoverModels(SmithyProcessor.class.getClassLoader());
 
