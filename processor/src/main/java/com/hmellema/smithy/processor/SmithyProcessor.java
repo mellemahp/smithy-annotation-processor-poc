@@ -6,9 +6,11 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.*;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import software.amazon.smithy.build.SmithyBuildResult;
 import software.amazon.smithy.build.model.SmithyBuildConfig;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.ModelAssembler;
+import software.amazon.smithy.utils.IoUtils;
 
 public abstract class SmithyProcessor<A extends Annotation> extends AbstractProcessor {
     private static final String MANIFEST_PATH = "META-INF/smithy/manifest";
@@ -37,7 +40,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         if (elements.size() != 1) {
             if (elements.size() > 1) {
                 messager.printMessage(Diagnostic.Kind.ERROR,
-                        "Only one package can have the " + getAnnotationClass() +  " annotation.");
+                        "Only one package can have the " + getAnnotationClass() + " annotation.");
             }
         } else {
             messager.printMessage(Diagnostic.Kind.NOTE,
@@ -46,16 +49,39 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
             SmithyBuildConfig config = createBuildConfig(annotation);
             SmithyBuildResult buildResult = executeSmithyBuild(config);
 
-            // TODO: Need to make sure artifacts are save to the right place?
-
             messager.printMessage(Diagnostic.Kind.NOTE, "ARTIFACTS: " + buildResult.allArtifacts().toList());
-            messager.printMessage(Diagnostic.Kind.NOTE,
-                    "Annotation processor " + this.getClass().getSimpleName() + " finished processing.");
-        }
+            buildResult.allArtifacts()
+                    .filter(path -> path.toString().contains("build/smithy/source/" + getPluginName()))
+                    .forEach(path -> {
+                        messager.printMessage(Diagnostic.Kind.NOTE, "WRITING FILE FOR ARTIFACT: " + path);
+                        String pathStr = path.toString();
+                        String outputPath = pathStr.substring(pathStr.lastIndexOf(getPluginName()) + getPluginName().length() + 1);
+                        if (outputPath.startsWith("META-INF")) {
+                            // TODO: this should really check if resource file already exists
+                            try (Writer writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputPath).openWriter()) {
+                                writer.write(IoUtils.readUtf8File(path));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            return;
+                        } else {
+                            outputPath = outputPath.replace("/", ".").substring(0, outputPath.lastIndexOf(".java"));
+                            try (Writer writer = filer.createSourceFile(outputPath).openWriter()) {
+                                writer.write(IoUtils.readUtf8File(path));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
 
+        }
+        messager.printMessage(Diagnostic.Kind.NOTE,
+                "Annotation processor " + this.getClass().getSimpleName() + " finished processing.");
         // Always return false to ensure the annotation processor does not claim the annotation.
         return false;
     }
+
+    protected abstract String getPluginName();
 
     /**
      * Annotation class for the processor.

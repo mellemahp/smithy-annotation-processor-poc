@@ -1,0 +1,8 @@
+{
+  "version": "1.0",
+  "plugins": {
+    "trait-codegen": {
+      "package": "com.example.generated"
+    }
+  }
+}

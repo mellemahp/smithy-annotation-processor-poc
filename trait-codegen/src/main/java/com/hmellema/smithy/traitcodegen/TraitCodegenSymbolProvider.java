@@ -2,32 +2,37 @@ package com.hmellema.smithy.traitcodegen;
 
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.utils.StringUtils;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 
 public class TraitCodegenSymbolProvider implements SymbolProvider, ShapeVisitor<Symbol> {
-    private final TraitCodegenSettings settings;
-    private final Model model;
+    private final String packageName;
 
-    TraitCodegenSymbolProvider(Model model, TraitCodegenSettings settings) {
-        this.settings = settings;
-        this.model = model;
+    private final String packagePath;
+
+    TraitCodegenSymbolProvider(TraitCodegenSettings settings) {
+        this.packageName = settings.packageName();
+        this.packagePath = "./" + packageName.replace(".", "/");
     }
 
     @Override
     public Symbol toSymbol(Shape shape) {
-        return null;
+        return shape.accept(this);
     }
 
     @Override
     public Symbol blobShape(BlobShape shape) {
-        return null;
+        return SymbolUtil.fromClass(ByteBuffer.class);
     }
 
     @Override
     public Symbol booleanShape(BooleanShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Boolean.class);
     }
 
     @Override
@@ -42,27 +47,27 @@ public class TraitCodegenSymbolProvider implements SymbolProvider, ShapeVisitor<
 
     @Override
     public Symbol byteShape(ByteShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Byte.class);
     }
 
     @Override
     public Symbol shortShape(ShortShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Short.class);
     }
 
     @Override
     public Symbol integerShape(IntegerShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Integer.class);
     }
 
     @Override
     public Symbol longShape(LongShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Long.class);
     }
 
     @Override
     public Symbol floatShape(FloatShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Float.class);
     }
 
     @Override
@@ -72,17 +77,17 @@ public class TraitCodegenSymbolProvider implements SymbolProvider, ShapeVisitor<
 
     @Override
     public Symbol doubleShape(DoubleShape shape) {
-        return null;
+        return SymbolUtil.fromClass(Double.class);
     }
 
     @Override
     public Symbol bigIntegerShape(BigIntegerShape shape) {
-        return null;
+        return SymbolUtil.fromClass(BigInteger.class);
     }
 
     @Override
     public Symbol bigDecimalShape(BigDecimalShape shape) {
-        return null;
+        return SymbolUtil.fromClass(BigDecimal.class);
     }
 
     @Override
@@ -102,7 +107,11 @@ public class TraitCodegenSymbolProvider implements SymbolProvider, ShapeVisitor<
 
     @Override
     public Symbol stringShape(StringShape shape) {
-        return null;
+        return Symbol.builder()
+                .name(StringUtils.capitalize(shape.getId().getName()))
+                .namespace(packageName,".")
+                .declarationFile(packagePath + "/" + StringUtils.capitalize(shape.getId().getName()) + ".java")
+                .build();
     }
 
     @Override

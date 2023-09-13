@@ -13,10 +13,12 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
     private static final String PACKAGE_HEADER_TEMPLATE = "package %s;%n";
 
     private final String packageName;
+    private final String fileName;
 
-    public TraitCodegenWriter(String packageName) {
+    public TraitCodegenWriter(String fileName, String packageName) {
         super(new TraitCodegenImportContainer());
         this.packageName = packageName;
+        this.fileName = fileName;
         putFormatter('T', new JavaTypeFormatter());
     }
 
@@ -36,17 +38,20 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
     public static final class Factory implements SymbolWriter.Factory<TraitCodegenWriter> {
         @Override
         public TraitCodegenWriter apply(String filename, String namespace) {
-            return new TraitCodegenWriter(namespace);
+            return new TraitCodegenWriter(filename, namespace);
         }
     }
 
     @Override
     public String toString() {
-        return getAttribution() + System.lineSeparator()
-                + getPackageHeader() + System.lineSeparator()
-                + getImportContainer().toString() + System.lineSeparator()
-                + super.toString();
-
+        StringBuilder builder = new StringBuilder();
+        if (!fileName.startsWith("META-INF/services")) {
+            builder.append(getAttribution()).append(System.lineSeparator());
+            builder.append(getPackageHeader()).append(System.lineSeparator());
+            builder.append(getImportContainer().toString()).append(System.lineSeparator());
+        }
+        builder.append(super.toString());
+        return builder.toString();
     }
 
     public String getPackageHeader() {

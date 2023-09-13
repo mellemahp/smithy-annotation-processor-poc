@@ -4,7 +4,6 @@ package com.hmellema.smithy.processor.traitprocessor.processor;
 import com.google.auto.service.AutoService;
 import com.hmellema.smithy.processor.SmithyProcessor;
 import com.hmellema.smithy.processor.traitprocessor.annotations.GenerateSmithyTraits;
-import com.hmellema.smithy.traitcodegen.TraitCodegenPlugin;
 import software.amazon.smithy.build.model.SmithyBuildConfig;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.ObjectNode;
@@ -21,6 +20,11 @@ import java.util.Map;
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class TraitCodegenProcessor extends SmithyProcessor<GenerateSmithyTraits> {
     @Override
+    protected String getPluginName() {
+        return "trait-codegen";
+    }
+
+    @Override
     protected Class<GenerateSmithyTraits> getAnnotationClass() {
         return GenerateSmithyTraits.class;
     }
@@ -28,7 +32,7 @@ public class TraitCodegenProcessor extends SmithyProcessor<GenerateSmithyTraits>
     @Override
     protected SmithyBuildConfig createBuildConfig(GenerateSmithyTraits annotation) {
         Map<String, ObjectNode> pluginMap = new HashMap<>();
-        pluginMap.put("trait-codegen", Node.objectNodeBuilder()
+        pluginMap.put(getPluginName(), Node.objectNodeBuilder()
                 .withMember("package", annotation.packageName())
                 .build());
 

@@ -2,7 +2,7 @@ description = "Smithy Build Plugin that auto-generates traits"
 
 plugins {
     id("java-library")
-   // id("smithy.annotation.processor.java-library-conventions")
+   //id("smithy.annotation.processor.java-library-conventions")
 }
 
 dependencies {

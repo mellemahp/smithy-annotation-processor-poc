@@ -22,7 +22,6 @@ public class TraitCodegenContext {
         this.settings = settings;
         this.symbolProvider = symbolProvider;
         this.fileManifest = fileManifest;
-
         //TODO: use a separate symbol provider for the delegator here and for the actual symbol types
         this.writerDelegator = new WriterDelegator<>(fileManifest, symbolProvider, new TraitCodegenWriter.Factory());
     }

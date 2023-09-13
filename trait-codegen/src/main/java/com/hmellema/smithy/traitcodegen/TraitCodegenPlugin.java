@@ -7,7 +7,7 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeVisitor;
-import software.amazon.smithy.model.traits.Trait;
+import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.model.transform.ModelTransformer;
 
 import java.util.logging.Logger;
@@ -29,25 +29,25 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         TraitCodegenSettings settings = TraitCodegenSettings.from(context.getSettings());
         Model model = context.getModel();
 
-
         // Execute base transforms
         model = transformer.flattenAndRemoveMixins(model);
         model = transformer.changeStringEnumsToEnumShapes(model);
 
         // Create context to use for the rest of the steps
-        SymbolProvider baseSymbolProvider = new TraitCodegenSymbolProvider(model, settings);
+        SymbolProvider baseSymbolProvider = new TraitCodegenSymbolProvider(settings);
         TraitCodegenContext codegenContext = new TraitCodegenContext(model, settings, baseSymbolProvider, context.getFileManifest());
 
-        ShapeVisitor<Void>  generator = null;
-        // Generate all shapes
-        for (Shape shape : model.getShapesWithTrait(Trait.class)) {
-            if (generator != null) {
-                shape.accept(generator);
-            }
+        // Set up generator visitor
+        ShapeVisitor<Void>  generator = new TraitCodegenGenerator(codegenContext);
+
+        // Generate all shapes with the Trait smithy trait
+        for (Shape shape : model.getShapesWithTrait(TraitDefinition.class)) {
+            shape.accept(generator);
         }
 
         // Write all to files
         if (!codegenContext.writerDelegator().getWriters().isEmpty()) {
+            LOGGER.severe("Flushing remaining writers.");
             codegenContext.writerDelegator().flushWriters();
         }
 
