@@ -116,7 +116,11 @@ public class TraitCodegenSymbolProvider implements SymbolProvider, ShapeVisitor<
 
     @Override
     public Symbol structureShape(StructureShape shape) {
-        return null;
+        return Symbol.builder()
+                .name(StringUtils.capitalize(shape.getId().getName()))
+                .namespace(packageName,".")
+                .declarationFile(packagePath + "/" + StringUtils.capitalize(shape.getId().getName()) + ".java")
+                .build();
     }
 
     @Override

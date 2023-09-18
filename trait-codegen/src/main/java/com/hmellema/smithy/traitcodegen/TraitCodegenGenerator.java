@@ -1,11 +1,9 @@
 package com.hmellema.smithy.traitcodegen;
 
-import com.hmellema.smithy.traitcodegen.directives.GenerateStringTraitDirective;
+import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.generators.AnnotationTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.StringTraitGenerator;
 import software.amazon.smithy.model.shapes.*;
-
-import java.io.File;
-import java.util.Optional;
 
 public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
     private final TraitCodegenContext context;
@@ -21,10 +19,21 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     public Void stringShape(StringShape shape) {
-        GenerateStringTraitDirective directive = new GenerateStringTraitDirective(
-                shape, context.symbolProvider().toSymbol(shape), context, context.settings(), context.model()
-        );
-        new StringTraitGenerator().accept(directive);
+        new StringTraitGenerator().accept(getDirective(shape));
         return null;
+    }
+
+    @Override
+    public Void structureShape(StructureShape shape) {
+        GenerateTraitDirective directive = getDirective(shape);
+        if (shape.getAllMembers().isEmpty()) {
+           new AnnotationTraitGenerator().accept(directive);
+        }
+        return null;
+    }
+
+    private GenerateTraitDirective getDirective(Shape shape) {
+        return new GenerateTraitDirective(shape, context.symbolProvider().toSymbol(shape),
+                context, context.settings(), context.model());
     }
 }
