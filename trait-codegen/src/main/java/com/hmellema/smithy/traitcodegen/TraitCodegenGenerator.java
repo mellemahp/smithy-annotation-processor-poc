@@ -7,7 +7,6 @@ import com.hmellema.smithy.traitcodegen.generators.traits.StringListTraitGenerat
 import com.hmellema.smithy.traitcodegen.generators.traits.StringTraitGenerator;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.shapes.*;
-import software.amazon.smithy.model.traits.TraitDefinition;
 
 public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
     private final TraitCodegenContext context;
@@ -35,8 +34,6 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     public Void listShape(ListShape shape) {
-        if (!shape.hasTrait(TraitDefinition.class))
-        System.out.println("MEMBER " + shape.getMember());
         Symbol memberType = context.symbolProvider().toSymbol(shape.getMember());
         if (memberType.equals(SymbolUtil.fromClass(String.class))) {
             new StringListTraitGenerator().accept(getDirective(shape));

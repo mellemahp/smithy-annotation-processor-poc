@@ -1,18 +1,15 @@
 package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
-import com.hmellema.smithy.traitcodegen.integrations.core.ClassJavaDocInterceptor;
-import com.hmellema.smithy.traitcodegen.integrations.core.PropertyJavaDocInterceptor;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.build.FileManifest;
 import software.amazon.smithy.codegen.core.CodegenContext;
-import software.amazon.smithy.codegen.core.SmithyIntegration;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.WriterDelegator;
 import software.amazon.smithy.codegen.core.directed.CodegenDirector;
-import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
 import software.amazon.smithy.model.Model;
-import software.amazon.smithy.model.shapes.ServiceShape;
+import software.amazon.smithy.utils.CodeInterceptor;
+import software.amazon.smithy.utils.CodeSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +33,7 @@ public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings,
         this.fileManifest = fileManifest;
         this.writerDelegator = new WriterDelegator<>(fileManifest, symbolProvider, new TraitCodegenWriter.Factory());
         this.integrations.addAll(ServiceLoader.load(TraitCodegenIntegration.class, this.getClass().getClassLoader())
-                .stream().map(ServiceLoader.Provider::get).toList());
+                .stream().map(ServiceLoader.Provider::get).peek(System.out::println).toList());
         registerInterceptors();
         this.symbolProvider = createSymbolProvider(symbolProvider);
     }
@@ -49,9 +46,11 @@ public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings,
     }
 
     private void registerInterceptors() {
-        for (TraitCodegenIntegration integration: integrations) {
-            integration.interceptors(this);
+        List<CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors = new ArrayList<>();
+        for (TraitCodegenIntegration integration : integrations) {
+            interceptors.addAll(integration.interceptors(this));
         }
+        writerDelegator.setInterceptors(interceptors);
     }
 
     public Model model() {

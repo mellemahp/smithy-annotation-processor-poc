@@ -29,7 +29,6 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
 
     @Override
     public void execute(PluginContext context) {
-        LOGGER.severe("Initializing Trait Codegen plugin...");
         TraitCodegenSettings settings = TraitCodegenSettings.from(context.getSettings());
         Model model = context.getModel();
 
@@ -63,7 +62,6 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
 
         // Write all to files
         if (!codegenContext.writerDelegator().getWriters().isEmpty()) {
-            LOGGER.severe("Flushing remaining writers.");
             codegenContext.writerDelegator().flushWriters();
         }
 
