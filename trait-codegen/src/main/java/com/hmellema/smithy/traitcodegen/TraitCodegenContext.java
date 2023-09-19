@@ -1,16 +1,29 @@
 package com.hmellema.smithy.traitcodegen;
 
+import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
+import com.hmellema.smithy.traitcodegen.integrations.core.ClassJavaDocInterceptor;
+import com.hmellema.smithy.traitcodegen.integrations.core.PropertyJavaDocInterceptor;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.build.FileManifest;
+import software.amazon.smithy.codegen.core.CodegenContext;
+import software.amazon.smithy.codegen.core.SmithyIntegration;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.WriterDelegator;
+import software.amazon.smithy.codegen.core.directed.CodegenDirector;
+import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
 import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.shapes.ServiceShape;
 
-public class TraitCodegenContext {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
+
+public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings, TraitCodegenWriter, TraitCodegenIntegration> {
     private final Model model;
     private final TraitCodegenSettings settings;
     private final SymbolProvider symbolProvider;
     private final FileManifest fileManifest;
+    private final List<TraitCodegenIntegration> integrations = new ArrayList<>();
     private final WriterDelegator<TraitCodegenWriter> writerDelegator;
 
     public TraitCodegenContext(Model model,
@@ -20,10 +33,25 @@ public class TraitCodegenContext {
     ) {
         this.model = model;
         this.settings = settings;
-        this.symbolProvider = symbolProvider;
         this.fileManifest = fileManifest;
-        //TODO: use a separate symbol provider for the delegator here and for the actual symbol types
         this.writerDelegator = new WriterDelegator<>(fileManifest, symbolProvider, new TraitCodegenWriter.Factory());
+        this.integrations.addAll(ServiceLoader.load(TraitCodegenIntegration.class, this.getClass().getClassLoader())
+                .stream().map(ServiceLoader.Provider::get).toList());
+        registerInterceptors();
+        this.symbolProvider = createSymbolProvider(symbolProvider);
+    }
+
+    private SymbolProvider createSymbolProvider(SymbolProvider provider) {
+        for (TraitCodegenIntegration integration : integrations) {
+            provider = integration.decorateSymbolProvider(model, settings, provider);
+        }
+        return SymbolProvider.cache(provider);
+    }
+
+    private void registerInterceptors() {
+        for (TraitCodegenIntegration integration: integrations) {
+            integration.interceptors(this);
+        }
     }
 
     public Model model() {
@@ -44,5 +72,10 @@ public class TraitCodegenContext {
 
     public WriterDelegator<TraitCodegenWriter> writerDelegator() {
         return writerDelegator;
+    }
+
+    @Override
+    public List<TraitCodegenIntegration> integrations() {
+        return integrations;
     }
 }

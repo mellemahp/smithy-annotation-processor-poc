@@ -3,8 +3,8 @@ package com.hmellema.smithy.traitcodegen.writer;
 import software.amazon.smithy.codegen.core.ImportContainer;
 import software.amazon.smithy.codegen.core.Symbol;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TraitCodegenImportContainer implements ImportContainer {
     private static final String JAVA_NAMESPACE_PREFIX = "java.lang";
@@ -19,10 +19,12 @@ public class TraitCodegenImportContainer implements ImportContainer {
 
     @Override
     public String toString() {
+        Set<String> sortedImports = imports.stream().map(Symbol::getFullName)
+                .collect(Collectors.toCollection(TreeSet::new));
         StringBuilder builder = new StringBuilder();
-        for (Symbol importSymbol: imports) {
+        for (String importName: sortedImports) {
             builder.append("import ");
-            builder.append(importSymbol.getFullName());
+            builder.append(importName);
             builder.append(";");
             builder.append(System.lineSeparator());
         }

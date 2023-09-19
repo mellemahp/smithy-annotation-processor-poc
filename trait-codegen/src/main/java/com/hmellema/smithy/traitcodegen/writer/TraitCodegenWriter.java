@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.writer;
 
+import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolReference;
 import software.amazon.smithy.codegen.core.SymbolWriter;
@@ -20,17 +21,31 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         this.packageName = packageName;
         this.fileName = fileName;
         putFormatter('T', new JavaTypeFormatter());
+        putFormatter('B', new BaseTypeFormatter());
     }
 
     public void addImport(Symbol symbol) {
         addImport(symbol, symbol.getName());
     }
 
+    public void addImport(Class<?> clazz) {
+        addImport(SymbolUtil.fromClass(clazz));
+    }
+
     public void writeDocString(String contents) {
         pushState().write("/**")
                 .writeInline(" * ")
-                .write(StringUtils.wrap(contents, MAX_LINE_LENGTH - 8,
-                        System.lineSeparator() + " *", false))
+                .write(StringUtils.wrap(contents.replace("\n", "\n * "), MAX_LINE_LENGTH - 8,
+                        System.lineSeparator() + " * ", false))
+                .write(" */")
+                .popState();
+    }
+
+    public void writeComment(String contents) {
+        pushState().write("//")
+                .writeInline(" * ")
+                .write(StringUtils.wrap(contents.replace("\n", "\n// "), MAX_LINE_LENGTH - 8,
+                        System.lineSeparator() + "// ", false))
                 .write(" */")
                 .popState();
     }
@@ -94,6 +109,21 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
             }
             builder.append(">");
             return builder.toString();
+        }
+    }
+
+    /**
+     * Implements a formatter for {@code $B} that writes the base type for a class.
+     */
+    private final class BaseTypeFormatter implements BiFunction<Object, String, String> {
+        private final JavaTypeFormatter javaTypeFormatter = new JavaTypeFormatter();
+        @Override
+        public String apply(Object type, String indent) {
+            if (!(type instanceof Symbol typeSymbol)) {
+                throw new RuntimeException("Invalid type provided for $B. Expected a Symbol but found: `" + type + "`.");
+            }
+            Symbol baseSymbol = typeSymbol.expectProperty("baseType", Symbol.class);
+            return javaTypeFormatter.apply(baseSymbol, indent);
         }
     }
 }

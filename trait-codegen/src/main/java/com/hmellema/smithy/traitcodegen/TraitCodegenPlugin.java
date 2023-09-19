@@ -5,11 +5,15 @@ import software.amazon.smithy.build.PluginContext;
 import software.amazon.smithy.build.SmithyBuildPlugin;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.neighbor.Walker;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.model.transform.ModelTransformer;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @AutoService(SmithyBuildPlugin.class)
@@ -34,18 +38,26 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         model = transformer.changeStringEnumsToEnumShapes(model);
 
         // Create context to use for the rest of the steps
-        SymbolProvider baseSymbolProvider = new TraitCodegenSymbolProvider(settings);
-        TraitCodegenContext codegenContext = new TraitCodegenContext(model, settings, baseSymbolProvider, context.getFileManifest());
+        SymbolProvider traitSymbolProvider = new TraitCodegenSymbolProvider(settings, model);
+        TraitCodegenContext codegenContext = new TraitCodegenContext(model, settings, traitSymbolProvider, context.getFileManifest());
 
         // Set up generator visitor
-        ShapeVisitor<Void>  generator = new TraitCodegenGenerator(codegenContext);
+        ShapeVisitor<Void> generator = new TraitCodegenGenerator(codegenContext);
 
-        // TODO: Needs to exclude prelude
-        // Generate all shapes with the Trait smithy trait
-        for (Shape shape : model.getShapesWithTrait(TraitDefinition.class)) {
+        // Generate all shapes with the Trait smithy trait and all shapes within their closure
+        Set<Shape> traitShapes = model.getShapesWithTrait(TraitDefinition.class);
+        Set<Shape> shapeClosure = new HashSet<>(traitShapes);
+        Walker walker = new Walker(model);
+        traitShapes.forEach(traitShape -> shapeClosure.addAll(walker.walkShapes(traitShape)));
+        for (Shape shape : shapeClosure) {
             // Do not process prelude shapes
             if (!shape.getId().getNamespace().contains("smithy.api")) {
-                shape.accept(generator);
+                if (shape.hasTrait(TraitDefinition.class)) {
+                    shape.accept(generator);
+                } else {
+                    // Do nothing for now
+                   // shape.accept(generator);
+                }
             }
         }
 

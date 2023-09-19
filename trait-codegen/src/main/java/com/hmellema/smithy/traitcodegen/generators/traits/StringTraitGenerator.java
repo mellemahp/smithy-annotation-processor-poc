@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
@@ -21,16 +21,14 @@ public class StringTraitGenerator extends SimpleTraitGenerator {
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol symbol) {
-        writer.addImport(SymbolUtil.fromClass(FromSourceLocation.class));
-        writer.openBlock("public $L(String name, FromSourceLocation sourceLocation) {", "}", symbol.getName(), () -> {
-            writer.write("super(ID, name, sourceLocation);");
-        }).writeInline("\n");
+        writer.addImport(FromSourceLocation.class);
+        writer.openBlock("public $T(String name, FromSourceLocation sourceLocation) {", "}", symbol,
+                () -> writer.write("super(ID, name, sourceLocation);")).writeInline("\n");
     }
 
     private void writeConstructor(TraitCodegenWriter writer, Symbol symbol) {
-        writer.addImport(SymbolUtil.fromClass(SourceLocation.class));
-        writer.openBlock("public $L(String name) {", "}", symbol.getName(), () -> {
-            writer.write("super(ID, name, SourceLocation.NONE);");
-        }).writeInline("\n");
+        writer.addImport(SourceLocation.class);
+        writer.openBlock("public $T(String name) {", "}", symbol,
+                () -> writer.write("super(ID, name, SourceLocation.NONE);")).writeInline("\n");
     }
 }

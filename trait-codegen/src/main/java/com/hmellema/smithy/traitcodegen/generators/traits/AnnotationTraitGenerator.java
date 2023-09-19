@@ -1,6 +1,5 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -24,24 +23,22 @@ public class AnnotationTraitGenerator extends SimpleTraitGenerator {
     }
 
     private void writeConstructor(TraitCodegenWriter writer, Symbol symbol) {
-        writer.addImport(SymbolUtil.fromClass(ObjectNode.class));
+        writer.addImport(ObjectNode.class);
         writer.openBlock("public $L(ObjectNode node) {", "}", symbol.getName(),
                 () -> writer.write("super(ID, node);")).writeInline("\n");
     }
 
     private void writeEmptyConstructor(TraitCodegenWriter writer, Symbol symbol) {
-        writer.addImport(SymbolUtil.fromClass(Node.class));
+        writer.addImport(Node.class);
         writer.openBlock("public $L() {", "}", symbol.getName(),
                 () -> writer.write("super(ID, Node.objectNode());")).writeInline("\n");
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol symbol) {
-        writer.addImport(SymbolUtil.fromClass(SourceLocation.class));
-        writer.addImport(SymbolUtil.fromClass(ObjectNode.class));
-        writer.addImport(SymbolUtil.fromClass(MapUtils.class));
+        writer.addImport(SourceLocation.class);
+        writer.addImport(ObjectNode.class);
+        writer.addImport(MapUtils.class);
         writer.openBlock("public $L(SourceLocation sourceLocation) {", "}", symbol.getName(),
                 () -> writer.write("this(new ObjectNode(MapUtils.of(), sourceLocation));")).writeInline("\n");
     }
-
-
 }

@@ -105,3 +105,13 @@ list StructureIdList {
     @idRef(failWhenMissing: true, selector: "structure")
     member: String
 }
+
+@trait
+integer HttpCode
+
+@trait
+list stringListTrait {
+    member: MyString
+}
+
+string MyString
