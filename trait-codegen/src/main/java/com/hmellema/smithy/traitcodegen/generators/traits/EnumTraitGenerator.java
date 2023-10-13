@@ -13,10 +13,9 @@ public class EnumTraitGenerator extends StringTraitGenerator {
     @Override
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         EnumShape shape = directive.shape().asEnumShape().orElseThrow(() -> new RuntimeException("oops"));
-        for (Map.Entry<String, String> memberEntry : shape.getEnumValues().entrySet()) {
-            String methodName = getMethodName(memberEntry.getKey());
-            writer.openBlock("public boolean $L() {", "}", methodName,
-                    () -> writer.write("return getValue().equals($S);", memberEntry.getValue()))
+        for (String memberKey : shape.getEnumValues().keySet()) {
+            writer.openBlock("public boolean $L() {", "}", getMethodName(memberKey),
+                            () -> writer.write("return $L.equals(getValue());", memberKey))
                     .writeInline("\n");
         }
     }

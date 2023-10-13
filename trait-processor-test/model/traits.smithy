@@ -23,3 +23,13 @@ list strList {
 }
 
 string MyString
+
+/// A simple enum trait
+@trait(selector: "structure > member")
+enum myEnum {
+    /// Positive response
+    YES = "yes"
+
+    /// Negative response
+    NO = "no"
+}
