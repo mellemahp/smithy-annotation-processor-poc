@@ -33,3 +33,13 @@ enum myEnum {
     /// Negative response
     NO = "no"
 }
+
+/// A simple enum trait
+@trait(selector: "structure > member")
+intEnum myIntEnum {
+    /// Positive response
+    YES = 1
+
+    /// Negative response
+    NO = 2
+}
