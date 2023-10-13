@@ -44,12 +44,8 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         } else {
             messager.printMessage(Diagnostic.Kind.NOTE,
                     "Executing processor: " + this.getClass().getSimpleName() + "...");
-            A annotation = getAnnotation(elements);
-            SmithyBuildConfig config = createBuildConfig(annotation);
-            SmithyBuildResult buildResult = executeSmithyBuild(config);
-
-            messager.printMessage(Diagnostic.Kind.NOTE, "ARTIFACTS: " + buildResult.allArtifacts().toList());
-            buildResult.allArtifacts()
+            SmithyBuildConfig config = createBuildConfig(getAnnotation(elements));
+            executeSmithyBuild(config).allArtifacts()
                     .filter(path -> path.toString().contains(SOURCE_PROJECTION_PATH + getPluginName()))
                     .forEach(this::writeArtifact);
         }
@@ -95,7 +91,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
     }
 
     private void writeArtifact(Path path) {
-        messager.printMessage(Diagnostic.Kind.NOTE, "WRITING FILE FOR ARTIFACT: " + path);
+        messager.printMessage(Diagnostic.Kind.NOTE, "WRITING FILE FOR ARTIFACT: " + path)
         String pathStr = path.toString();
         String outputPath = pathStr.substring(pathStr.lastIndexOf(getPluginName()) + getPluginName().length() + 1);
         try {
