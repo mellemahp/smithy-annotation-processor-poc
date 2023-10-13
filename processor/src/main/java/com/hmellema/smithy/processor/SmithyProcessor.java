@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import software.amazon.smithy.build.SmithyBuildResult;
 import software.amazon.smithy.build.model.SmithyBuildConfig;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.ModelAssembler;
+import software.amazon.smithy.model.loader.ModelDiscovery;
 import software.amazon.smithy.utils.IoUtils;
 
 public abstract class SmithyProcessor<A extends Annotation> extends AbstractProcessor {
@@ -108,7 +110,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         assembler.discoverModels(SmithyProcessor.class.getClassLoader());
 
         // Load specified model files from the annotation
-        getFiles().forEach(assembler::addImport);
+        ModelDiscovery.findModels(getManifestUrl()).forEach(assembler::addImport);
 
         SmithyBuild smithyBuild = SmithyBuild.create(SmithyProcessor.class.getClassLoader());
         smithyBuild.model(assembler.assemble().unwrap());
@@ -125,21 +127,11 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
                 .orElseThrow(() -> new IllegalStateException("No annotation of type " + getAnnotationClass() + " found on element"));
     }
 
-    private List<Path> getFiles() {
-        List<Path> modelFiles = new ArrayList<>();
+    private URL getManifestUrl() {
         try {
-            // First, get the root manifest file. Then we will use that to discover the other smithy files in the
-            // META-INF directory
-            FileObject manifest = filer.getResource(StandardLocation.SOURCE_PATH, "", MANIFEST_PATH);
-            // read each manifest entry and add to the list
-            for (String line : Files.readAllLines(Paths.get(manifest.toUri()))) {
-                FileObject resource = filer.getResource(StandardLocation.SOURCE_PATH, "",
-                        SMITHY_PREFIX + line.trim());
-                modelFiles.add(Paths.get(resource.toUri()));
-            }
+            return filer.getResource(StandardLocation.SOURCE_PATH, "", MANIFEST_PATH).toUri().toURL();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return modelFiles;
     }
 }
