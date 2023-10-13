@@ -83,6 +83,20 @@ enum cfnMutability {
     WRITE = "write"
 }
 
+@trait(selector: "structure > member")
+intEnum cfnMutabilityInts {
+    /// Indicates that the CloudFormation property generated from this
+    /// member does not have any mutability restrictions, meaning that it
+    /// can be specified by the user and returned in a `read` or `list`
+    /// request.
+    FULL = 1
+
+    /// Indicates that the CloudFormation property generated from this
+    /// member can be specified only during resource creation and can be
+    /// returned in a `read` or `list` request.
+    CREATE_AND_READ = 2
+}
+
 /// Indicates that a Smithy resource is a CloudFormation resource.
 @unstable
 @trait(

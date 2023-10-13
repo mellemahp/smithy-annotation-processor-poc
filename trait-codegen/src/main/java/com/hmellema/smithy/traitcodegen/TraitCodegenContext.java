@@ -33,7 +33,7 @@ public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings,
         this.fileManifest = fileManifest;
         this.writerDelegator = new WriterDelegator<>(fileManifest, symbolProvider, new TraitCodegenWriter.Factory());
         this.integrations.addAll(ServiceLoader.load(TraitCodegenIntegration.class, this.getClass().getClassLoader())
-                .stream().map(ServiceLoader.Provider::get).peek(System.out::println).toList());
+                .stream().map(ServiceLoader.Provider::get).toList());
         registerInterceptors();
         this.symbolProvider = createSymbolProvider(symbolProvider);
     }

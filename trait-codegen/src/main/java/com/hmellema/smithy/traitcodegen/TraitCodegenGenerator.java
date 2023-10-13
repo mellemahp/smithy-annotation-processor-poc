@@ -24,6 +24,12 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
     }
 
     @Override
+    public Void intEnumShape(IntEnumShape shape) {
+        new IntEnumTraitGenerator().accept(getDirective(shape));
+        return null;
+    }
+
+    @Override
     public Void stringShape(StringShape shape) {
         new StringTraitGenerator().accept(getDirective(shape));
         return null;
