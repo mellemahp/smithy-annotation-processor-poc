@@ -1,10 +1,7 @@
 package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.traits.AnnotationTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.NumberTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.StringListTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.StringTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.*;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.shapes.*;
 
@@ -33,6 +30,12 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
     }
 
     @Override
+    public Void enumShape(EnumShape shape) {
+        new EnumTraitGenerator().accept(getDirective(shape));
+        return null;
+    }
+
+    @Override
     public Void listShape(ListShape shape) {
         Symbol memberType = context.symbolProvider().toSymbol(shape.getMember());
         if (memberType.equals(SymbolUtil.fromClass(String.class))) {
@@ -50,6 +53,8 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
         }
         return null;
     }
+
+
 
     private GenerateTraitDirective getDirective(Shape shape) {
         return new GenerateTraitDirective(shape, context.symbolProvider().toSymbol(shape),
