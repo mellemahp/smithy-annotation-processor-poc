@@ -9,10 +9,7 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.Path;
 import java.util.Set;
 
 import software.amazon.smithy.build.SmithyBuild;
@@ -25,7 +22,7 @@ import software.amazon.smithy.utils.IoUtils;
 
 public abstract class SmithyProcessor<A extends Annotation> extends AbstractProcessor {
     private static final String MANIFEST_PATH = "META-INF/smithy/manifest";
-    private static final String SMITHY_PREFIX = "META-INF/smithy/";
+    private static final String SOURCE_PROJECTION_PATH = "build/smithy/source/";
     private Messager messager;
     private Filer filer;
 
@@ -53,32 +50,10 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
 
             messager.printMessage(Diagnostic.Kind.NOTE, "ARTIFACTS: " + buildResult.allArtifacts().toList());
             buildResult.allArtifacts()
-                    .filter(path -> path.toString().contains("build/smithy/source/" + getPluginName()))
-                    .forEach(path -> {
-                        messager.printMessage(Diagnostic.Kind.NOTE, "WRITING FILE FOR ARTIFACT: " + path);
-                        String pathStr = path.toString();
-                        String outputPath = pathStr.substring(pathStr.lastIndexOf(getPluginName()) + getPluginName().length() + 1);
-                        if (outputPath.startsWith("META-INF")) {
-                            // TODO: this should really check if resource file already exists
-                            try (Writer writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputPath).openWriter()) {
-                                writer.write(IoUtils.readUtf8File(path));
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            return;
-                        } else {
-                            outputPath = outputPath.replace("/", ".").substring(0, outputPath.lastIndexOf(".java"));
-                            try (Writer writer = filer.createSourceFile(outputPath).openWriter()) {
-                                writer.write(IoUtils.readUtf8File(path));
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    });
-
+                    .filter(path -> path.toString().contains(SOURCE_PROJECTION_PATH + getPluginName()))
+                    .forEach(this::writeArtifact);
         }
-        messager.printMessage(Diagnostic.Kind.NOTE,
-                "Annotation processor " + this.getClass().getSimpleName() + " finished processing.");
+
         // Always return false to ensure the annotation processor does not claim the annotation.
         return false;
     }
@@ -119,6 +94,27 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         return smithyBuild.build();
     }
 
+    private void writeArtifact(Path path) {
+        messager.printMessage(Diagnostic.Kind.NOTE, "WRITING FILE FOR ARTIFACT: " + path);
+        String pathStr = path.toString();
+        String outputPath = pathStr.substring(pathStr.lastIndexOf(getPluginName()) + getPluginName().length() + 1);
+        try {
+            // Resources are written to the class output
+            if (outputPath.startsWith("META-INF")) {
+                try (Writer writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputPath).openWriter()) {
+                    writer.write(IoUtils.readUtf8File(path));
+                }
+            // All other files are written to the source output
+            } else {
+                outputPath = outputPath.replace("/", ".").substring(0, outputPath.lastIndexOf(".java"));
+                try (Writer writer = filer.createSourceFile(outputPath).openWriter()) {
+                    writer.write(IoUtils.readUtf8File(path));
+                }
+            }
+        } catch (IOException exc) {
+            throw new UncheckedIOException(exc);
+        }
+    }
 
     private A getAnnotation(Set<? extends Element> elements) {
         return elements.stream()
