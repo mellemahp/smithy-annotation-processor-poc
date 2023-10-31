@@ -91,7 +91,6 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
     }
 
     private void writeArtifact(Path path) {
-        messager.printMessage(Diagnostic.Kind.NOTE, "WRITING FILE FOR ARTIFACT: " + path);
         String pathStr = path.toString();
         String outputPath = pathStr.substring(pathStr.lastIndexOf(getPluginName()) + getPluginName().length() + 1);
         try {
