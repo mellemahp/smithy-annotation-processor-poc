@@ -20,8 +20,10 @@ public class CoreIntegration implements TraitCodegenIntegration {
     @Override
     public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(TraitCodegenContext codegenContext) {
         return List.of(
+            new GeneratedAnnotationInterceptor(),
             new ClassJavaDocInterceptor(),
             new PropertyJavaDocInterceptor()
+
         );
     }
 }

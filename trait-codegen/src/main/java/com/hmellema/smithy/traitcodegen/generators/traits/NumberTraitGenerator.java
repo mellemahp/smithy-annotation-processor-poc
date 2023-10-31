@@ -1,6 +1,5 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -12,7 +11,7 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.AbstractTrait;
 import software.amazon.smithy.model.traits.Trait;
 
-public class NumberTraitGenerator extends SimpleTraitGenerator {
+public class NumberTraitGenerator extends TraitGenerator {
     @Override
     protected void writeAdditionalProperties(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         writer.write("private final $B value;", directive.symbol()).writeInline("\n");

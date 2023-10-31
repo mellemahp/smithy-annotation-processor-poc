@@ -7,7 +7,7 @@ import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
 import software.amazon.smithy.model.traits.StringTrait;
 
-public class StringTraitGenerator extends SimpleTraitGenerator {
+public class StringTraitGenerator extends TraitGenerator {
     @Override
     protected Class<?> getTraitClass() {
         return StringTrait.class;

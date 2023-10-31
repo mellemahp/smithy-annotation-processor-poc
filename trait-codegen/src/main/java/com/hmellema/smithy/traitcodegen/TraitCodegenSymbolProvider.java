@@ -2,12 +2,11 @@ package com.hmellema.smithy.traitcodegen;
 
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.*;
-import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -21,11 +20,15 @@ public class TraitCodegenSymbolProvider extends ShapeVisitor.Default<Symbol> imp
     private final String packagePath;
     private final Model model;
 
-    TraitCodegenSymbolProvider(TraitCodegenSettings settings, Model model) {
+    private TraitCodegenSymbolProvider(TraitCodegenSettings settings, Model model) {
         this.packageName = settings.packageName();
         this.packagePath = "./" + packageName.replace(".", "/");
         this.baseVisitor = new BaseJavaSymbolVisitor();
         this.model = model;
+    }
+
+    public static SymbolProvider fromDirective(CreateSymbolProviderDirective<TraitCodegenSettings> directive) {
+        return new TraitCodegenSymbolProvider(directive.settings(), directive.model());
     }
 
     @Override

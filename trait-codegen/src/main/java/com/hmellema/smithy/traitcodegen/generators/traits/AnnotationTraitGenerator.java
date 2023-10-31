@@ -9,7 +9,7 @@ import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.traits.AnnotationTrait;
 import software.amazon.smithy.utils.MapUtils;
 
-public class AnnotationTraitGenerator extends SimpleTraitGenerator {
+public class AnnotationTraitGenerator extends TraitGenerator {
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         writeConstructor(writer, directive.symbol());

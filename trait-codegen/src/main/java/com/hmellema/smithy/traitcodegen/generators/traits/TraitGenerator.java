@@ -1,8 +1,8 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.SymbolUtil;
-import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.writer.SpiWriterUtils;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -10,8 +10,7 @@ import software.amazon.smithy.model.shapes.ShapeId;
 
 import java.util.function.Consumer;
 
-abstract class SimpleTraitGenerator implements Consumer<GenerateTraitDirective> {
-    private static final String TRAIT_SERVICE_PROVIDER_FILE = "META-INF/services/software.amazon.smithy.model.traits.TraitService";
+abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
     private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class);
     protected static final String CLASS_DEF_TEMPLATE = "public final class $L extends $L {";
 
@@ -31,22 +30,11 @@ abstract class SimpleTraitGenerator implements Consumer<GenerateTraitDirective> 
             }).popState();
         });
 
-        addProviderToServices(directive.context(), directive.symbol());
+        SpiWriterUtils.addSpiTraitProvider(directive.context(), directive.symbol());
     }
 
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         // defaults to empty
-    }
-
-    /**
-     * Write provider method to Java SPI to service file for {@link software.amazon.smithy.model.traits.TraitService}.
-     *
-     * @param context Codegen context
-     * @param symbol Symbol for trait class
-     */
-    protected void addProviderToServices(TraitCodegenContext context, Symbol symbol) {
-        context.writerDelegator().useFileWriter(TRAIT_SERVICE_PROVIDER_FILE,
-                writer -> writer.writeInline("$L$$Provider", symbol.getFullName()));
     }
 
     /**

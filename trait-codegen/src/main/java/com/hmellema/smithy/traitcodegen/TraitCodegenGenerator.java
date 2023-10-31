@@ -3,13 +3,15 @@ package com.hmellema.smithy.traitcodegen;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.traits.*;
 import software.amazon.smithy.codegen.core.Symbol;
+import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
 import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.model.traits.TraitDefinition;
 
 public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
-    private final TraitCodegenContext context;
+    private final CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive;
 
-    public TraitCodegenGenerator(TraitCodegenContext context) {
-        this.context = context;
+    public TraitCodegenGenerator(CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
+        this.directive = directive;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     public Void listShape(ListShape shape) {
-        Symbol memberType = context.symbolProvider().toSymbol(shape.getMember());
+        Symbol memberType = directive.symbolProvider().toSymbol(shape.getMember());
         if (memberType.equals(SymbolUtil.fromClass(String.class))) {
             new StringListTraitGenerator().accept(getDirective(shape));
         }
@@ -53,17 +55,20 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     public Void structureShape(StructureShape shape) {
-        GenerateTraitDirective directive = getDirective(shape);
         if (shape.getAllMembers().isEmpty()) {
-           new AnnotationTraitGenerator().accept(directive);
+           new AnnotationTraitGenerator().accept(getDirective(shape));
         }
         return null;
     }
 
-
-
     private GenerateTraitDirective getDirective(Shape shape) {
-        return new GenerateTraitDirective(shape, context.symbolProvider().toSymbol(shape),
-                context, context.settings(), context.model());
+        return new GenerateTraitDirective(shape, directive.symbolProvider().toSymbol(shape),
+                directive.context(), directive.settings(), directive.model());
+    }
+
+    public void generate() {
+        directive.connectedShapes().values().stream()
+                .filter(shape -> shape.hasTrait(TraitDefinition.class))
+                .forEach(shape -> shape.accept(this));
     }
 }
