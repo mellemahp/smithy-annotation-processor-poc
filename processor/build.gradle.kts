@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    api("software.amazon.smithy:smithy-build:1.37.0")
-    implementation("software.amazon.smithy:smithy-model:1.37.0")
+    api("software.amazon.smithy:smithy-build:1.40.0")
+    implementation("software.amazon.smithy:smithy-model:1.40.0")
 }
 

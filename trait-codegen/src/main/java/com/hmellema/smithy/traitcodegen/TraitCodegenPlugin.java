@@ -4,8 +4,10 @@ import com.google.auto.service.AutoService;
 import software.amazon.smithy.build.PluginContext;
 import software.amazon.smithy.build.SmithyBuildPlugin;
 import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.codegen.core.directed.CodegenDirector;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.neighbor.Walker;
+import software.amazon.smithy.model.shapes.ServiceShape;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeVisitor;
 import software.amazon.smithy.model.traits.Trait;
@@ -48,15 +50,17 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         Set<Shape> shapeClosure = new HashSet<>(traitShapes);
         Walker walker = new Walker(model);
         traitShapes.forEach(traitShape -> shapeClosure.addAll(walker.walkShapes(traitShape)));
-        for (Shape shape : shapeClosure) {
-            // Do not process prelude shapes
-            if (!shape.getId().getNamespace().contains("smithy.api")) {
-                if (shape.hasTrait(TraitDefinition.class)) {
-                    shape.accept(generator);
-                } else {
-                    // Do nothing for now
-                   // shape.accept(generator);
-                }
+
+        // TESTING TRANFORMER
+        Model transformed = SyntheticTraitServiceTransformer.transform(model);
+        ServiceShape serviceShape = transformed.expectShape(SyntheticTraitServiceTransformer.SYNTHETIC_SERVICE_ID, ServiceShape.class);
+        Set<Shape> shapesToWalk = new Walker(transformed).walkShapes(serviceShape);
+        for (Shape shape : shapesToWalk) {
+            if (shape.hasTrait(TraitDefinition.class)) {
+                shape.accept(generator);
+            } else {
+                // Do nothing for now
+               // shape.accept(generator);
             }
         }
 
