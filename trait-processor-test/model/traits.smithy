@@ -10,6 +10,18 @@ string jsonName
 structure myComplexTrait {
     fieldA: String
     fieldB: Boolean
+    fieldC: NestedA
+}
+
+structure NestedA {
+    fieldN: String
+    fieldQ: Boolean
+    fieldZ: NestedB
+}
+
+enum NestedB {
+    A
+    B
 }
 
 /// An HttpCode
