@@ -12,9 +12,9 @@ import software.amazon.smithy.utils.MapUtils;
 public class AnnotationTraitGenerator extends TraitGenerator {
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writeConstructor(writer, directive.symbol());
-        writeEmptyConstructor(writer, directive.symbol());
-        writeConstructorWithSourceLocation(writer, directive.symbol());
+        writeConstructor(writer, directive.traitSymbol());
+        writeEmptyConstructor(writer, directive.traitSymbol());
+        writeConstructorWithSourceLocation(writer, directive.traitSymbol());
     }
 
     @Override

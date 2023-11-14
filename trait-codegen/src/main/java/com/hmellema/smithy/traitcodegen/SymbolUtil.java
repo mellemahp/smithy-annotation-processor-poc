@@ -1,7 +1,9 @@
 package com.hmellema.smithy.traitcodegen;
 
 import software.amazon.smithy.codegen.core.Symbol;
+import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.StringUtils;
 
 public interface SymbolUtil {

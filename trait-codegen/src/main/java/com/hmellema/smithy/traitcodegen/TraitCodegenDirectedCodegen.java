@@ -8,12 +8,12 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.*;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
-public class TraitCodegenDirectedCodegen
+final class TraitCodegenDirectedCodegen
         implements DirectedCodegen<TraitCodegenContext, TraitCodegenSettings, TraitCodegenIntegration> {
 
     @Override
     public SymbolProvider createSymbolProvider(CreateSymbolProviderDirective<TraitCodegenSettings> directive) {
-        return TraitCodegenSymbolProvider.fromDirective(directive);
+        return BaseJavaSymbolProvider.fromDirective(directive);
     }
 
     @Override
@@ -59,6 +59,6 @@ public class TraitCodegenDirectedCodegen
 
     @Override
     public void customizeBeforeShapeGeneration(CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
-        new TraitCodegenGenerator(directive).generate();
+        new TraitCodegenGenerator(directive).run();
     }
 }

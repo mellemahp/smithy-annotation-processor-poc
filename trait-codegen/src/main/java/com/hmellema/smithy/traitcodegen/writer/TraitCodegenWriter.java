@@ -21,7 +21,6 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         this.packageName = packageName;
         this.fileName = fileName;
         putFormatter('T', new JavaTypeFormatter());
-        putFormatter('B', new BaseTypeFormatter());
     }
 
     public void addImport(Symbol symbol) {
@@ -109,21 +108,6 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
             }
             builder.append(">");
             return builder.toString();
-        }
-    }
-
-    /**
-     * Implements a formatter for {@code $B} that writes the base type for a class.
-     */
-    private final class BaseTypeFormatter implements BiFunction<Object, String, String> {
-        private final JavaTypeFormatter javaTypeFormatter = new JavaTypeFormatter();
-        @Override
-        public String apply(Object type, String indent) {
-            if (!(type instanceof Symbol typeSymbol)) {
-                throw new RuntimeException("Invalid type provided for $B. Expected a Symbol but found: `" + type + "`.");
-            }
-            Symbol baseSymbol = typeSymbol.expectProperty("baseType", Symbol.class);
-            return javaTypeFormatter.apply(baseSymbol, indent);
         }
     }
 }

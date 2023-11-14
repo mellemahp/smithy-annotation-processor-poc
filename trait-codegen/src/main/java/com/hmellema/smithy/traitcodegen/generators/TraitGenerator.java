@@ -5,6 +5,7 @@ import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.SpiWriterUtils;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.ProviderSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.shapes.ShapeId;
 
@@ -12,14 +13,14 @@ import java.util.function.Consumer;
 
 abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
     private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class);
-    protected static final String CLASS_DEF_TEMPLATE = "public final class $L extends $L {";
+    protected static final String CLASS_DEF_TEMPLATE = "public final class $T extends $T {";
 
     @Override
     public void accept(GenerateTraitDirective directive) {
         directive.context().writerDelegator().useShapeWriter(directive.shape(), writer -> {
             addTraitClassImport(writer);
             writer.pushState(new ClassSection(directive.shape()));
-            writer.openBlock(CLASS_DEF_TEMPLATE,"}", directive.symbol().getName(), getTraitClass().getSimpleName(), () -> {
+            writer.openBlock(CLASS_DEF_TEMPLATE,"}", directive.traitSymbol(), SymbolUtil.fromClass(getTraitClass()), () -> {
                 writeIdProperty(writer, directive.shape().getId());
                 writeAdditionalProperties(writer, directive);
                 writeConstructors(writer, directive);
@@ -28,12 +29,11 @@ abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
                 writeCreateNodeMethod(writer, directive);
 
                 // Write trait provider class
-                ProviderGenerator providerGenerator = new ProviderGenerator(directive.context().symbolProvider(), writer, directive.model());
-                directive.shape().accept(providerGenerator);
+                writer.injectSection(new ProviderSection(directive.shape(), directive.context().symbolProvider(), directive.model()));
             }).popState();
         });
 
-        SpiWriterUtils.addSpiTraitProvider(directive.context(), directive.symbol());
+        SpiWriterUtils.addSpiTraitProvider(directive.context(), directive.traitSymbol());
     }
 
     private void writeIdProperty(TraitCodegenWriter writer, ShapeId shapeId) {

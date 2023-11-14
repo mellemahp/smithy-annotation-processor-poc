@@ -15,17 +15,15 @@ public final class StructureTraitGenerator extends TraitGenerator {
     @Override
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         StructureShape shape = directive.shape().asStructureShape().orElseThrow();
-        new GetterGenerator(writer, shape, directive.context().symbolProvider(), directive.model()).run();
+        new GetterGenerator(writer, shape, directive.symbolProvider(), directive.model()).run();
         getBuilderGenerator(writer, directive).run();
         new CreateNodeGenerator(writer).run();
     }
 
-
-
     @Override
     protected void writeAdditionalProperties(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         for (MemberShape member: directive.shape().members()) {
-            writer.write("private final $T $L;", directive.context().symbolProvider().toSymbol(member), member.getMemberName());
+            writer.write("private final $T $L;", directive.symbolProvider().toSymbol(member), member.getMemberName());
         }
         writer.write("");
     }
@@ -38,6 +36,6 @@ public final class StructureTraitGenerator extends TraitGenerator {
     private BuilderGenerator getBuilderGenerator(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         StructureShape structureShape = directive.shape().asStructureShape()
                 .orElseThrow(() -> new RuntimeException("Expected structure shape"));
-        return new BuilderGenerator(structureShape, directive.model(), directive.symbol(), directive.context().symbolProvider(), writer, true);
+        return new BuilderGenerator(structureShape, directive.model(), directive.traitSymbol(), directive.symbolProvider(), writer, true);
     }
 }

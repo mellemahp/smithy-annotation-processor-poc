@@ -14,13 +14,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-final class SyntheticTraitServiceTransformer {
-    public static final ShapeId SYNTHETIC_SERVICE_ID = ShapeId.from("smithy.synthetic#TraitService");
+interface SyntheticTraitServiceTransformer {
+    ShapeId SYNTHETIC_SERVICE_ID = ShapeId.from("smithy.synthetic#TraitService");
 
     static Model transform(Model model) {
         // Find all trait definition shapes excluding private traits and traits in the prelude.
         Set<Shape> toGenerate =  model.getShapesWithTrait(TraitDefinition.class).stream()
-                .filter(SyntheticTraitServiceTransformer::isTraitDefinitionToGenerate)
+                .filter(shape -> !Prelude.isPreludeShape(shape))
+                .filter(shape -> !shape.hasTrait(PrivateTrait.class))
                 .collect(Collectors.toSet());
 
         Set<Shape> shapesToAdd = new HashSet<>();
@@ -40,9 +41,5 @@ final class SyntheticTraitServiceTransformer {
         shapesToAdd.add(serviceBuilder.build());
 
         return ModelTransformer.create().replaceShapes(model, shapesToAdd);
-    }
-
-    private static boolean isTraitDefinitionToGenerate(Shape shape) {
-        return !Prelude.isPreludeShape(shape) && !shape.hasTrait(PrivateTrait.class);
     }
 }

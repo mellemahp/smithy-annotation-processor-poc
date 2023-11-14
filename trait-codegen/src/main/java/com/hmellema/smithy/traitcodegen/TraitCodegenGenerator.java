@@ -7,11 +7,13 @@ import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
-public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
+final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements Runnable{
     private final CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive;
+    private final TraitSymbolProvider traitSymbolProvider;
 
     public TraitCodegenGenerator(CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         this.directive = directive;
+        this.traitSymbolProvider = new TraitSymbolProvider(directive.settings());
     }
 
     @Override
@@ -64,11 +66,17 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
     }
 
     private GenerateTraitDirective getDirective(Shape shape) {
-        return new GenerateTraitDirective(shape, directive.symbolProvider().toSymbol(shape),
-                directive.context(), directive.settings(), directive.model());
+        return new GenerateTraitDirective(shape,
+                traitSymbolProvider.toSymbol(shape),
+                directive.symbolProvider().toSymbol(shape),
+                directive.symbolProvider(),
+                directive.context(),
+                directive.settings(),
+                directive.model());
     }
 
-    public void generate() {
+    @Override
+    public void run() {
         directive.connectedShapes().values().stream()
                 .filter(shape -> shape.hasTrait(TraitDefinition.class))
                 .forEach(shape -> shape.accept(this));

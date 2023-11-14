@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators;
 
+import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;

@@ -12,33 +12,34 @@ import software.amazon.smithy.model.traits.AbstractTrait;
 public class NumberTraitGenerator extends TraitGenerator {
     @Override
     protected void writeAdditionalProperties(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.write("private final $B value;", directive.symbol()).writeInline("\n");
+        writer.write("private final $T value;", directive.baseSymbol()).writeInline("\n");
     }
 
     @Override
     protected void writeGetters(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.addImport(directive.symbol());
-        writer.openBlock("public $B getValue() {", "}", directive.symbol(),
+        writer.openBlock("public $T getValue() {", "}", directive.baseSymbol(),
                 () -> writer.write("return value;")).writeInline("\n");
     }
 
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writeConstructor(writer, directive.symbol());
-        writeConstructorWithSourceLocation(writer, directive.symbol());
+        writeConstructor(writer, directive.traitSymbol(), directive.baseSymbol());
+        writeConstructorWithSourceLocation(writer, directive.traitSymbol(), directive.baseSymbol());
     }
 
-    private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol symbol) {
+    private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {
         writer.addImport(FromSourceLocation.class);
-        writer.openBlock("public $T($B value, FromSourceLocation sourceLocation) {", "}", symbol, symbol, () -> {
+        writer.openBlock("public $T($T value, FromSourceLocation sourceLocation) {", "}",
+                traitSymbol, baseSymbol, () -> {
             writer.write("super(ID, sourceLocation);");
             writer.write("this.value = value;");
         }).writeInline("\n");
     }
 
-    private void writeConstructor(TraitCodegenWriter writer, Symbol symbol) {
+    private void writeConstructor(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {
         writer.addImport(SourceLocation.class);
-        writer.openBlock("public $T($B value) {", "}", symbol, symbol, () -> {
+        writer.openBlock("public $T($T value) {", "}",
+                traitSymbol, baseSymbol, () -> {
             writer.write("super(ID, SourceLocation.NONE);");
             writer.write("this.value = value;");
         }).writeInline("\n");

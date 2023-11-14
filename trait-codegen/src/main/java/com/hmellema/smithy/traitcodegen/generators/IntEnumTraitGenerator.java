@@ -26,8 +26,8 @@ public class IntEnumTraitGenerator extends NumberTraitGenerator {
 
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writeConstructor(writer, directive.symbol());
-        writeConstructorWithSourceLocation(writer, directive.symbol());
+        writeConstructor(writer, directive.traitSymbol());
+        writeConstructorWithSourceLocation(writer, directive.traitSymbol());
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol symbol) {
