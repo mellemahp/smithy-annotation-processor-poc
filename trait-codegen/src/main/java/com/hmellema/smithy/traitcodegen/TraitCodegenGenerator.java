@@ -1,7 +1,7 @@
 package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.traits.*;
+import com.hmellema.smithy.traitcodegen.generators.*;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
 import software.amazon.smithy.model.shapes.*;
@@ -16,13 +16,14 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     protected Void getDefault(Shape shape) {
+        if (shape instanceof NumberShape) {
+            generateNumberTrait(shape);
+        }
         return null;
     }
 
-    @Override
-    public Void integerShape(IntegerShape shape) {
+    private void generateNumberTrait(Shape shape) {
         new NumberTraitGenerator().accept(getDirective(shape));
-        return null;
     }
 
     @Override
@@ -52,11 +53,12 @@ public class TraitCodegenGenerator extends ShapeVisitor.Default<Void> {
         return null;
     }
 
-
     @Override
     public Void structureShape(StructureShape shape) {
         if (shape.getAllMembers().isEmpty()) {
            new AnnotationTraitGenerator().accept(getDirective(shape));
+        } else {
+            new StructureTraitGenerator().accept(getDirective(shape));
         }
         return null;
     }

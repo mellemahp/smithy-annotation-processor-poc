@@ -124,6 +124,12 @@ list StructureIdList {
 integer HttpCode
 
 @trait
+long HttpCodeLong
+
+@trait
+short HttpCodeShort
+
+@trait
 list stringListTrait {
     member: MyString
 }

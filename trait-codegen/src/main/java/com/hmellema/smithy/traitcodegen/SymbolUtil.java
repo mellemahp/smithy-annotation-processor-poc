@@ -15,4 +15,8 @@ public interface SymbolUtil {
     static String getDefaultName(Shape shape) {
         return StringUtils.capitalize(shape.getId().getName());
     }
+
+    static String getDefaultTraitName(Shape shape) {
+        return getDefaultName(shape) + "Trait";
+    }
 }

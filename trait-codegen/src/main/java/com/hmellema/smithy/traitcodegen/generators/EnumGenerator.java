@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.generators.base;
+package com.hmellema.smithy.traitcodegen.generators;
 
 import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
@@ -10,7 +10,7 @@ import software.amazon.smithy.model.traits.EnumValueTrait;
 
 import java.util.Locale;
 
-public class EnumGenerator extends AbstractEnumGenerator<GenerateEnumDirective<TraitCodegenContext, TraitCodegenSettings>> {
+public final class EnumGenerator extends AbstractEnumGenerator<GenerateEnumDirective<TraitCodegenContext, TraitCodegenSettings>> {
     private static final String VARIANT_TEMPLATE = "$L($S)";
     private static final Symbol VALUE_TYPE = SymbolUtil.fromClass(String.class);
     @Override

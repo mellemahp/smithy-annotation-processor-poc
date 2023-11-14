@@ -14,8 +14,11 @@ structure myComplexTrait {
 }
 
 structure NestedA {
+    @required
     fieldN: String
+
     fieldQ: Boolean
+
     fieldZ: NestedB
 }
 
@@ -27,6 +30,14 @@ enum NestedB {
 /// An HttpCode
 @trait
 integer HttpCode
+
+/// An HttpCode
+@trait
+short HttpCodeShort
+
+/// An HttpCode
+@trait
+long HttpCodeLong
 
 @documentation("A list of strings.")
 @trait

@@ -1,9 +1,8 @@
 package com.hmellema.smithy.traitcodegen;
 
-import com.hmellema.smithy.traitcodegen.generators.base.EnumGenerator;
-import com.hmellema.smithy.traitcodegen.generators.base.IntEnumGenerator;
-import com.hmellema.smithy.traitcodegen.generators.base.StructureGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.EnumTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.EnumGenerator;
+import com.hmellema.smithy.traitcodegen.generators.IntEnumGenerator;
+import com.hmellema.smithy.traitcodegen.generators.StructureGenerator;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.*;

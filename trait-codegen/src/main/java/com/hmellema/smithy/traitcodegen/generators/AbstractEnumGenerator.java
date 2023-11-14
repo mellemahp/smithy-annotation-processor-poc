@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.generators.base;
+package com.hmellema.smithy.traitcodegen.generators;
 
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;

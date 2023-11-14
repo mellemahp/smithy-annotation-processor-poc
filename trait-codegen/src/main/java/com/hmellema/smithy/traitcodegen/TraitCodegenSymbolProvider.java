@@ -114,9 +114,9 @@ public class TraitCodegenSymbolProvider extends ShapeVisitor.Default<Symbol> imp
 
     private Symbol.Builder getSymbolBuilder(Shape shape) {
         return Symbol.builder()
-                .name(SymbolUtil.getDefaultName(shape))
+                .name(SymbolUtil.getDefaultTraitName(shape))
                 .namespace(packageName,".")
-                .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java");
+                .declarationFile(packagePath + "/" + SymbolUtil.getDefaultTraitName(shape) + ".java");
     }
 
     private final class BaseJavaSymbolVisitor extends ShapeVisitor.Default<Symbol> {
