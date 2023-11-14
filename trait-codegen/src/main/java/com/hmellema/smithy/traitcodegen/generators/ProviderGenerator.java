@@ -8,6 +8,7 @@ import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.AnnotationTrait;
+import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.model.traits.StringTrait;
 import software.amazon.smithy.model.traits.Trait;
 
@@ -99,44 +100,28 @@ public class ProviderGenerator extends ShapeVisitor.Default<Void> {
     @Override
     public Void listShape(ListShape shape) {
         if (model.expectShape(shape.getMember().getTarget()).isStringShape()) {
-            generateStringListTraitProvider(shape);
+            generateSimpleProvider(shape, StringListTrait.class);
+            return null;
         }
         return null;
     }
 
-    private void generateStringListTraitProvider(Shape shape) {
-        writer.addImport(StringTrait.class);
-        Symbol symbol = symbolProvider.toSymbol(shape);
-        writer.openBlock("public static final class Provider extends StringListTrait.Provider<$T> {", "}",
-                symbol, () -> writer.openBlock("public Provider() {", "}",
-                        () -> writer.write("super(ID, $T::new);", symbol)));
-    }
-
-    // TODO: check for repeated pattern with String List trait and others
     @Override
     public Void stringShape(StringShape shape) {
-        generateStringProvider(shape);
+        generateSimpleProvider(shape, StringTrait.class);
         return null;
     }
 
     @Override
     public Void enumShape(EnumShape shape) {
-        generateStringProvider(shape);
+        generateSimpleProvider(shape, StringTrait.class);
         return null;
-    }
-
-    private void generateStringProvider(Shape shape) {
-        writer.addImport(StringTrait.class);
-        Symbol symbol = symbolProvider.toSymbol(shape);
-        writer.openBlock("public static final class Provider extends StringTrait.Provider<$T> {", "}",
-                symbol, () -> writer.openBlock("public Provider() {", "}",
-                        () -> writer.write("super(ID, $T::new);", symbol)));
     }
 
     @Override
     public Void structureShape(StructureShape shape) {
         if (shape.members().isEmpty()) {
-            generateAnnotationTraitProvider(shape);
+            generateSimpleProvider(shape, AnnotationTrait.class);
             return null;
         }
         writer.addImport(Trait.class);
@@ -157,11 +142,11 @@ public class ProviderGenerator extends ShapeVisitor.Default<Void> {
         return null;
     }
 
-    private void generateAnnotationTraitProvider(StructureShape shape) {
-        writer.addImport(AnnotationTrait.class);
+    private void generateSimpleProvider(Shape shape, Class<?> traitClass) {
+        writer.addImport(traitClass);
         Symbol symbol = symbolProvider.toSymbol(shape);
-        writer.openBlock("public static final class Provider extends AnnotationTrait.Provider<$T> {", "}",
-                symbol, () -> writer.openBlock("public Provider() {", "}",
+        writer.openBlock("public static final class Provider extends $L.Provider<$T> {", "}",
+                traitClass.getSimpleName(), symbol, () -> writer.openBlock("public Provider() {", "}",
                         () -> writer.write("super(ID, $T::new);", symbol)));
     }
 }
