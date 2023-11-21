@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
@@ -10,6 +10,18 @@ import software.amazon.smithy.model.traits.AnnotationTrait;
 import software.amazon.smithy.utils.MapUtils;
 
 public class AnnotationTraitGenerator extends TraitGenerator {
+    private static final String CLASS_TEMPLATE = "public final class $T extends AnnotationTrait implements FromNode {";
+
+    @Override
+    protected void imports(TraitCodegenWriter writer) {
+        writer.addImport(AnnotationTrait.class);
+    }
+
+    @Override
+    protected String getClassDefinition() {
+        return CLASS_TEMPLATE;
+    }
+
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         writeConstructor(writer, directive.traitSymbol());
@@ -18,9 +30,15 @@ public class AnnotationTraitGenerator extends TraitGenerator {
     }
 
     @Override
-    protected Class<?> getTraitClass() {
-        return AnnotationTrait.class;
+    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        // Does not use any additional methods
     }
+
+    @Override
+    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        // No builder used
+    }
+
 
     private void writeConstructor(TraitCodegenWriter writer, Symbol symbol) {
         writer.addImport(ObjectNode.class);
@@ -41,4 +59,5 @@ public class AnnotationTraitGenerator extends TraitGenerator {
         writer.openBlock("public $L(SourceLocation sourceLocation) {", "}", symbol.getName(),
                 () -> writer.write("this(new ObjectNode(MapUtils.of(), sourceLocation));")).writeInline("\n");
     }
+
 }

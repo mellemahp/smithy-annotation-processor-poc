@@ -1,8 +1,9 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.base;
 
 import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
+import com.hmellema.smithy.traitcodegen.generators.base.AbstractEnumGenerator;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.directed.GenerateEnumDirective;
 import software.amazon.smithy.model.shapes.MemberShape;

@@ -8,9 +8,18 @@ string jsonName
 
 @trait
 structure myComplexTrait {
+    @required
     fieldA: String
+
     fieldB: Boolean
+
     fieldC: NestedA
+
+    fieldD: ListD
+}
+
+list ListD {
+    member: MyString
 }
 
 structure NestedA {
@@ -66,3 +75,38 @@ intEnum myIntEnum {
     /// Negative response
     NO = 2
 }
+
+/// Defines the ordered list of supported authentication schemes.
+@trait(selector: ":is(service, operation)")
+list auth {
+    member: AuthTraitReference
+}
+
+/// A string that must target an auth trait.
+@idRef(selector: "[trait|authDefinition]")
+@private
+string AuthTraitReference
+
+@trait(selector: "operation")
+list examples {
+    member: Example
+}
+
+@private
+structure Example {
+    @required
+    title: String
+
+    documentation: String
+}
+
+@trait
+@length(min: 1)
+map externalDocumentationIsh {
+    key: NonEmptyString
+    value: NonEmptyString
+}
+
+@private
+@length(min: 1)
+string NonEmptyString

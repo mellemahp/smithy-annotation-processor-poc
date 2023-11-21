@@ -4,7 +4,9 @@ import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
 import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.model.traits.UniqueItemsTrait;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,6 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
+    private static final String NODE_FROM =  "Node.from($L)";
+    private static final String TO_NODE = "$L.toNode()";
+    private static final String LIST_INITIALIZER = "forList()";
+    private static final String SET_INITIALIZER = "forOrderedSet()";
+    private static final String MAP_INITIALIZER = "forOrderedMap()";
+
     private final String packageName;
     private final String packagePath;
     private final Model model;
@@ -27,6 +35,7 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
         return new BaseJavaSymbolProvider(directive.settings(), directive.model());
     }
 
+    // TODO: ToNode?
     @Override
     public Symbol blobShape(BlobShape shape) {
         return SymbolUtil.fromClass(ByteBuffer.class);
@@ -34,9 +43,10 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol booleanShape(BooleanShape shape) {
-        return SymbolUtil.fromClass(Boolean.class);
+        return simpleShapeSymbolFrom(Boolean.class);
     }
 
+    // TODO: ToNode?
     @Override
     public Symbol byteShape(ByteShape shape) {
         return SymbolUtil.fromClass(Byte.class);
@@ -44,19 +54,20 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol shortShape(ShortShape shape) {
-        return SymbolUtil.fromClass(Short.class);
+        return simpleShapeSymbolFrom(Short.class);
     }
 
     @Override
     public Symbol integerShape(IntegerShape shape) {
-        return SymbolUtil.fromClass(Integer.class);
+        return simpleShapeSymbolFrom(Integer.class);
     }
 
     @Override
     public Symbol intEnumShape(IntEnumShape shape) {
         return Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
-                .putProperty("enumValueType", SymbolUtil.fromClass(int.class))
+                .putProperty(SymbolProperties.ENUM_VALUE_TYPE, SymbolUtil.fromClass(int.class))
+                .putProperty(SymbolProperties.NODE_MAPPER, NODE_FROM)
                 .namespace(packageName, ".")
                 .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
                 .build();
@@ -64,33 +75,35 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol longShape(LongShape shape) {
-        return SymbolUtil.fromClass(Long.class);
+        return simpleShapeSymbolFrom(Long.class);
     }
 
     @Override
     public Symbol floatShape(FloatShape shape) {
-        return SymbolUtil.fromClass(Float.class);
+        return simpleShapeSymbolFrom(Float.class);
     }
 
     @Override
     public Symbol doubleShape(DoubleShape shape) {
-        return SymbolUtil.fromClass(Double.class);
+        return simpleShapeSymbolFrom(Double.class);
     }
 
     @Override
     public Symbol bigIntegerShape(BigIntegerShape shape) {
-        return SymbolUtil.fromClass(BigInteger.class);
+        return simpleShapeSymbolFrom(BigInteger.class);
     }
 
     @Override
     public Symbol bigDecimalShape(BigDecimalShape shape) {
-        return SymbolUtil.fromClass(BigDecimal.class);
+        return simpleShapeSymbolFrom(BigDecimal.class);
     }
 
     @Override
     public Symbol listShape(ListShape shape) {
         return SymbolUtil.fromClass(List.class).toBuilder()
                 .addReference(toSymbol(shape.getMember()))
+                .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER,
+                        shape.hasTrait(UniqueItemsTrait.class) ? SET_INITIALIZER : LIST_INITIALIZER)
                 .build();
     }
 
@@ -99,19 +112,21 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
         return SymbolUtil.fromClass(Map.class).toBuilder()
                 .addReference(shape.getKey().accept(this))
                 .addReference(shape.getValue().accept(this))
+                .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER, MAP_INITIALIZER)
                 .build();
     }
 
     @Override
     public Symbol stringShape(StringShape shape) {
-        return SymbolUtil.fromClass(String.class);
+        return simpleShapeSymbolFrom(String.class);
     }
 
     @Override
     public Symbol enumShape(EnumShape shape) {
         return Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
-                .putProperty("enumValueType", SymbolUtil.fromClass(String.class))
+                .putProperty(SymbolProperties.ENUM_VALUE_TYPE, SymbolUtil.fromClass(String.class))
+                .putProperty(SymbolProperties.NODE_MAPPER, "Node.from($L.getValue())")
                 .namespace(packageName, ".")
                 .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
                 .build();
@@ -122,6 +137,7 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
         return Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
                 .namespace(packageName, ".")
+                .putProperty(SymbolProperties.NODE_MAPPER, TO_NODE)
                 .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
                 .build();
     }
@@ -139,5 +155,12 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
     @Override
     public Symbol toSymbol(Shape shape) {
         return shape.accept(this);
+    }
+
+    public static Symbol simpleShapeSymbolFrom(Class<?> clazz) {
+        return SymbolUtil.fromClass(clazz).toBuilder()
+                .putProperty(SymbolProperties.NODE_MAPPER, NODE_FROM)
+                .putProperty(SymbolProperties.NODE_MAPPING_IMPORTS, SymbolUtil.fromClass(Node.class))
+                .build();
     }
 }

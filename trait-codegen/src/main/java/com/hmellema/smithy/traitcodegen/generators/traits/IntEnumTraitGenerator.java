@@ -1,6 +1,7 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.generators.traits.NumberTraitGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.FromSourceLocation;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class IntEnumTraitGenerator extends NumberTraitGenerator {
-    @Override
+
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         super.writeAdditionalMethods(writer, directive);
         IntEnumShape shape = directive.shape().asIntEnumShape().orElseThrow(() -> new RuntimeException("oops"));
@@ -45,23 +46,6 @@ public class IntEnumTraitGenerator extends NumberTraitGenerator {
             writer.write("this.value = value;");
         }).writeInline("\n");
     }
-
-    @Override
-    protected void writeAdditionalProperties(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.write("private final Integer value;").writeInline("\n");
-
-        IntEnumShape shape = directive.shape().asIntEnumShape().orElseThrow(() -> new RuntimeException("oops"));
-        for (Map.Entry<String, Integer> memberEntry : shape.getEnumValues().entrySet()) {
-            writer.write("public static final Integer $L = $L;", memberEntry.getKey(), memberEntry.getValue());
-        }
-    }
-
-    @Override
-    protected void writeGetters(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.openBlock("public Integer getValue() {", "}",
-                () -> writer.write("return value;")).writeInline("\n");
-    }
-
 
     private String getMethodName(String enumValue) {
         return Arrays.stream(enumValue.split("_"))

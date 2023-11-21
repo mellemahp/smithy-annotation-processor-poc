@@ -1,11 +1,17 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.base;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
+import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderConstructorGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.builder.ToBuilderGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.CreateNodeGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.GenerateStructureDirective;
+import software.amazon.smithy.model.node.ToNode;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.utils.StringUtils;
 
@@ -18,26 +24,31 @@ public class StructureGenerator implements Consumer<GenerateStructureDirective<T
     @Override
     public void accept(GenerateStructureDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         directive.context().writerDelegator().useShapeWriter(directive.shape(), writer -> {
+            writer.addImport(ToNode.class);
             writer.pushState(new ClassSection(directive.shape()))
                 .openBlock(BASE_CLASS_TEMPLATE_STRING, "}", directive.symbol(), () -> {
                     writeProperties(directive.shape(), directive.symbolProvider(), writer);
 
+                    // Create constructor from builder
+                    new BuilderConstructorGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+                    writer.write("");
+
                     // Creates all builder-associated methods
-                    BuilderGenerator builderGenerator = new BuilderGenerator(directive.shape(), directive.model(), directive.symbol(), directive.symbolProvider(), writer, false);
-                    builderGenerator.createConstructorWithBuilder();
-                    builderGenerator.createToBuilderMethod();
+                    new ToBuilderGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model(), false).run();
+                    writer.write("");
 
                     // Creates toNode method
-                    ToNodeGenerator toNodeGenerator = new ToNodeGenerator(directive.shape(), writer);
-                    toNodeGenerator.run();
+                    CreateNodeGenerator toNodeGenerator = new CreateNodeGenerator(writer, directive.symbolProvider(), directive.model());
+                    toNodeGenerator.writeToNodeMethod(directive.shape());
 
                     // TODO
                     // Creates fromNode method
 
-                    new GetterGenerator(writer, directive.shape(), directive.symbolProvider(), directive.model()).run();
+                    directive.shape().accept(new GetterGenerator(writer, directive.symbolProvider(), directive.model()));
 
                     // TODO: Should these trait sub-structures have setters by default?
                     //writeSetters(directive.shape(), directive.symbolProvider(), writer);
+                    BuilderGenerator builderGenerator = new BuilderGenerator(directive.shape(), directive.model(), directive.symbol(), directive.symbolProvider(), writer);
                     builderGenerator.run();
                 })
                 .popState();

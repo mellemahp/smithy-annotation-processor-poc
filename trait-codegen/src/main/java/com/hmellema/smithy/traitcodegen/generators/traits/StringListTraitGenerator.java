@@ -1,6 +1,5 @@
-package com.hmellema.smithy.traitcodegen.generators;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -8,11 +7,34 @@ import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
 import software.amazon.smithy.model.traits.StringListTrait;
 
+// NEEDS A TO SMITHY BUILDER
 public final class StringListTraitGenerator extends TraitGenerator {
+    private static final String CLASS_TEMPLATE = "public final class $T extends StringListTrait {";
+
+    @Override
+    protected void imports(TraitCodegenWriter writer) {
+        writer.addImport(StringListTrait.class);
+    }
+
+    @Override
+    protected String getClassDefinition() {
+        return CLASS_TEMPLATE;
+    }
+
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writeConstructor(writer, directive.traitSymbol(), directive.baseSymbol());
         writeConstructorWithSourceLocation(writer, directive.traitSymbol(), directive.baseSymbol());
+        writeConstructor(writer, directive.traitSymbol(), directive.baseSymbol());
+    }
+
+    @Override
+    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        // Does not use any additional methods
+    }
+
+    @Override
+    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        // HAS A SPECIAL BUILDER
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {
@@ -26,10 +48,5 @@ public final class StringListTraitGenerator extends TraitGenerator {
         writer.addImport(SourceLocation.class);
         writer.openBlock("public $T($T values) {", "}", traitSymbol, baseSymbol,
                 () -> writer.write("super(ID, values, SourceLocation.NONE);")).writeInline("\n");
-    }
-
-    @Override
-    protected Class<?> getTraitClass() {
-        return StringListTrait.class;
     }
 }

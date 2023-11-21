@@ -1,0 +1,38 @@
+package com.hmellema.smithy.traitcodegen.generators.traits;
+
+import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.generators.common.CreateNodeGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderConstructorGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderGenerator;
+import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import software.amazon.smithy.model.traits.AbstractTrait;
+
+public final class StructureTraitGenerator extends TraitGenerator {
+    private static final String CLASS_TEMPLATE = "public final class $T extends AbstractTrait {";
+
+    @Override
+    protected void imports(TraitCodegenWriter writer) {
+        writer.addImport(AbstractTrait.class);
+    }
+
+    @Override
+    protected String getClassDefinition() {
+        return CLASS_TEMPLATE;
+    }
+
+    @Override
+    protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new BuilderConstructorGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+    }
+
+
+    @Override
+    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new CreateNodeGenerator(writer, directive.symbolProvider(), directive.model()).writeCreateNodeMethod(directive.shape());
+    }
+
+    @Override
+    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new BuilderGenerator(directive.shape(), directive.model(), directive.traitSymbol(), directive.symbolProvider(), writer).run();
+    }
+}

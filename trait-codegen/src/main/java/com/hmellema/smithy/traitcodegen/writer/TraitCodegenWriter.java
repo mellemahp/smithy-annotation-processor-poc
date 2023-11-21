@@ -4,12 +4,15 @@ import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolReference;
 import software.amazon.smithy.codegen.core.SymbolWriter;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.utils.StringUtils;
 
 import java.util.Iterator;
 import java.util.function.BiFunction;
 
 public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCodegenImportContainer> {
+    private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class);
     private static final int MAX_LINE_LENGTH = 120;
     private static final String PACKAGE_HEADER_TEMPLATE = "package %s;%n";
 
@@ -89,7 +92,6 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
             if (!(type instanceof Symbol typeSymbol)) {
                 throw new RuntimeException("Invalid type provided for $T. Expected a Symbol but found: `" + type + "`.");
             }
-
             addImport(typeSymbol);
             if (typeSymbol.getReferences().isEmpty()) {
                 return typeSymbol.getName();

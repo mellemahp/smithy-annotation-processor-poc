@@ -22,8 +22,7 @@ public class CoreIntegration implements TraitCodegenIntegration {
         return List.of(
             new GeneratedAnnotationInterceptor(),
             new ClassJavaDocInterceptor(),
-            new PropertyJavaDocInterceptor(),
-            new ProviderSectionInterceptor(codegenContext.settings())
+            new PropertyJavaDocInterceptor()
         );
     }
 }

@@ -7,7 +7,6 @@ import software.amazon.smithy.model.traits.TraitDefinition;
 
 
 public final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
-    private static final String VALUE_GETTER_PROPERTY = "value-getter";
     private final String packageName;
     private final String packagePath;
 
@@ -38,35 +37,35 @@ public final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> impl
     @Override
     public Symbol shortShape(ShortShape shape) {
         return getSymbolBuilder(shape)
-                .putProperty(VALUE_GETTER_PROPERTY, "shortValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "shortValue()")
                 .build();
     }
 
     @Override
     public Symbol integerShape(IntegerShape shape) {
         return getSymbolBuilder(shape)
-                .putProperty(VALUE_GETTER_PROPERTY, "intValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "intValue()")
                 .build();
     }
 
     @Override
     public Symbol floatShape(FloatShape shape) {
         return getSymbolBuilder(shape)
-                .putProperty(VALUE_GETTER_PROPERTY, "floatValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "floatValue()")
                 .build();
     }
 
     @Override
     public Symbol doubleShape(DoubleShape shape) {
         return getSymbolBuilder(shape)
-                .putProperty(VALUE_GETTER_PROPERTY, "doubleValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "doubleValue()")
                 .build();
     }
 
     @Override
     public Symbol longShape(LongShape shape) {
         return getSymbolBuilder(shape)
-                .putProperty(VALUE_GETTER_PROPERTY, "longValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "longValue()")
                 .build();
     }
 
