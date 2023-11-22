@@ -16,10 +16,18 @@ structure myComplexTrait {
     fieldC: NestedA
 
     fieldD: ListD
+
+    fieldE: MyMap
 }
 
 list ListD {
     member: MyString
+}
+
+@private
+map MyMap {
+    key: NonEmptyString
+    value: NonEmptyString
 }
 
 structure NestedA {
@@ -104,7 +112,7 @@ structure Example {
 @length(min: 1)
 map externalDocumentationIsh {
     key: NonEmptyString
-    value: NonEmptyString
+    value: AuthTraitReference
 }
 
 @private

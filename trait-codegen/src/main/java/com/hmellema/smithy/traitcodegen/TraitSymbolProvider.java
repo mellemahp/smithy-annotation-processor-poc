@@ -63,6 +63,11 @@ public final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> impl
     }
 
     @Override
+    public Symbol mapShape(MapShape shape) {
+        return getSymbolBuilder(shape).build();
+    }
+
+    @Override
     public Symbol longShape(LongShape shape) {
         return getSymbolBuilder(shape)
                 .putProperty(SymbolProperties.VALUE_GETTER, "longValue()")

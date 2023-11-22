@@ -6,6 +6,7 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.SmithyBuilder;
 import software.amazon.smithy.utils.ToSmithyBuilder;
 
@@ -19,13 +20,13 @@ public class ToBuilderGenerator implements Runnable {
     private final Model model;
     private final boolean isTrait;
 
-    public ToBuilderGenerator(TraitCodegenWriter writer, Symbol symbol, Shape shape, SymbolProvider symbolProvider, Model model, boolean isTrait) {
+    public ToBuilderGenerator(TraitCodegenWriter writer, Symbol symbol, Shape shape, SymbolProvider symbolProvider, Model model) {
         this.writer = writer;
         this.symbol = symbol;
         this.shape = shape;
         this.symbolProvider = symbolProvider;
         this.model = model;
-        this.isTrait = isTrait;
+        this.isTrait = shape.hasTrait(TraitDefinition.class);
     }
 
     @Override

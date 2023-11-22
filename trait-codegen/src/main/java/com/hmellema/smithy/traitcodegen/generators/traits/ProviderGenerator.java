@@ -82,6 +82,12 @@ final class ProviderGenerator extends ShapeVisitor.Default<Void> {
         return null;
     }
 
+    @Override
+    public Void mapShape(MapShape shape) {
+        generateAbstractTraitProvider();
+        return null;
+    }
+
     private void generateNumericTraitProvider() {
         writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
             // Basic constructor
@@ -105,6 +111,7 @@ final class ProviderGenerator extends ShapeVisitor.Default<Void> {
             generateSimpleProvider(StringListTrait.class);
             return null;
         }
+        generateAbstractTraitProvider();
         return null;
     }
 

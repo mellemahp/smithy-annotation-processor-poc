@@ -1,18 +1,21 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.generators.common.node.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderConstructorGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderGenerator;
-import com.hmellema.smithy.traitcodegen.generators.common.CreateNodeGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.node.CreateNodeGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.builder.ToBuilderGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import software.amazon.smithy.model.shapes.ListShape;
 import software.amazon.smithy.model.traits.AbstractTrait;
+import software.amazon.smithy.utils.ToSmithyBuilder;
 
-public class ListTraitGenerator extends TraitGenerator {
-    private static final String CLASS_TEMPLATE = "public final class $T extends AbstractTrait {";
+public class CollectionTraitGenerator extends TraitGenerator {
+    private static final String CLASS_TEMPLATE = "public final class $1T extends AbstractTrait implements ToSmithyBuilder<$1T> {";
 
     @Override
     protected void imports(TraitCodegenWriter writer) {
+        writer.addImport(ToSmithyBuilder.class);
         writer.addImport(AbstractTrait.class);
     }
 
@@ -33,13 +36,9 @@ public class ListTraitGenerator extends TraitGenerator {
 
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         new CreateNodeGenerator(writer, directive.symbolProvider(), directive.model()).writeCreateNodeMethod(directive.shape());
-
-        //BuilderGenerator generator = getBuilderGenerator(writer, directive);
-       // generator.createToBuilderMethod();
-        //generator.run();
+        writer.write("");
+        new ToBuilderGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+        writer.write("");
+        new FromNodeGenerator(writer, directive.traitSymbol(), directive.symbolProvider(), directive.shape(), directive.model()).run();
     }
-
-//    private BuilderGenerator getBuilderGenerator(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-//        return new BuilderGenerator(directive.shape(), directive.model(), directive.traitSymbol(), directive.symbolProvider(), writer, true);
-//    }
 }

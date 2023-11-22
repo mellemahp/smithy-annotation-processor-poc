@@ -4,8 +4,10 @@ import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.utils.SetUtils;
 
 import java.util.Map;
+import java.util.Set;
 
 public class PropertyGenerator extends ShapeVisitor.Default<Void> {
     private static final String PROPERTY_TEMPLATE = "private final $T $L;";
@@ -106,6 +108,15 @@ public class PropertyGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     public Void structureShape(StructureShape shape) {
+        if (!shape.members().isEmpty()) {
+            writer.addImport(Set.class);
+            writer.addImport(SetUtils.class);
+            writer.putContext("properties", shape.getAllMembers());
+            writer.openBlock("private static final Set<String> PROPERTIES = SetUtils.of(", ");", () -> {
+                writer.write("${#properties}${key:S}${^key.last}, ${/key.last}${/properties}");
+            });
+        }
+
         for (MemberShape member: shape.members()) {
             writer.write(PROPERTY_TEMPLATE, symbolProvider.toSymbol(member), symbolProvider.toMemberName(member));
         }

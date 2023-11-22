@@ -15,7 +15,7 @@ public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirec
     @Override
     public void accept(GenerateIntEnumDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         directive.context().writerDelegator().useShapeWriter(directive.shape(),
-                writer -> writeEnum(directive.shape(), directive.symbolProvider(), writer));
+                writer -> writeEnum(directive.shape(), directive.symbolProvider(), writer, directive.model()));
     }
     @Override
     String getVariantTemplate() {

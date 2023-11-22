@@ -50,8 +50,14 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
         if (SymbolUtil.isJavaString(directive.symbolProvider().toSymbol(shape.getMember()))) {
             new StringListTraitGenerator().accept(getDirective(shape));
         } else {
-            new ListTraitGenerator().accept(getDirective(shape));
+            new CollectionTraitGenerator().accept(getDirective(shape));
         }
+        return null;
+    }
+
+    @Override
+    public Void mapShape(MapShape shape) {
+        new CollectionTraitGenerator().accept(getDirective(shape));
         return null;
     }
 

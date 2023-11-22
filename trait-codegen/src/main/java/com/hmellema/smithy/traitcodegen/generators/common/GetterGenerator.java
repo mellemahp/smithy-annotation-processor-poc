@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
+import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -72,7 +73,7 @@ public final class GetterGenerator  extends ShapeVisitor.Default<Void>  {
     @Override
     public Void listShape(ListShape shape) {
         // StringListTraits already have a getter.
-        if (model.expectShape(shape.getMember().getTarget()).isStringShape()) {
+        if (SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getMember()))) {
             return null;
         }
 

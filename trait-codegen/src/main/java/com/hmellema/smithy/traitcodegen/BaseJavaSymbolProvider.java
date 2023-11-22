@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen;
 
+import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
@@ -67,7 +68,8 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
         return Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
                 .putProperty(SymbolProperties.ENUM_VALUE_TYPE, SymbolUtil.fromClass(int.class))
-                .putProperty(SymbolProperties.NODE_MAPPER, NODE_FROM)
+                .putProperty(SymbolProperties.TO_NODE_MAPPER, NODE_FROM)
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, SymbolUtil.getDefaultName(shape) + ".fromNode($L)")
                 .namespace(packageName, ".")
                 .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
                 .build();
@@ -118,7 +120,9 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol stringShape(StringShape shape) {
-        return simpleShapeSymbolFrom(String.class);
+        return simpleShapeSymbolFrom(String.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectStringNode().getValue()")
+                .build();
     }
 
     @Override
@@ -126,7 +130,8 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
         return Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
                 .putProperty(SymbolProperties.ENUM_VALUE_TYPE, SymbolUtil.fromClass(String.class))
-                .putProperty(SymbolProperties.NODE_MAPPER, "Node.from($L.getValue())")
+                .putProperty(SymbolProperties.TO_NODE_MAPPER, "Node.from($L.getValue())")
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, SymbolUtil.getDefaultName(shape) + ".fromNode($L)")
                 .namespace(packageName, ".")
                 .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
                 .build();
@@ -137,7 +142,8 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
         return Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
                 .namespace(packageName, ".")
-                .putProperty(SymbolProperties.NODE_MAPPER, TO_NODE)
+                .putProperty(SymbolProperties.TO_NODE_MAPPER, TO_NODE)
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, SymbolUtil.getDefaultName(shape) + ".fromNode($L)")
                 .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
                 .build();
     }
@@ -159,7 +165,7 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     public static Symbol simpleShapeSymbolFrom(Class<?> clazz) {
         return SymbolUtil.fromClass(clazz).toBuilder()
-                .putProperty(SymbolProperties.NODE_MAPPER, NODE_FROM)
+                .putProperty(SymbolProperties.TO_NODE_MAPPER, NODE_FROM)
                 .putProperty(SymbolProperties.NODE_MAPPING_IMPORTS, SymbolUtil.fromClass(Node.class))
                 .build();
     }

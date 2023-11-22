@@ -17,7 +17,7 @@ public final class EnumGenerator extends AbstractEnumGenerator<GenerateEnumDirec
     @Override
     public void accept(GenerateEnumDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         directive.context().writerDelegator().useShapeWriter(directive.shape(),
-                writer -> writeEnum(directive.shape(), directive.symbolProvider(), writer));
+                writer -> writeEnum(directive.shape(), directive.symbolProvider(), writer, directive.model()));
     }
 
     @Override
