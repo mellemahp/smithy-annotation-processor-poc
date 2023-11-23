@@ -1,6 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.common.builder;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
@@ -40,7 +41,7 @@ public class BuilderConstructorGenerator implements Runnable {
     private final class InitializerVisitor extends ShapeVisitor.Default<Void> {
         @Override
         protected Void getDefault(Shape shape) {
-            throw new RuntimeException("Does not support shape of type " + shape.getType());
+            throw new UnsupportedOperationException("Does not support shape of type " + shape.getType());
         }
 
         @Override
@@ -60,9 +61,9 @@ public class BuilderConstructorGenerator implements Runnable {
             for (MemberShape member : shape.members()) {
                 if (member.isRequired()) {
                     writer.addImport(SmithyBuilder.class);
-                    writer.write("this.$1L = SmithyBuilder.requiredState($1S, $2L);", toMemberName(member), getBuilderValue(member));
+                    writer.write("this.$1L = SmithyBuilder.requiredState($1S, $2L);", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider), getBuilderValue(member));
                 } else {
-                    writer.write("this.$L = $L;", toMemberName(member), getBuilderValue(member));
+                    writer.write("this.$L = $L;", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider), getBuilderValue(member));
                 }
             }
             return null;
@@ -70,24 +71,14 @@ public class BuilderConstructorGenerator implements Runnable {
 
         private String getBuilderValue(MemberShape member) {
             if (symbolProvider.toSymbol(member).getProperty(SymbolProperties.BUILDER_REF_INITIALIZER).isPresent()) {
-                return writer.format("builder.$L.copy()", toMemberName(member));
+                return writer.format("builder.$L.copy()", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
             } else {
-                return writer.format("builder.$L", toMemberName(member));
+                return writer.format("builder.$L", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
             }
         }
 
         private void writeValuesInitializer() {
             writer.write("this.values = builder.values.copy();");
-        }
-
-        // TODO: Figure out why this doesnt work correctly in the SymbolProvider?
-        private String toMemberName(MemberShape member) {
-            Shape containerShape = model.expectShape(member.getContainer());
-            if (containerShape.isMapShape() || containerShape.isListShape()) {
-                return "values";
-            } else {
-                return symbolProvider.toMemberName(member);
-            }
         }
     }
 }

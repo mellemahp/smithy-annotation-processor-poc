@@ -26,17 +26,6 @@ public class StringTraitGenerator extends TraitGenerator {
         writeConstructorWithSourceLocation(writer, directive.traitSymbol());
     }
 
-    @Override
-    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // String traits have no need for additional methods
-    }
-
-    @Override
-    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // Does not use a builder
-    }
-
-
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol symbol) {
         writer.addImport(FromSourceLocation.class);
         writer.openBlock("public $T(String name, FromSourceLocation sourceLocation) {", "}", symbol,

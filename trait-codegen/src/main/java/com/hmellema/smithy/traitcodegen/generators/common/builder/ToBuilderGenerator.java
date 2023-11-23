@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.common.builder;
 
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
@@ -31,9 +32,8 @@ public class ToBuilderGenerator implements Runnable {
 
     @Override
     public void run() {
-        writer.addImport(SmithyBuilder.class);
-        writer.addImport(ToSmithyBuilder.class);
-        writer.write("@Override");
+        writer.addImports(SmithyBuilder.class, ToSmithyBuilder.class);
+        writer.override();
         writer.openBlock("public SmithyBuilder<$T> toBuilder() {", "}", symbol, () -> {
             writer.writeInline("return builder()");
             writer.indent();
@@ -43,7 +43,7 @@ public class ToBuilderGenerator implements Runnable {
             Iterator<MemberShape> memberIterator = shape.members().iterator();
             while (memberIterator.hasNext()) {
                 MemberShape member = memberIterator.next();
-                writer.writeInline(".$1L($1L)", toMemberName(member));
+                writer.writeInline(".$1L($1L)", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
                 if (memberIterator.hasNext()) {
                     writer.writeInline("\n");
                 } else {
@@ -52,16 +52,5 @@ public class ToBuilderGenerator implements Runnable {
             }
             writer.dedent();
         });
-        writer.write("");
-    }
-
-    // TODO: Figure out why this doesnt work correctly in the SymbolProvider?
-    private String toMemberName(MemberShape member) {
-        Shape containerShape = model.expectShape(member.getContainer());
-        if (containerShape.isMapShape() || containerShape.isListShape()) {
-            return "values";
-        } else {
-            return symbolProvider.toMemberName(member);
-        }
     }
 }

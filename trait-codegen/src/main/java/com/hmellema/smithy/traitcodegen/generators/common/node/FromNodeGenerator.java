@@ -1,7 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.common.node;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
@@ -31,7 +31,7 @@ public class FromNodeGenerator implements Runnable {
     @Override
     public void run() {
         writer.addImport(Node.class);
-        writer.openBlock("public static $T fromNode(Node node) {","}", symbol,
+        writer.openBlock("public static $T fromNode(Node node) {", "}", symbol,
                 () -> shape.accept(new FromNodeBodyGenerator()));
     }
 
@@ -64,12 +64,11 @@ public class FromNodeGenerator implements Runnable {
             writer.write(BUILDER_INITIALIZER);
             Symbol keySymbol = symbolProvider.toSymbol(shape.getKey());
             Symbol valueSymbol = symbolProvider.toSymbol(shape.getValue());
-            writer.openBlock("node.expectObjectNode().getMembers().forEach((k, v) -> {", "});", () -> {
-                writer.write("builder.putValues("
-                        +  keySymbol.expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class) + ", "
-                        +  valueSymbol.expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class) + ");",
-                        "k", "v");
-            });
+            writer.openBlock("node.expectObjectNode().getMembers().forEach((k, v) -> {", "});",
+                    () -> writer.write("builder.putValues("
+                                    + keySymbol.expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class) + ", "
+                                    + valueSymbol.expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class) + ");",
+                            "k", "v"));
             writer.write(BUILD_AND_RETURN);
             return null;
         }
@@ -139,8 +138,8 @@ public class FromNodeGenerator implements Runnable {
         @Override
         public Void listShape(ListShape shape) {
             writer.writeInline("$memberPrefix:LArrayMember($S, n -> "
-                        + symbolProvider.toSymbol(shape.getMember()).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class)
-                        +", builder::$L)", symbolProvider.toMemberName(member), "n", symbolProvider.toMemberName(member));
+                    + symbolProvider.toSymbol(shape.getMember()).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class)
+                    + ", builder::$L)", symbolProvider.toMemberName(member), "n", symbolProvider.toMemberName(member));
             return null;
         }
 
@@ -193,7 +192,7 @@ public class FromNodeGenerator implements Runnable {
             writer.disableNewlines();
             writer.openBlock("$memberPrefix:LObjectMember($S, o -> o.getMembers().forEach((k, v) -> {\n", "}))", symbolProvider.toMemberName(member),
                     () -> writer.write("builder.put$L(" + keyMapper + ", " + valueMapper + ");\n",
-                        StringUtils.capitalize(symbolProvider.toMemberName(member)), "k", "v"));
+                            StringUtils.capitalize(symbolProvider.toMemberName(member)), "k", "v"));
             writer.enableNewlines();
             return null;
         }
@@ -223,7 +222,7 @@ public class FromNodeGenerator implements Runnable {
         private void generateGenericMember(Shape shape) {
             writer.writeInline("$memberPrefix:LMember($S, n -> "
                     + symbolProvider.toSymbol(shape).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class)
-                    +", builder::$L)", symbolProvider.toMemberName(member), "n", symbolProvider.toMemberName(member));
+                    + ", builder::$L)", symbolProvider.toMemberName(member), "n", symbolProvider.toMemberName(member));
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.hmellema.smithy.traitcodegen;
 
-import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
-    private static final String NODE_FROM =  "Node.from($L)";
+    private static final String NODE_FROM = "Node.from($L)";
     private static final String TO_NODE = "$L.toNode()";
     private static final String LIST_INITIALIZER = "forList()";
     private static final String SET_INITIALIZER = "forOrderedSet()";
@@ -34,6 +34,13 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     public static SymbolProvider fromDirective(CreateSymbolProviderDirective<TraitCodegenSettings> directive) {
         return new BaseJavaSymbolProvider(directive.settings(), directive.model());
+    }
+
+    public static Symbol simpleShapeSymbolFrom(Class<?> clazz) {
+        return SymbolUtil.fromClass(clazz).toBuilder()
+                .putProperty(SymbolProperties.TO_NODE_MAPPER, NODE_FROM)
+                .putProperty(SymbolProperties.NODE_MAPPING_IMPORTS, SymbolUtil.fromClass(Node.class))
+                .build();
     }
 
     // TODO: ToNode?
@@ -161,12 +168,5 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
     @Override
     public Symbol toSymbol(Shape shape) {
         return shape.accept(this);
-    }
-
-    public static Symbol simpleShapeSymbolFrom(Class<?> clazz) {
-        return SymbolUtil.fromClass(clazz).toBuilder()
-                .putProperty(SymbolProperties.TO_NODE_MAPPER, NODE_FROM)
-                .putProperty(SymbolProperties.NODE_MAPPING_IMPORTS, SymbolUtil.fromClass(Node.class))
-                .build();
     }
 }

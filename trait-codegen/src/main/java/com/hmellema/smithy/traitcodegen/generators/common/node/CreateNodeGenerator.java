@@ -1,7 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.common.node;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
@@ -47,7 +47,8 @@ public final class CreateNodeGenerator {
     }
 
     private final class CreateNodeBodyGenerator extends ShapeVisitor.Default<Void> {
-        private CreateNodeBodyGenerator() {}
+        private CreateNodeBodyGenerator() {
+        }
 
         @Override
         protected Void getDefault(Shape shape) {
@@ -127,15 +128,14 @@ public final class CreateNodeGenerator {
                         .write(".sourceLocation(getSourceLocation()).build();");
                 return null;
             }
-            Symbol keySymbol = symbolProvider.toSymbol(shape.getKey());;
+            Symbol keySymbol = symbolProvider.toSymbol(shape.getKey());
             Symbol valueSymbol = symbolProvider.toSymbol(shape.getValue());
             keySymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
             valueSymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
             String keyMapper = keySymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
             String valueMapper = valueSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
 
-            writer.addImport(AbstractMap.class);
-            writer.addImport(Map.class);
+            writer.addImports(AbstractMap.class, Map.class);
             writer.write("return values.entrySet().stream()")
                     .indent()
                     .write(".map(entry -> new AbstractMap.SimpleImmutableEntry<>(")
@@ -168,12 +168,12 @@ public final class CreateNodeGenerator {
                     } else if (model.expectShape(member.getTarget()).isListShape()) {
                         writer.addImport(ArrayNode.class);
                         Symbol listTargetSymbol = symbolProvider.toSymbol(model.expectShape(
-                                model.expectShape(member.getTarget()).asListShape().get().getMember().getTarget()));
+                                model.expectShape(member.getTarget()).asListShape().orElseThrow().getMember().getTarget()));
                         writer.write(".withMember($S, get$L().stream().map(s -> " + listTargetSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class)
                                         + ").collect(ArrayNode.collect()))",
                                 symbolProvider.toMemberName(member), StringUtils.capitalize(symbolProvider.toMemberName(member)), "s");
                     } else if (model.expectShape(member.getTarget()).isMapShape()) {
-                        MapShape mapShape = model.expectShape(member.getTarget()).asMapShape().get();
+                        MapShape mapShape = model.expectShape(member.getTarget()).asMapShape().orElseThrow();
                         Symbol keySymbol = symbolProvider.toSymbol(mapShape.getKey());
                         Symbol valueSymbol = symbolProvider.toSymbol(mapShape.getValue());
                         keySymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
@@ -181,16 +181,13 @@ public final class CreateNodeGenerator {
                         String keyMapper = keySymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
                         String valueMapper = valueSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
 
-                        writer.addImport(AbstractMap.class);
-                        writer.addImport(Map.class);
-                        writer.addImport(ObjectNode.class);
-                        writer.openBlock(".withMember($1S, get$1L().entrySet().stream()",")", StringUtils.capitalize(member.getMemberName()), () -> {
-                                    writer.write(".map(entry -> new AbstractMap.SimpleImmutableEntry<>(")
-                                            .indent()
-                                            .write(keyMapper + ", " + valueMapper + "))", "entry.getKey()", "entry.getValue()")
-                                            .dedent()
-                                            .write(".collect(ObjectNode.collect(Map.Entry::getKey, Map.Entry::getValue))");
-                                });
+                        writer.addImports(AbstractMap.class, Map.class, ObjectNode.class);
+                        writer.openBlock(".withMember($1S, get$1L().entrySet().stream()", ")", StringUtils.capitalize(member.getMemberName()),
+                                () -> writer.write(".map(entry -> new AbstractMap.SimpleImmutableEntry<>(")
+                                        .indent()
+                                        .write(keyMapper + ", " + valueMapper + "))", "entry.getKey()", "entry.getValue()")
+                                        .dedent()
+                                        .write(".collect(ObjectNode.collect(Map.Entry::getKey, Map.Entry::getValue))"));
                     } else {
                         writer.write(".withOptionalMember($S, get$L().map(m -> " + memberSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class) + "))",
                                 symbolProvider.toMemberName(member), StringUtils.capitalize(symbolProvider.toMemberName(member)), "m");

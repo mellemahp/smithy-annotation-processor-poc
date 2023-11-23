@@ -7,6 +7,7 @@ import software.amazon.smithy.build.PluginContext;
 import software.amazon.smithy.build.SmithyBuildPlugin;
 import software.amazon.smithy.codegen.core.directed.CodegenDirector;
 import software.amazon.smithy.model.Model;
+
 import java.util.logging.Logger;
 
 @AutoService(SmithyBuildPlugin.class)

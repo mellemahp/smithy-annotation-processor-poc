@@ -13,4 +13,5 @@ public record GenerateTraitDirective(Shape shape,
                                      SymbolProvider symbolProvider,
                                      TraitCodegenContext context,
                                      TraitCodegenSettings settings,
-                                     Model model) {}
+                                     Model model) {
+}

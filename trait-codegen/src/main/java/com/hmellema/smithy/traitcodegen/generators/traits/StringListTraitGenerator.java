@@ -7,7 +7,7 @@ import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
 import software.amazon.smithy.model.traits.StringListTrait;
 
-// NEEDS A TO SMITHY BUILDER
+// TODO: Add custom builder
 public final class StringListTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $T extends StringListTrait {";
 
@@ -25,16 +25,6 @@ public final class StringListTraitGenerator extends TraitGenerator {
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         writeConstructorWithSourceLocation(writer, directive.traitSymbol(), directive.baseSymbol());
         writeConstructor(writer, directive.traitSymbol(), directive.baseSymbol());
-    }
-
-    @Override
-    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // Does not use any additional methods
-    }
-
-    @Override
-    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // HAS A SPECIAL BUILDER
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {

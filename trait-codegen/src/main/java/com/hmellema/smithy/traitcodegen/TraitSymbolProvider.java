@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen;
 
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.*;
@@ -86,17 +87,17 @@ public final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> impl
 
     @Override
     public Symbol unionShape(UnionShape shape) {
-        return null;
+        throw new UnsupportedOperationException("Cannot generate Union shape traits");
     }
 
     @Override
     public Symbol memberShape(MemberShape shape) {
-        return null;
+        throw new UnsupportedOperationException("Cannot generate trait for member shape.");
     }
 
     @Override
     public Symbol timestampShape(TimestampShape shape) {
-        return null;
+        throw new UnsupportedOperationException("Cannot generate trait for timestamp at this time");
     }
 
     private Symbol.Builder getSymbolBuilder(Shape shape) {

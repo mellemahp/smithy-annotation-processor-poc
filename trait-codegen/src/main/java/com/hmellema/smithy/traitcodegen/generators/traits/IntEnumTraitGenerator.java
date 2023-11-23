@@ -1,7 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.traits.NumberTraitGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.FromSourceLocation;
@@ -10,11 +9,11 @@ import software.amazon.smithy.model.shapes.IntEnumShape;
 import software.amazon.smithy.utils.StringUtils;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class IntEnumTraitGenerator extends NumberTraitGenerator {
 
+    @Override
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         super.writeAdditionalMethods(writer, directive);
         IntEnumShape shape = directive.shape().asIntEnumShape().orElseThrow(() -> new RuntimeException("oops"));

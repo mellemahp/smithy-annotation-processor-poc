@@ -27,6 +27,11 @@ final class TraitCodegenDirectedCodegen
     }
 
     @Override
+    public void generateOperation(GenerateOperationDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
+        // Do nothing for operation generation
+    }
+
+    @Override
     public void generateError(GenerateErrorDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         // Do nothing on error generation
     }

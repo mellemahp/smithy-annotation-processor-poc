@@ -1,9 +1,10 @@
-package com.hmellema.smithy.traitcodegen;
+package com.hmellema.smithy.traitcodegen.utils;
 
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
-import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.StringUtils;
 
 public interface SymbolUtil {
@@ -26,5 +27,14 @@ public interface SymbolUtil {
 
     static boolean isJavaString(Symbol symbol) {
         return JAVA_STRING.getName().equals(symbol.getName()) && JAVA_STRING.getNamespace().equals(symbol.getNamespace());
+    }
+
+    static String toMemberNameOrValues(MemberShape member, Model model, SymbolProvider symbolProvider) {
+        Shape containerShape = model.expectShape(member.getContainer());
+        if (containerShape.isMapShape() || containerShape.isListShape()) {
+            return "values";
+        } else {
+            return symbolProvider.toMemberName(member);
+        }
     }
 }

@@ -7,6 +7,9 @@ namespace io.smithy.example
 string jsonName
 
 @trait
+structure AnnotationTrait {}
+
+@trait
 structure myComplexTrait {
     @required
     fieldA: String

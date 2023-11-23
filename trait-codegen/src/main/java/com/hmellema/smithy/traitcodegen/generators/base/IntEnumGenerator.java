@@ -1,12 +1,12 @@
 package com.hmellema.smithy.traitcodegen.generators.base;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
-import com.hmellema.smithy.traitcodegen.generators.base.AbstractEnumGenerator;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.directed.GenerateIntEnumDirective;
 import software.amazon.smithy.model.shapes.MemberShape;
+import software.amazon.smithy.model.traits.EnumValueTrait;
 
 public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirective<TraitCodegenContext, TraitCodegenSettings>> {
     private static final String VARIANT_TEMPLATE = "$L($L)";
@@ -17,6 +17,7 @@ public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirec
         directive.context().writerDelegator().useShapeWriter(directive.shape(),
                 writer -> writeEnum(directive.shape(), directive.symbolProvider(), writer, directive.model()));
     }
+
     @Override
     String getVariantTemplate() {
         return VARIANT_TEMPLATE;
@@ -29,6 +30,8 @@ public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirec
 
     @Override
     Object getEnumValue(MemberShape member) {
-        return null;
+        return member.getTrait(EnumValueTrait.class)
+                .flatMap(EnumValueTrait::getIntValue)
+                .orElseThrow();
     }
 }

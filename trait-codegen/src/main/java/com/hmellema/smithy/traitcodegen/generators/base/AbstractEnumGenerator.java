@@ -20,18 +20,16 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
         writer.pushState(new ClassSection(enumShape))
                 .openBlock("public enum $L {", "}", enumSymbol.getName(), () -> {
                     writeVariants(enumShape, provider, writer);
+                    writer.newLine();
 
-                    writer.write("");
                     writeValueField(writer);
-                    writer.write("");
+                    writer.newLine();
 
-                    // TODO: add Section
                     writeConstructor(enumSymbol, writer);
 
-                    // TODO: add Section
                     writeValueGetter(writer);
+                    writer.newLine();
 
-                    // TODO: add Section
                     new FromNodeGenerator(writer, enumSymbol, provider, enumShape, model).run();
                 })
                 .popState();
@@ -50,7 +48,6 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
             MemberShape member = memberIterator.next();
             String name = provider.toMemberName(member);
             if (memberIterator.hasNext()) {
-                // TODO: Add section
                 writer.write(template + ",", name, getEnumValue(member));
             } else {
                 writer.write(template + ";", name, getEnumValue(member));
@@ -70,6 +67,6 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
     private void writeConstructor(Symbol enumSymbol, TraitCodegenWriter writer) {
         writer.openBlock("$L($T value) {", "}",
                 enumSymbol.getName(), getValueType(), () -> writer.write("this.value = value;"));
-        writer.write("");
+        writer.newLine();
     }
 }

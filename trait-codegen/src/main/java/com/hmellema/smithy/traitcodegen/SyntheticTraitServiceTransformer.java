@@ -19,7 +19,7 @@ interface SyntheticTraitServiceTransformer {
 
     static Model transform(Model model) {
         // Find all trait definition shapes excluding private traits and traits in the prelude.
-        Set<Shape> toGenerate =  model.getShapesWithTrait(TraitDefinition.class).stream()
+        Set<Shape> toGenerate = model.getShapesWithTrait(TraitDefinition.class).stream()
                 .filter(shape -> !Prelude.isPreludeShape(shape))
                 .filter(shape -> !shape.hasTrait(PrivateTrait.class))
                 .collect(Collectors.toSet());

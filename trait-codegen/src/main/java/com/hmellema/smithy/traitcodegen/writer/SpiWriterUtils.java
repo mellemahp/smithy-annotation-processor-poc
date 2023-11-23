@@ -10,7 +10,7 @@ public interface SpiWriterUtils {
      * Write provider method to Java SPI to service file for {@link software.amazon.smithy.model.traits.TraitService}.
      *
      * @param context Codegen context
-     * @param symbol Symbol for trait class
+     * @param symbol  Symbol for trait class
      */
     static void addSpiTraitProvider(TraitCodegenContext context, Symbol symbol) {
         context.writerDelegator().useFileWriter(TRAIT_SERVICE_PROVIDER_FILE,

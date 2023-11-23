@@ -1,20 +1,16 @@
 package com.hmellema.smithy.traitcodegen.writer;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolReference;
 import software.amazon.smithy.codegen.core.SymbolWriter;
-import software.amazon.smithy.model.shapes.Shape;
-import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.utils.StringUtils;
 
 import java.util.Iterator;
 import java.util.function.BiFunction;
 
 public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCodegenImportContainer> {
-    private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class);
     private static final int MAX_LINE_LENGTH = 120;
-    private static final String PACKAGE_HEADER_TEMPLATE = "package %s;%n";
 
     private final String packageName;
     private final String fileName;
@@ -23,15 +19,30 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         super(new TraitCodegenImportContainer());
         this.packageName = packageName;
         this.fileName = fileName;
+
         putFormatter('T', new JavaTypeFormatter());
     }
 
+    private static boolean fileMatchesSymbol(String file, Symbol symbol) {
+        String fullClassName = StringUtils.strip(file, ".java").replace("/", ".");
+        return fullClassName.equals(symbol.getNamespace() + "." + symbol.getName());
+    }
+
     public void addImport(Symbol symbol) {
-        addImport(symbol, symbol.getName());
+        // Do not add import if the symbol is the same class as this file
+        if (!fileMatchesSymbol(fileName, symbol)) {
+            addImport(symbol, symbol.getName());
+        }
     }
 
     public void addImport(Class<?> clazz) {
         addImport(SymbolUtil.fromClass(clazz));
+    }
+
+    public void addImports(Class<?>... clazzes) {
+        for (Class<?> clazz : clazzes) {
+            addImport(SymbolUtil.fromClass(clazz));
+        }
     }
 
     public void writeDocString(String contents) {
@@ -52,13 +63,6 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
                 .popState();
     }
 
-    public static final class Factory implements SymbolWriter.Factory<TraitCodegenWriter> {
-        @Override
-        public TraitCodegenWriter apply(String filename, String namespace) {
-            return new TraitCodegenWriter(filename, namespace);
-        }
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -72,7 +76,7 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
     }
 
     public String getPackageHeader() {
-        return String.format(PACKAGE_HEADER_TEMPLATE, packageName);
+        return String.format("package %s;%n", packageName);
     }
 
     public String getAttribution() {
@@ -81,6 +85,21 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
                  * Copyright My.company
                  */
                 """;
+    }
+
+    public void newLine() {
+        writeInline(getNewline());
+    }
+
+    public void override() {
+        write("@Override");
+    }
+
+    public static final class Factory implements SymbolWriter.Factory<TraitCodegenWriter> {
+        @Override
+        public TraitCodegenWriter apply(String file, String namespace) {
+            return new TraitCodegenWriter(file, namespace);
+        }
     }
 
     /**

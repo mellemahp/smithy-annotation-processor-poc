@@ -1,6 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -10,8 +10,8 @@ import software.amazon.smithy.utils.StringUtils;
 import java.util.EnumSet;
 import java.util.Optional;
 
-public final class GetterGenerator  extends ShapeVisitor.Default<Void>  {
-    private final EnumSet<ShapeType> NO_OPTIONAL_WRAPPING_TYPES = EnumSet.of(ShapeType.MAP, ShapeType.LIST);
+public final class GetterGenerator extends ShapeVisitor.Default<Void> {
+    private static final EnumSet<ShapeType> NO_OPTIONAL_WRAPPING_TYPES = EnumSet.of(ShapeType.MAP, ShapeType.LIST);
     private final TraitCodegenWriter writer;
     private final SymbolProvider symbolProvider;
     private final Model model;
@@ -104,7 +104,7 @@ public final class GetterGenerator  extends ShapeVisitor.Default<Void>  {
             } else {
                 generateOptionalGetter(member);
             }
-            writer.write("");
+            writer.newLine();
         }
         return null;
     }

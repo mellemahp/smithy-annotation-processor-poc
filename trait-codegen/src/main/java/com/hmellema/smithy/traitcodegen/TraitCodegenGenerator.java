@@ -2,11 +2,12 @@ package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.traits.*;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
-final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements Runnable{
+final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements Runnable {
     private final CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive;
     private final TraitSymbolProvider traitSymbolProvider;
 
@@ -64,7 +65,7 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
     @Override
     public Void structureShape(StructureShape shape) {
         if (shape.getAllMembers().isEmpty()) {
-           new AnnotationTraitGenerator().accept(getDirective(shape));
+            new AnnotationTraitGenerator().accept(getDirective(shape));
         } else {
             new StructureTraitGenerator().accept(getDirective(shape));
         }

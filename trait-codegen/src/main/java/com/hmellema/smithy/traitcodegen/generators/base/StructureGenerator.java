@@ -2,13 +2,13 @@ package com.hmellema.smithy.traitcodegen.generators.base;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
-import com.hmellema.smithy.traitcodegen.generators.common.node.FromNodeGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.PropertyGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderConstructorGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.builder.ToBuilderGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.node.CreateNodeGenerator;
-import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.node.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
 import software.amazon.smithy.codegen.core.directed.GenerateStructureDirective;
 import software.amazon.smithy.model.node.ToNode;
@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 
 public class StructureGenerator implements Consumer<GenerateStructureDirective<TraitCodegenContext, TraitCodegenSettings>> {
     private static final String BASE_CLASS_TEMPLATE_STRING = "public final class $1T implements ToNode, ToSmithyBuilder<$1T> {";
-    private static final String PROPERTY_TEMPLATE = "private final $T $L;";
 
     @Override
     public void accept(GenerateStructureDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
@@ -29,13 +28,13 @@ public class StructureGenerator implements Consumer<GenerateStructureDirective<T
 
                         // Create constructor from builder
                         new BuilderConstructorGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
-                        writer.write("");
+                        writer.newLine();
 
                         // Creates all builder-associated methods
                         new ToBuilderGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
-                        writer.write("");
+                        writer.newLine();
                         new FromNodeGenerator(writer, directive.symbol(), directive.symbolProvider(), directive.shape(), directive.model()).run();
-                        writer.write("");
+                        writer.newLine();
 
                         // Creates toNode method
                         CreateNodeGenerator toNodeGenerator = new CreateNodeGenerator(writer, directive.symbolProvider(), directive.model());

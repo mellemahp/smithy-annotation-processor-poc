@@ -1,7 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
@@ -94,10 +94,8 @@ final class ProviderGenerator extends ShapeVisitor.Default<Void> {
             writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
 
             // Provider method
-            writer.addImport(Trait.class);
-            writer.addImport(ShapeId.class);
-            writer.addImport(Node.class);
-            writer.write("@Override");
+            writer.addImports(Trait.class, ShapeId.class, Node.class);
+            writer.override();
             writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
                     () -> writer.write("return new $T(value.expectNumberNode().getValue().$L, value.getSourceLocation());",
                             traitSymbol, traitSymbol.expectProperty(SymbolProperties.VALUE_GETTER)));
@@ -138,14 +136,11 @@ final class ProviderGenerator extends ShapeVisitor.Default<Void> {
     }
 
     private void generateAbstractTraitProvider() {
-        writer.addImport(Trait.class);
-        writer.addImport(Node.class);
-        writer.addImport(NodeMapper.class);
+        writer.addImports(Trait.class, Node.class, NodeMapper.class);
 
         writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
-            writer.openBlock(PROVIDER_METHOD, "}",
-                    () -> writer.write("super(ID);"));
-            writer.write("");
+            writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+            writer.newLine();
             writer.write("@Override");
             writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}", () -> {
                 writer.write("$1T result = new NodeMapper().deserialize(value, $1T.class);", traitSymbol);

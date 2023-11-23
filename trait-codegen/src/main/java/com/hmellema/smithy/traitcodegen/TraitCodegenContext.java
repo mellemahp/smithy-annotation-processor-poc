@@ -4,12 +4,10 @@ import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.build.FileManifest;
 import software.amazon.smithy.codegen.core.CodegenContext;
-import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.WriterDelegator;
 import software.amazon.smithy.codegen.core.directed.CreateContextDirective;
 import software.amazon.smithy.model.Model;
-import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
 import java.util.List;
@@ -58,22 +56,27 @@ public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings,
         );
     }
 
+    @Override
     public Model model() {
         return model;
     }
 
+    @Override
     public TraitCodegenSettings settings() {
         return settings;
     }
 
+    @Override
     public SymbolProvider symbolProvider() {
         return baseSymbolProvider;
     }
 
+    @Override
     public FileManifest fileManifest() {
         return fileManifest;
     }
 
+    @Override
     public WriterDelegator<TraitCodegenWriter> writerDelegator() {
         return writerDelegator;
     }

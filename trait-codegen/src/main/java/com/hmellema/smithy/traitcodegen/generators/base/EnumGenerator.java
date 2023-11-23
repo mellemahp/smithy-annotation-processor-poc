@@ -1,9 +1,8 @@
 package com.hmellema.smithy.traitcodegen.generators.base;
 
-import com.hmellema.smithy.traitcodegen.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
-import com.hmellema.smithy.traitcodegen.generators.base.AbstractEnumGenerator;
+import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.directed.GenerateEnumDirective;
 import software.amazon.smithy.model.shapes.MemberShape;
@@ -14,6 +13,7 @@ import java.util.Locale;
 public final class EnumGenerator extends AbstractEnumGenerator<GenerateEnumDirective<TraitCodegenContext, TraitCodegenSettings>> {
     private static final String VARIANT_TEMPLATE = "$L($S)";
     private static final Symbol VALUE_TYPE = SymbolUtil.fromClass(String.class);
+
     @Override
     public void accept(GenerateEnumDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         directive.context().writerDelegator().useShapeWriter(directive.shape(),

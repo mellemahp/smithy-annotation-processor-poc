@@ -35,26 +35,21 @@ public class NumberTraitGenerator extends TraitGenerator {
         createNodeGenerator.writeCreateNodeMethod(directive.shape());
     }
 
-    @Override
-    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // TODO: maybe uses a builder?
-    }
-
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {
         writer.addImport(FromSourceLocation.class);
         writer.openBlock("public $T($T value, FromSourceLocation sourceLocation) {", "}",
                 traitSymbol, baseSymbol, () -> {
-            writer.write("super(ID, sourceLocation);");
-            writer.write("this.value = value;");
-        }).writeInline("\n");
+                    writer.write("super(ID, sourceLocation);");
+                    writer.write("this.value = value;");
+                }).writeInline("\n");
     }
 
     private void writeConstructor(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {
         writer.addImport(SourceLocation.class);
         writer.openBlock("public $T($T value) {", "}",
                 traitSymbol, baseSymbol, () -> {
-            writer.write("super(ID, SourceLocation.NONE);");
-            writer.write("this.value = value;");
-        }).writeInline("\n");
+                    writer.write("super(ID, SourceLocation.NONE);");
+                    writer.write("this.value = value;");
+                }).writeInline("\n");
     }
 }
