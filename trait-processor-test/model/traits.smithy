@@ -89,6 +89,7 @@ intEnum myIntEnum {
 
 /// Defines the ordered list of supported authentication schemes.
 @trait(selector: ":is(service, operation)")
+@externalDocumentation(test: "https://smithy.io/", other: "https://smithy.io/1.0/")
 list auth {
     member: AuthTraitReference
 }

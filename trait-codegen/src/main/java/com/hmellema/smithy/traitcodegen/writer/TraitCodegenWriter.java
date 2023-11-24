@@ -45,13 +45,18 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         }
     }
 
-    public void writeDocString(String contents) {
-        pushState().write("/**")
-                .writeInline(" * ")
-                .write(StringUtils.wrap(contents.replace("\n", "\n * "), MAX_LINE_LENGTH - 8,
-                        System.lineSeparator() + " * ", false))
-                .write(" */")
-                .popState();
+    public void openDocstring() {
+        pushState().write("/**");
+    }
+
+    public void writeDocStringContents(String contents, Object... args) {
+        writeInline(" * ");
+        write(StringUtils.wrap(contents.replace("\n", "\n * "), MAX_LINE_LENGTH - 8,
+                System.lineSeparator() + " * ", false), args);
+    }
+
+    public void closeDocstring() {
+        write(" */").popState();
     }
 
     public void writeComment(String contents) {

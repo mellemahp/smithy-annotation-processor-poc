@@ -4,6 +4,7 @@ namespace aws.cloudformation
 
 /// Indicates that the CloudFormation property generated from this member is an
 /// additional identifier for the resource.
+@externalDocumentation(test: "https://smithy.io/")
 @unstable
 @trait(
     selector: "structure > :test(member > string)"
