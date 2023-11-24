@@ -3,6 +3,7 @@ package com.hmellema.smithy.traitcodegen.generators.common.node;
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.writer.sections.FromNodeSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -31,8 +32,10 @@ public class FromNodeGenerator implements Runnable {
     @Override
     public void run() {
         writer.addImport(Node.class);
+        writer.pushState(new FromNodeSection(symbol));
         writer.openBlock("public static $T fromNode(Node node) {", "}", symbol,
                 () -> shape.accept(new FromNodeBodyGenerator()));
+        writer.popState();
     }
 
     private final class FromNodeBodyGenerator extends ShapeVisitor.Default<Void> {

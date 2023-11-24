@@ -3,6 +3,8 @@ package com.hmellema.smithy.traitcodegen.generators.common.builder;
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.writer.sections.BuilderClassSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.BuilderMethodSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -44,10 +46,13 @@ public final class BuilderGenerator implements Runnable {
     @Override
     public void run() {
         // Write builder method
+        writer.pushState(new BuilderMethodSection(symbol));
         writer.openBlock(BUILDER_METHOD_TEMPLATE, "}", () -> writer.write("return new Builder();"));
         writer.newLine();
+        writer.popState();
 
         // Write builder class
+        writer.pushState(new BuilderClassSection(symbol));
         String builderClassTemplate = "public static final class Builder ";
         if (isTrait) {
             writer.addImport(AbstractTraitBuilder.class);
@@ -73,6 +78,7 @@ public final class BuilderGenerator implements Runnable {
             writer.openBlock("public $T build() {", "}", symbol,
                     () -> writer.write("return new $T(this);", symbol));
         });
+        writer.popState();
     }
 
     private final class BuilderSetterGenerator extends ShapeVisitor.Default<Void> {

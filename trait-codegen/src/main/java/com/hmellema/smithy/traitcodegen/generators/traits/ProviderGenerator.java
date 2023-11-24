@@ -92,7 +92,7 @@ final class ProviderGenerator extends ShapeVisitor.Default<Void> {
         writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
             // Basic constructor
             writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
-
+            writer.newLine();
             // Provider method
             writer.addImports(Trait.class, ShapeId.class, Node.class);
             writer.override();

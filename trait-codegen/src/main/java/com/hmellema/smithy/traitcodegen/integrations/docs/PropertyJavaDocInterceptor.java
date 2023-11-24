@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.integrations.core;
+package com.hmellema.smithy.traitcodegen.integrations.docs;
 
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.PropertySection;

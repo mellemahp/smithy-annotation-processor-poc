@@ -79,6 +79,7 @@ enum myEnum {
 
 /// A simple enum trait
 @trait(selector: "structure > member")
+@deprecated(message: "Dont use this plz", since: "1.3.01")
 intEnum myIntEnum {
     /// Positive response
     YES = 1
