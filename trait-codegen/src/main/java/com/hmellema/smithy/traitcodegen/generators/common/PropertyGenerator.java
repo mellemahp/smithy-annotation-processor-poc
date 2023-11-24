@@ -2,8 +2,10 @@ package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.writer.sections.PropertySection;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.model.traits.EnumValueTrait;
 import software.amazon.smithy.utils.SetUtils;
 
 import java.util.Map;
@@ -50,9 +52,13 @@ public class PropertyGenerator extends ShapeVisitor.Default<Void> {
     public Void intEnumShape(IntEnumShape shape) {
         writer.addImport(Integer.class);
         writer.write("private final Integer value;");
-        for (Map.Entry<String, Integer> memberEntry : shape.getEnumValues().entrySet()) {
-            writer.write("public static final Integer $L = $L;", memberEntry.getKey(), memberEntry.getValue());
+        for (Map.Entry<String, MemberShape> memberEntry : shape.getAllMembers().entrySet()) {
+            writer.pushState(new PropertySection(memberEntry.getValue()));
+            writer.write("public static final Integer $L = $L;", memberEntry.getKey(),
+                    memberEntry.getValue().expectTrait(EnumValueTrait.class).expectIntValue());
+            writer.popState();
         }
+
         return null;
     }
 
@@ -100,8 +106,11 @@ public class PropertyGenerator extends ShapeVisitor.Default<Void> {
 
     @Override
     public Void enumShape(EnumShape shape) {
-        for (Map.Entry<String, String> memberEntry : shape.getEnumValues().entrySet()) {
-            writer.write("public static final String $L = $S;", memberEntry.getKey(), memberEntry.getValue());
+        for (Map.Entry<String, MemberShape> memberEntry : shape.getAllMembers().entrySet()) {
+            writer.pushState(new PropertySection(memberEntry.getValue()));
+            writer.write("public static final String $L = $S;", memberEntry.getKey(),
+                    memberEntry.getValue().expectTrait(EnumValueTrait.class).expectStringValue());
+            writer.popState();
         }
         return null;
     }
@@ -116,16 +125,22 @@ public class PropertyGenerator extends ShapeVisitor.Default<Void> {
         }
 
         for (MemberShape member : shape.members()) {
+            writer.pushState(new PropertySection(member));
             writer.write(PROPERTY_TEMPLATE, symbolProvider.toSymbol(member), symbolProvider.toMemberName(member));
+            writer.popState();
         }
         return null;
     }
 
     private void createValueProperty(Shape shape) {
+        writer.pushState(new PropertySection(shape));
         writer.write("private final $T value;", symbolProvider.toSymbol(shape));
+        writer.popState();
     }
 
     private void createValuesProperty(Shape shape) {
+        writer.pushState(new PropertySection(shape));
         writer.write("private final $T values;", symbolProvider.toSymbol(shape));
+        writer.popState();
     }
 }
