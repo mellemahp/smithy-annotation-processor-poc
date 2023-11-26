@@ -8,7 +8,7 @@ public class FromNodeDocInterceptor implements CodeInterceptor.Prepender<FromNod
     @Override
     public void prepend(TraitCodegenWriter writer, FromNodeSection section) {
         writer.openDocstring();
-        writer.writeDocStringContents("Creates an {@link $T} from a {@link Node}.", section.symbol());
+        writer.writeDocStringContents("Creates a {@link $T} from a {@link Node}.", section.symbol());
         writer.writeDocStringContents("");
         writer.writeDocStringContents("@param node Node to create the $T from.", section.symbol());
         writer.writeDocStringContents("@return Returns the created $T.", section.symbol());

@@ -8,7 +8,7 @@ public class BuilderMethodDocInterceptor implements CodeInterceptor.Prepender<Bu
     @Override
     public void prepend(TraitCodegenWriter writer, BuilderMethodSection section) {
         writer.openDocstring();
-        writer.writeDocStringContents("@return Creates a builder used to build a {@link $T}", section.symbol());
+        writer.writeDocStringContents("Creates a builder used to build a {@link $T}.", section.symbol());
         writer.closeDocstring();
     }
 

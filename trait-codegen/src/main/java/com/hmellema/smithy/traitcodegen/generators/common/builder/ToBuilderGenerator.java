@@ -13,6 +13,7 @@ import software.amazon.smithy.utils.ToSmithyBuilder;
 
 import java.util.Iterator;
 
+// Move to an interceptor?
 public class ToBuilderGenerator implements Runnable {
     private final TraitCodegenWriter writer;
     private final Symbol symbol;
@@ -20,6 +21,7 @@ public class ToBuilderGenerator implements Runnable {
     private final SymbolProvider symbolProvider;
     private final Model model;
     private final boolean isTrait;
+    private final boolean isStringListTrait;
 
     public ToBuilderGenerator(TraitCodegenWriter writer, Symbol symbol, Shape shape, SymbolProvider symbolProvider, Model model) {
         this.writer = writer;
@@ -28,6 +30,7 @@ public class ToBuilderGenerator implements Runnable {
         this.symbolProvider = symbolProvider;
         this.model = model;
         this.isTrait = shape.hasTrait(TraitDefinition.class);
+        this.isStringListTrait = shape.isListShape() && SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.asListShape().orElseThrow().getMember()));
     }
 
     @Override
@@ -40,17 +43,32 @@ public class ToBuilderGenerator implements Runnable {
             if (isTrait) {
                 writer.write(".sourceLocation(getSourceLocation())");
             }
-            Iterator<MemberShape> memberIterator = shape.members().iterator();
-            while (memberIterator.hasNext()) {
-                MemberShape member = memberIterator.next();
-                writer.writeInline(".$1L($1L)", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
-                if (memberIterator.hasNext()) {
-                    writer.writeInline("\n");
-                } else {
-                    writer.writeInline(";\n");
-                }
+
+            // TODO: lots of special casing for the string list traits. Probably a better approach
+            if (isStringListTrait) {
+                writeStringListBody();
+            } else {
+                writeBasicBody();
             }
+
             writer.dedent();
         });
+    }
+
+    private void writeBasicBody() {
+        Iterator<MemberShape> memberIterator = shape.members().iterator();
+        while (memberIterator.hasNext()) {
+            MemberShape member = memberIterator.next();
+            writer.writeInline(".$1L($1L)", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
+            if (memberIterator.hasNext()) {
+                writer.writeInline("\n");
+            } else {
+                writer.writeInline(";\n");
+            }
+        }
+    }
+
+    private void writeStringListBody() {
+        writer.write(".values(getValues());");
     }
 }

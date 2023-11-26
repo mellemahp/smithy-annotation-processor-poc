@@ -10,6 +10,7 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.AbstractTraitBuilder;
+import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.BuilderRef;
 import software.amazon.smithy.utils.SmithyBuilder;
@@ -18,7 +19,7 @@ import software.amazon.smithy.utils.StringUtils;
 import java.util.Optional;
 
 // TODO: add sections
-// TODO: StringListTrait.Builder<
+// TODO: Should this be an injected section?
 public final class BuilderGenerator implements Runnable {
     private static final String VALUES = "values";
     private static final String BUILDER_METHOD_TEMPLATE = "public static final Builder builder() {";
@@ -32,6 +33,7 @@ public final class BuilderGenerator implements Runnable {
     private final SymbolProvider symbolProvider;
     private final TraitCodegenWriter writer;
     private final boolean isTrait;
+    private final boolean isStringListTrait;
 
     public BuilderGenerator(Shape shape, Model model, Symbol symbol, SymbolProvider symbolProvider, TraitCodegenWriter writer) {
         this.shape = shape;
@@ -40,6 +42,7 @@ public final class BuilderGenerator implements Runnable {
         this.symbolProvider = symbolProvider;
         this.writer = writer;
         this.isTrait = shape.hasTrait(TraitDefinition.class);
+        this.isStringListTrait = shape.isListShape() && SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.asListShape().orElseThrow().getMember()));
     }
 
 
@@ -55,8 +58,13 @@ public final class BuilderGenerator implements Runnable {
         writer.pushState(new BuilderClassSection(symbol));
         String builderClassTemplate = "public static final class Builder ";
         if (isTrait) {
-            writer.addImport(AbstractTraitBuilder.class);
-            builderClassTemplate += "extends AbstractTraitBuilder<$T, Builder> {";
+            if (isStringListTrait) {
+               writer.addImport(StringListTrait.class);
+               builderClassTemplate += "extends StringListTrait.Builder<$T, Builder> {";
+            } else {
+                writer.addImport(AbstractTraitBuilder.class);
+                builderClassTemplate += "extends AbstractTraitBuilder<$T, Builder> {";
+            }
         } else {
             writer.addImport(SmithyBuilder.class);
             builderClassTemplate += "implements SmithyBuilder<$T> {";
@@ -73,12 +81,18 @@ public final class BuilderGenerator implements Runnable {
             shape.accept(new BuilderSetterGenerator());
             writer.newLine();
 
-            // create build method
-            writer.write("@Override");
-            writer.openBlock("public $T build() {", "}", symbol,
-                    () -> writer.write("return new $T(this);", symbol));
+            writer.override();
+            writer.openBlock("public $T build() {", "}", symbol, this::writeBuilderMethodBody);
         });
         writer.popState();
+    }
+
+    private void writeBuilderMethodBody() {
+        if (isStringListTrait) {
+            writer.write("return new $T(getValues(), getSourceLocation());", symbol);
+        } else {
+            writer.write("return new $T(this);", symbol);
+        }
     }
 
     private final class BuilderSetterGenerator extends ShapeVisitor.Default<Void> {
@@ -115,6 +129,10 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
+            if (isStringListTrait) {
+                // Don't write any builder properties for StringListTraits. They inherit all properties
+                return null;
+            }
             writeValuesProperty(shape);
             return null;
         }
@@ -167,6 +185,10 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
+            if (isStringListTrait) {
+                // Don't write any builder setters for StringListTraits. They inherit setters
+                return null;
+            }
             writeListAccessors(shape);
             return null;
         }
