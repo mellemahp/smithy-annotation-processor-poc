@@ -3,7 +3,6 @@ package com.hmellema.smithy.traitcodegen.integrations.docs;
 import com.google.auto.service.AutoService;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
-import com.hmellema.smithy.traitcodegen.integrations.core.GeneratedAnnotationInterceptor;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.CodeSection;
@@ -20,8 +19,6 @@ public class DocsIntegration implements TraitCodegenIntegration {
     @Override
     public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(TraitCodegenContext codegenContext) {
         return List.of(
-                new BuilderClassDocInterceptor(),
-                new BuilderMethodDocInterceptor(),
                 new DeprecatedAnnotationClassInterceptor(),
                 new DeprecatedNoteInterceptor(),
                 new ClassJavaDocInterceptor(),

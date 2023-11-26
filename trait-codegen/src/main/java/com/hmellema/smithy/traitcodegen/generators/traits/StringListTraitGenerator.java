@@ -1,9 +1,8 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.common.builder.BuilderGenerator;
-import com.hmellema.smithy.traitcodegen.generators.common.builder.ToBuilderGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.writer.sections.BuilderSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
@@ -43,12 +42,6 @@ public final class StringListTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        new BuilderGenerator(directive.shape(), directive.model(), directive.traitSymbol(), directive.symbolProvider(), writer).run();
-    }
-
-    @Override
-    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        new ToBuilderGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
-        writer.newLine();
+        writer.injectSection(new BuilderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
     }
 }

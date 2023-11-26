@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.integrations.core;
+package com.hmellema.smithy.traitcodegen.integrations.idref;
 
 import com.google.auto.service.AutoService;
 import com.hmellema.smithy.traitcodegen.SymbolProperties;

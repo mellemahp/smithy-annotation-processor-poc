@@ -5,6 +5,7 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.StringUtils;
 
 public interface SymbolUtil {
@@ -36,5 +37,13 @@ public interface SymbolUtil {
         } else {
             return symbolProvider.toMemberName(member);
         }
+    }
+
+    static boolean isTrait(Shape shape) {
+        return shape.hasTrait(TraitDefinition.class);
+    }
+
+    static boolean isStringListTrait(Shape shape, SymbolProvider symbolProvider) {
+        return shape.isListShape() && isJavaString(symbolProvider.toSymbol(shape.asListShape().orElseThrow().getMember()));
     }
 }

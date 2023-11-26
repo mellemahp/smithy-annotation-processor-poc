@@ -16,6 +16,7 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
         this.traitSymbolProvider = new TraitSymbolProvider(directive.settings());
     }
 
+    // TODO: dont have instance of check. Just run using visitor branches
     @Override
     protected Void getDefault(Shape shape) {
         if (shape instanceof NumberShape) {

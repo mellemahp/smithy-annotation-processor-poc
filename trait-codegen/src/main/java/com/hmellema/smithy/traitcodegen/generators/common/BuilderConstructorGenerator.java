@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.generators.common.builder;
+package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
