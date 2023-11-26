@@ -13,7 +13,7 @@ import software.amazon.smithy.utils.SetUtils;
 import java.util.Map;
 import java.util.Set;
 
-public class PropertiesGeneratorInterceptor implements CodeInterceptor<PropertiesSection, TraitCodegenWriter> {
+public final class PropertiesGeneratorInterceptor implements CodeInterceptor<PropertiesSection, TraitCodegenWriter> {
     @Override
     public Class<PropertiesSection> sectionType() {
         return PropertiesSection.class;
@@ -22,6 +22,7 @@ public class PropertiesGeneratorInterceptor implements CodeInterceptor<Propertie
     @Override
     public void write(TraitCodegenWriter writer, String previousText, PropertiesSection section) {
         section.shape().accept(new PropertyGenerator(writer, section.symbolProvider()));
+        writer.newLine();
     }
 
     private static final class PropertyGenerator extends ShapeVisitor.Default<Void> {
@@ -66,8 +67,10 @@ public class PropertiesGeneratorInterceptor implements CodeInterceptor<Propertie
             writer.addImport(Integer.class);
             writer.write("private final Integer value;");
             for (Map.Entry<String, MemberShape> memberEntry : shape.getAllMembers().entrySet()) {
+                writer.pushState(new PropertySection(memberEntry.getValue()));
                 writer.write("public static final Integer $L = $L;", memberEntry.getKey(),
                         memberEntry.getValue().expectTrait(EnumValueTrait.class).expectIntValue());
+                writer.popState();
             }
 
             return null;
@@ -118,8 +121,10 @@ public class PropertiesGeneratorInterceptor implements CodeInterceptor<Propertie
         @Override
         public Void enumShape(EnumShape shape) {
             for (Map.Entry<String, MemberShape> memberEntry : shape.getAllMembers().entrySet()) {
+                writer.pushState(new PropertySection(memberEntry.getValue()));
                 writer.write("public static final String $L = $S;", memberEntry.getKey(),
                         memberEntry.getValue().expectTrait(EnumValueTrait.class).expectStringValue());
+                writer.popState();
             }
             return null;
         }
@@ -134,7 +139,7 @@ public class PropertiesGeneratorInterceptor implements CodeInterceptor<Propertie
             }
 
             for (MemberShape member : shape.members()) {
-                writer.pushState(new PropertySection(shape));
+                writer.pushState(new PropertySection(member));
                 writer.write(PROPERTY_TEMPLATE, symbolProvider.toSymbol(member), symbolProvider.toMemberName(member));
                 writer.popState();
             }

@@ -8,7 +8,7 @@ import software.amazon.smithy.utils.CodeInterceptor;
 
 import javax.annotation.processing.Generated;
 
-public class GeneratedAnnotationInterceptor implements CodeInterceptor.Prepender<ClassSection, TraitCodegenWriter> {
+public final class GeneratedAnnotationInterceptor implements CodeInterceptor.Prepender<ClassSection, TraitCodegenWriter> {
     private final Symbol generatedAnnotationSymbol = Symbol.builder()
             .name(Generated.class.getSimpleName())
             .namespace(Generated.class.getPackageName(), ".")

@@ -10,7 +10,7 @@ import software.amazon.smithy.utils.ToSmithyBuilder;
 
 import java.util.Iterator;
 
-public class ToBuilderMethodInterceptor implements CodeInterceptor.Prepender<BuilderClassSection, TraitCodegenWriter> {
+public final class ToBuilderMethodInterceptor implements CodeInterceptor.Prepender<BuilderClassSection, TraitCodegenWriter> {
     private static final String VALUES_FLUENT_SETTER = ".values(getValues());";
 
     @Override

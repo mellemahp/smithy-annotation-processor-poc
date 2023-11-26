@@ -36,6 +36,7 @@ public class BuilderConstructorGenerator implements Runnable {
             }
             shape.accept(new InitializerVisitor());
         });
+        writer.newLine();
     }
 
     private final class InitializerVisitor extends ShapeVisitor.Default<Void> {

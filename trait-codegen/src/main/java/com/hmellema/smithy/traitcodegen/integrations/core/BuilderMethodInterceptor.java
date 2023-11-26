@@ -4,7 +4,7 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.BuilderClassSection;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class BuilderMethodInterceptor implements CodeInterceptor.Prepender<BuilderClassSection, TraitCodegenWriter> {
+public final class BuilderMethodInterceptor implements CodeInterceptor.Prepender<BuilderClassSection, TraitCodegenWriter> {
     private static final String BUILDER_METHOD_TEMPLATE = "public static final Builder builder() {";
 
     @Override

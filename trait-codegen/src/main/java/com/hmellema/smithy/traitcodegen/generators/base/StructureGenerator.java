@@ -19,18 +19,14 @@ public class StructureGenerator implements Consumer<GenerateStructureDirective<T
             writer.pushState(new ClassSection(directive.shape()))
                     .openBlock(BASE_CLASS_TEMPLATE_STRING, "}", directive.symbol(), () -> {
                         writer.injectSection(new PropertiesSection(directive.shape(), directive.symbolProvider()));
-
-                        // Create constructor from builder
                         new BuilderConstructorGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
-                        writer.newLine();
-
-                        // Creates toNode method
                         writer.injectSection(new ToNodeSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
                         writer.injectSection(new FromNodeSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
                         writer.injectSection(new GetterSection(directive.shape(), directive.symbolProvider(), directive.model()));
                         writer.injectSection(new BuilderSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
                     })
                     .popState();
+            writer.newLine();
         });
     }
 }

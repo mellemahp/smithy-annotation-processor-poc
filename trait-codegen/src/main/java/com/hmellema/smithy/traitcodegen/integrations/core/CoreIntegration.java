@@ -10,7 +10,7 @@ import software.amazon.smithy.utils.CodeSection;
 import java.util.List;
 
 @AutoService(TraitCodegenIntegration.class)
-public class CoreIntegration implements TraitCodegenIntegration {
+public final class CoreIntegration implements TraitCodegenIntegration {
 
     @Override
     public String name() {
@@ -25,9 +25,10 @@ public class CoreIntegration implements TraitCodegenIntegration {
                 new GetterSectionInterceptor(),
                 new ToNodeSectionInjector(),
                 new FromNodeSectionInjector(),
-                new BuilderSectionInterceptor(),
+                new ToBuilderMethodInterceptor(),
                 new BuilderMethodInterceptor(),
-                new ToBuilderMethodInterceptor()
+                new BuilderSectionInterceptor(),
+                new ProviderSectionInjector()
         );
     }
 }

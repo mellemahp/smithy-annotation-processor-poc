@@ -17,7 +17,7 @@ import software.amazon.smithy.utils.StringUtils;
 import java.util.AbstractMap;
 import java.util.Map;
 
-public class ToNodeSectionInjector  implements CodeInterceptor<ToNodeSection, TraitCodegenWriter> {
+public final class ToNodeSectionInjector  implements CodeInterceptor<ToNodeSection, TraitCodegenWriter> {
     private static final String CREATE_NODE_METHOD = "protected Node createNode() {";
     private static final String TO_NODE_METHOD = "public Node toNode() {";
 

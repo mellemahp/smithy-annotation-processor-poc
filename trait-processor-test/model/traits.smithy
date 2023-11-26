@@ -14,8 +14,10 @@ structure myComplexTrait {
     @required
     fieldA: String
 
+    /// Some member documentation
     fieldB: Boolean
 
+    @documentation("More documentation")
     fieldC: NestedA
 
     fieldD: ListD

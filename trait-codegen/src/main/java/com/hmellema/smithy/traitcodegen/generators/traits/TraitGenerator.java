@@ -6,8 +6,12 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
 import com.hmellema.smithy.traitcodegen.writer.sections.GetterSection;
 import com.hmellema.smithy.traitcodegen.writer.sections.PropertiesSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.ProviderSection;
 import software.amazon.smithy.model.shapes.ShapeId;
+import software.amazon.smithy.utils.CodeSection;
+import software.amazon.smithy.utils.ListUtils;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
@@ -25,29 +29,20 @@ abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
         writer.pushState(new ClassSection(directive.shape()));
         writer.openBlock(getClassDefinition(), "}", directive.traitSymbol(), () -> {
             writer.write(TRAIT_ID_TEMPLATE, directive.shape().getId());
+            writer.newLine();
             writer.injectSection(new PropertiesSection(directive.shape(), directive.symbolProvider()));
             writeConstructors(writer, directive);
             writeAdditionalMethods(writer, directive);
-            writeBuilder(writer, directive);
-            writer.injectSection(new GetterSection(directive.shape(), directive.symbolProvider(), directive.model()));
-
-            directive.shape().accept(new ProviderGenerator(directive.symbolProvider(), directive.traitSymbol(), writer));
+            additionalSections(directive).forEach(writer::injectSection);
         });
         writer.popState();
     }
 
-
     protected abstract void imports(TraitCodegenWriter writer);
-
     protected abstract String getClassDefinition();
-
     protected abstract void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive);
-
+    protected abstract List<CodeSection> additionalSections(GenerateTraitDirective directive);
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // No additional methods by default
-    }
-
-    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // Traits have no builder by default
+        // no additional methods by default
     }
 }

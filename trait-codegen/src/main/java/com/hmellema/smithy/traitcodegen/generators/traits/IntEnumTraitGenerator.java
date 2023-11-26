@@ -11,16 +11,15 @@ import software.amazon.smithy.utils.StringUtils;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class IntEnumTraitGenerator extends NumberTraitGenerator {
+public final class IntEnumTraitGenerator extends NumberTraitGenerator {
 
     @Override
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        super.writeAdditionalMethods(writer, directive);
         IntEnumShape shape = directive.shape().asIntEnumShape().orElseThrow(() -> new RuntimeException("oops"));
         for (String memberKey : shape.getEnumValues().keySet()) {
             writer.openBlock("public boolean is$L() {", "}", getMethodName(memberKey),
-                            () -> writer.write("return $L.equals(getValue());", memberKey))
-                    .writeInline("\n");
+                            () -> writer.write("return $L.equals(getValue());", memberKey));
+            writer.newLine();
         }
     }
 
@@ -35,7 +34,8 @@ public class IntEnumTraitGenerator extends NumberTraitGenerator {
         writer.openBlock("public $T(Integer value, FromSourceLocation sourceLocation) {", "}", symbol, () -> {
             writer.write("super(ID, sourceLocation);");
             writer.write("this.value = value;");
-        }).writeInline("\n");
+        });
+        writer.newLine();
     }
 
     private void writeConstructor(TraitCodegenWriter writer, Symbol symbol) {
@@ -43,7 +43,8 @@ public class IntEnumTraitGenerator extends NumberTraitGenerator {
         writer.openBlock("public $T(Integer value) {", "}", symbol, () -> {
             writer.write("super(ID, SourceLocation.NONE);");
             writer.write("this.value = value;");
-        }).writeInline("\n");
+        });
+        writer.newLine();
     }
 
     private String getMethodName(String enumValue) {

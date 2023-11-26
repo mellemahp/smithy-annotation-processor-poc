@@ -3,11 +3,13 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.BuilderConstructorGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.BuilderSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.FromNodeSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.ToNodeSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.*;
 import software.amazon.smithy.model.traits.AbstractTrait;
+import software.amazon.smithy.utils.CodeSection;
+import software.amazon.smithy.utils.ListUtils;
 import software.amazon.smithy.utils.ToSmithyBuilder;
+
+import java.util.List;
 
 public final class StructureTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $1T extends AbstractTrait implements ToSmithyBuilder<$1T> {";
@@ -27,15 +29,14 @@ public final class StructureTraitGenerator extends TraitGenerator {
         new BuilderConstructorGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
     }
 
-
     @Override
-    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.injectSection(new ToNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
-        writer.injectSection(new FromNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
-    }
-
-    @Override
-    protected void writeBuilder(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.injectSection(new BuilderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
+    protected List<CodeSection> additionalSections(GenerateTraitDirective directive) {
+        return ListUtils.of(
+                new ToNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()),
+                new FromNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()),
+                new GetterSection(directive.shape(), directive.symbolProvider(), directive.model()),
+                new BuilderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()),
+                new ProviderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider())
+        );
     }
 }

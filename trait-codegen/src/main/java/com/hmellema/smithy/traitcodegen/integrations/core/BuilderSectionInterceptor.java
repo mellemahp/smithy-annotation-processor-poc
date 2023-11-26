@@ -16,7 +16,7 @@ import software.amazon.smithy.utils.StringUtils;
 
 import java.util.Optional;
 
-public class BuilderSectionInterceptor implements CodeInterceptor<BuilderSection, TraitCodegenWriter> {
+public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderSection, TraitCodegenWriter> {
     private static final String VALUES = "values";
     private static final String ACCESSOR_TEMPLATE = "public Builder $1L($2T $1L) {";
     private static final String RETURN_THIS = "return this;";
@@ -58,6 +58,7 @@ public class BuilderSectionInterceptor implements CodeInterceptor<BuilderSection
             writer.openBlock("public $T build() {", "}", section.symbol(),
                     () -> writeBuildMethodBody(writer, section));
         });
+        writer.newLine();
         writer.popState();
     }
 

@@ -12,7 +12,7 @@ import software.amazon.smithy.utils.StringUtils;
 import java.util.EnumSet;
 import java.util.Optional;
 
-public class GetterSectionInterceptor implements CodeInterceptor<GetterSection, TraitCodegenWriter> {
+public final class GetterSectionInterceptor implements CodeInterceptor<GetterSection, TraitCodegenWriter> {
     private static final EnumSet<ShapeType> NO_OPTIONAL_WRAPPING_TYPES = EnumSet.of(ShapeType.MAP, ShapeType.LIST);
 
     @Override
@@ -107,6 +107,7 @@ public class GetterSectionInterceptor implements CodeInterceptor<GetterSection, 
             writer.addImport(Integer.class);
             writer.openBlock("public Integer getValue() {", "}",
                     () -> writer.write("return value;"));
+            writer.newLine();
             return null;
         }
 
@@ -127,6 +128,7 @@ public class GetterSectionInterceptor implements CodeInterceptor<GetterSection, 
             writer.openBlock("public $T get$L() {", "}",
                     symbolProvider.toSymbol(member), StringUtils.capitalize(symbolProvider.toMemberName(member)),
                     () -> writer.write("return $L;", symbolProvider.toMemberName(member)));
+            writer.newLine();
         }
 
         private void generateOptionalGetter(MemberShape member) {
@@ -134,16 +136,19 @@ public class GetterSectionInterceptor implements CodeInterceptor<GetterSection, 
             writer.openBlock("public Optional<$T> get$L() {", "}",
                     symbolProvider.toSymbol(member), StringUtils.capitalize(symbolProvider.toMemberName(member)),
                     () -> writer.write("return Optional.ofNullable($L);", symbolProvider.toMemberName(member)));
+            writer.newLine();
         }
 
         private void generateValuesGetter(Shape shape) {
             writer.openBlock("public $T getValues() {", "}",
                     symbolProvider.toSymbol(shape), () -> writer.write("return values;"));
+            writer.newLine();
         }
 
         private void generateValueGetter(Shape shape) {
             writer.openBlock("public $T getValue() {", "}",
                     symbolProvider.toSymbol(shape), () -> writer.write("return value;"));
+            writer.newLine();
         }
     }
 }

@@ -12,7 +12,7 @@ import software.amazon.smithy.utils.StringUtils;
 
 import java.util.Iterator;
 
-public class FromNodeSectionInjector implements CodeInterceptor<FromNodeSection, TraitCodegenWriter> {
+public final class FromNodeSectionInjector implements CodeInterceptor<FromNodeSection, TraitCodegenWriter> {
     private static final String FROM_NODE_METHOD_TEMPLATE = "public static $T fromNode(Node node) {";
     @Override
     public Class<FromNodeSection> sectionType() {

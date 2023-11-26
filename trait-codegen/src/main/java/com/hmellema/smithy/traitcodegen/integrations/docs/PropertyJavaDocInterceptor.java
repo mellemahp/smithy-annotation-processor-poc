@@ -11,6 +11,7 @@ public class PropertyJavaDocInterceptor implements CodeInterceptor.Prepender<Pro
     public void prepend(TraitCodegenWriter writer, PropertySection section) {
         if (section.shape().hasTrait(DocumentationTrait.class)) {
             DocumentationTrait trait = section.shape().expectTrait(DocumentationTrait.class);
+            writer.newLine();
             writer.openDocstring();
             writer.pushState(new JavaDocSection(section.shape()));
             writer.writeDocStringContents(trait.getValue());
