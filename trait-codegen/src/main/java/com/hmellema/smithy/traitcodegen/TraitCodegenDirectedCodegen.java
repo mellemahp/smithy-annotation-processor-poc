@@ -7,7 +7,6 @@ import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.*;
-import software.amazon.smithy.model.traits.TraitDefinition;
 
 final class TraitCodegenDirectedCodegen
         implements DirectedCodegen<TraitCodegenContext, TraitCodegenSettings, TraitCodegenIntegration> {

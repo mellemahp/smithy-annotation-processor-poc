@@ -4,12 +4,9 @@ import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.SpiWriterUtils;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.GetterSection;
 import com.hmellema.smithy.traitcodegen.writer.sections.PropertiesSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.ProviderSection;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.utils.CodeSection;
-import software.amazon.smithy.utils.ListUtils;
 
 import java.util.List;
 import java.util.function.Consumer;

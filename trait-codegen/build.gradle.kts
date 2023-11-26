@@ -8,12 +8,11 @@ plugins {
 dependencies {
     annotationProcessor("com.google.auto.service:auto-service:1.1.1")
     compileOnly("com.google.auto.service:auto-service-annotations:1.1.1")
-
     implementation("software.amazon.smithy:smithy-codegen-core:1.40.0")
     implementation("software.amazon.smithy:smithy-model:1.40.0")
 }
 
-// TODO: Remove when the java convention is re-introducted
+// TODO: Remove when the java convention is re-introduced
 repositories {
     mavenLocal()
     // Use Maven Central for resolving dependencies.

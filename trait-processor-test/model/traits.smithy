@@ -12,6 +12,7 @@ structure AnnotationTrait {}
 @trait
 structure myComplexTrait {
     @required
+    @pattern("^[^#+]+$")
     fieldA: String
 
     /// Some member documentation

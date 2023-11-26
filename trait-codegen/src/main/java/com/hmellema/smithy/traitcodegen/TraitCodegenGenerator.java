@@ -16,17 +16,9 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
         this.traitSymbolProvider = new TraitSymbolProvider(directive.settings());
     }
 
-    // TODO: dont have instance of check. Just run using visitor branches
     @Override
     protected Void getDefault(Shape shape) {
-        if (shape instanceof NumberShape) {
-            generateNumberTrait(shape);
-        }
         return null;
-    }
-
-    private void generateNumberTrait(Shape shape) {
-        new NumberTraitGenerator().accept(getDirective(shape));
     }
 
     @Override
@@ -58,6 +50,48 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
     }
 
     @Override
+    public Void shortShape(ShortShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void integerShape(IntegerShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void longShape(LongShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void floatShape(FloatShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void doubleShape(DoubleShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void bigIntegerShape(BigIntegerShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void bigDecimalShape(BigDecimalShape shape) {
+        generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
     public Void mapShape(MapShape shape) {
         new CollectionTraitGenerator().accept(getDirective(shape));
         return null;
@@ -71,6 +105,10 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
             new StructureTraitGenerator().accept(getDirective(shape));
         }
         return null;
+    }
+
+    private void generateNumberTrait(Shape shape) {
+        new NumberTraitGenerator().accept(getDirective(shape));
     }
 
     private GenerateTraitDirective getDirective(Shape shape) {
