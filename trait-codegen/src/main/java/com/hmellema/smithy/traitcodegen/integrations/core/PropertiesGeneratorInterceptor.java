@@ -143,15 +143,11 @@ public class PropertiesGeneratorInterceptor implements CodeInterceptor<Propertie
         }
 
         private void createValueProperty(Shape shape) {
-            writer.pushState(new PropertySection(shape));
             writer.write("private final $T value;", symbolProvider.toSymbol(shape));
-            writer.popState();
         }
 
         private void createValuesProperty(Shape shape) {
-            writer.pushState(new PropertySection(shape));
             writer.write("private final $T values;", symbolProvider.toSymbol(shape));
-            writer.popState();
         }
     }
 }

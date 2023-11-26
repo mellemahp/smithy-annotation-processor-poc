@@ -21,10 +21,13 @@ public class CoreIntegration implements TraitCodegenIntegration {
     public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(TraitCodegenContext codegenContext) {
         return List.of(
                 new GeneratedAnnotationInterceptor(),
+                new PropertiesGeneratorInterceptor(),
+                new GetterSectionInterceptor(),
+                new ToNodeSectionInjector(),
+                new FromNodeSectionInjector(),
                 new BuilderSectionInterceptor(),
                 new BuilderMethodInterceptor(),
-                new ToBuilderMethodInterceptor(),
-                new PropertiesGeneratorInterceptor()
+                new ToBuilderMethodInterceptor()
         );
     }
 }

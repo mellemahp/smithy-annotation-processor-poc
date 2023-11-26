@@ -1,8 +1,8 @@
 package com.hmellema.smithy.traitcodegen.generators.base;
 
-import com.hmellema.smithy.traitcodegen.generators.common.node.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.FromNodeSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -29,8 +29,7 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
 
                     writeValueGetter(writer);
                     writer.newLine();
-
-                    new FromNodeGenerator(writer, enumSymbol, provider, enumShape, model).run();
+                    writer.injectSection(new FromNodeSection(enumShape, enumSymbol, provider, model));
                 })
                 .popState();
     }

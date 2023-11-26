@@ -22,7 +22,6 @@ public class DocsIntegration implements TraitCodegenIntegration {
                 new DeprecatedAnnotationClassInterceptor(),
                 new DeprecatedNoteInterceptor(),
                 new ClassJavaDocInterceptor(),
-                new FromNodeDocInterceptor(),
                 new ExternalDocsInterceptor(),
                 new PropertyJavaDocInterceptor()
         );

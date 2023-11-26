@@ -2,10 +2,10 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.BuilderConstructorGenerator;
-import com.hmellema.smithy.traitcodegen.generators.common.node.CreateNodeGenerator;
-import com.hmellema.smithy.traitcodegen.generators.common.node.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.BuilderSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.FromNodeSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.ToNodeSection;
 import software.amazon.smithy.model.traits.AbstractTrait;
 import software.amazon.smithy.utils.ToSmithyBuilder;
 
@@ -30,9 +30,8 @@ public final class StructureTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        new CreateNodeGenerator(writer, directive.symbolProvider(), directive.model()).writeCreateNodeMethod(directive.shape());
-        writer.newLine();
-        new FromNodeGenerator(writer, directive.traitSymbol(), directive.symbolProvider(), directive.shape(), directive.model()).run();
+        writer.injectSection(new ToNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
+        writer.injectSection(new FromNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
     }
 
     @Override

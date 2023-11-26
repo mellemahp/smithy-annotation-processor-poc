@@ -6,4 +6,5 @@ import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.utils.CodeSection;
 
-public record FromNodeSection(Shape shape, Symbol symbol, SymbolProvider symbolProvider, Model model) implements CodeSection {}
+public record ToNodeSection(Shape shape, Symbol symbol, SymbolProvider symbolProvider, Model model) implements CodeSection {
+}

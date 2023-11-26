@@ -39,6 +39,7 @@ public interface SymbolUtil {
         }
     }
 
+    // TODO: should be in shape utils!
     static boolean isTrait(Shape shape) {
         return shape.hasTrait(TraitDefinition.class);
     }

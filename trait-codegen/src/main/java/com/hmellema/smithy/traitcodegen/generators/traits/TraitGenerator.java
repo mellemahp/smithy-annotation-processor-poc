@@ -1,10 +1,10 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
 import com.hmellema.smithy.traitcodegen.writer.SpiWriterUtils;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.writer.sections.GetterSection;
 import com.hmellema.smithy.traitcodegen.writer.sections.PropertiesSection;
 import software.amazon.smithy.model.shapes.ShapeId;
 
@@ -15,25 +15,25 @@ abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
 
     @Override
     public void accept(GenerateTraitDirective directive) {
-        directive.context().writerDelegator().useShapeWriter(directive.shape(), writer -> {
-            writer.pushState(new ClassSection(directive.shape()));
-            writeTraitClass(writer, directive);
-        });
+        directive.context().writerDelegator().useShapeWriter(directive.shape(), writer -> writeTraitClass(writer, directive));
         SpiWriterUtils.addSpiTraitProvider(directive.context(), directive.traitSymbol());
     }
 
     private void writeTraitClass(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         imports(writer);
         writer.addImport(ShapeId.class);
+        writer.pushState(new ClassSection(directive.shape()));
         writer.openBlock(getClassDefinition(), "}", directive.traitSymbol(), () -> {
             writer.write(TRAIT_ID_TEMPLATE, directive.shape().getId());
             writer.injectSection(new PropertiesSection(directive.shape(), directive.symbolProvider()));
             writeConstructors(writer, directive);
             writeAdditionalMethods(writer, directive);
             writeBuilder(writer, directive);
-            directive.shape().accept(new GetterGenerator(writer, directive.symbolProvider(), directive.model()));
+            writer.injectSection(new GetterSection(directive.shape(), directive.symbolProvider(), directive.model()));
+
             directive.shape().accept(new ProviderGenerator(directive.symbolProvider(), directive.traitSymbol(), writer));
         });
+        writer.popState();
     }
 
 

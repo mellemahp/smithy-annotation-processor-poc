@@ -1,8 +1,8 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.common.node.CreateNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.writer.sections.ToNodeSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
@@ -30,9 +30,7 @@ public class NumberTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        // Creates createNode method
-        CreateNodeGenerator createNodeGenerator = new CreateNodeGenerator(writer, directive.symbolProvider(), directive.model());
-        createNodeGenerator.writeCreateNodeMethod(directive.shape());
+        writer.injectSection(new ToNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {

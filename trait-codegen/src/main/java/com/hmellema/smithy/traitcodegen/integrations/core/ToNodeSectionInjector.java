@@ -1,53 +1,52 @@
-package com.hmellema.smithy.traitcodegen.generators.common.node;
+package com.hmellema.smithy.traitcodegen.integrations.core;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import com.hmellema.smithy.traitcodegen.writer.sections.ToNodeSection;
 import software.amazon.smithy.codegen.core.Symbol;
-import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.node.ArrayNode;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NumberNode;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.TraitDefinition;
+import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.StringUtils;
 
 import java.util.AbstractMap;
 import java.util.Map;
 
-public final class CreateNodeGenerator {
+public class ToNodeSectionInjector  implements CodeInterceptor<ToNodeSection, TraitCodegenWriter> {
     private static final String CREATE_NODE_METHOD = "protected Node createNode() {";
     private static final String TO_NODE_METHOD = "public Node toNode() {";
 
-    final TraitCodegenWriter writer;
-    final SymbolProvider symbolProvider;
-    final Model model;
-
-    public CreateNodeGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
-        this.writer = writer;
-        this.symbolProvider = symbolProvider;
-        this.model = model;
+    @Override
+    public Class<ToNodeSection> sectionType() {
+        return ToNodeSection.class;
     }
 
-    public void writeCreateNodeMethod(Shape shape) {
-        writeMethod(CREATE_NODE_METHOD, shape);
-    }
-
-    public void writeToNodeMethod(Shape shape) {
-        writeMethod(TO_NODE_METHOD, shape);
-    }
-
-    private void writeMethod(String methodHeader, Shape shape) {
+    @Override
+    public void write(TraitCodegenWriter writer, String previousText, ToNodeSection section) {
         writer.addImport(Node.class);
         writer.write("@Override");
-        writer.openBlock(methodHeader, "}",
-                () -> shape.accept(new CreateNodeBodyGenerator()));
+        if (SymbolUtil.isTrait(section.shape())) {
+            writer.openBlock(CREATE_NODE_METHOD, "}",
+                    () -> section.shape().accept(new CreateNodeBodyGenerator(writer, section)));
+        } else {
+            writer.openBlock(TO_NODE_METHOD, "}",
+                    () -> section.shape().accept(new CreateNodeBodyGenerator(writer, section)));
+        }
+        writer.newLine();
     }
 
-    private final class CreateNodeBodyGenerator extends ShapeVisitor.Default<Void> {
-        private CreateNodeBodyGenerator() {
+    private static final class CreateNodeBodyGenerator extends ShapeVisitor.Default<Void> {
+        private final TraitCodegenWriter writer;
+        private final ToNodeSection section;
+
+        private CreateNodeBodyGenerator(TraitCodegenWriter writer, ToNodeSection section) {
+            this.writer = writer;
+            this.section = section;
         }
 
         @Override
@@ -58,7 +57,7 @@ public final class CreateNodeGenerator {
 
         @Override
         public Void listShape(ListShape shape) {
-            Symbol symbol = symbolProvider.toSymbol(shape.getMember());
+            Symbol symbol = section.symbolProvider().toSymbol(shape.getMember());
             symbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
             writer.addImport(ArrayNode.class);
             writer.write("return values.stream()")
@@ -121,15 +120,15 @@ public final class CreateNodeGenerator {
         public Void mapShape(MapShape shape) {
             writer.addImport(ObjectNode.class);
             // If it is a string, string map use the easier syntax
-            if (SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getKey()))
-                    && SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getValue()))
+            if (SymbolUtil.isJavaString(section.symbolProvider().toSymbol(shape.getKey()))
+                    && SymbolUtil.isJavaString(section.symbolProvider().toSymbol(shape.getValue()))
             ) {
                 writer.write("return ObjectNode.fromStringMap(values).toBuilder()")
                         .write(".sourceLocation(getSourceLocation()).build();");
                 return null;
             }
-            Symbol keySymbol = symbolProvider.toSymbol(shape.getKey());
-            Symbol valueSymbol = symbolProvider.toSymbol(shape.getValue());
+            Symbol keySymbol = section.symbolProvider().toSymbol(shape.getKey());
+            Symbol valueSymbol = section.symbolProvider().toSymbol(shape.getValue());
             keySymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
             valueSymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
             String keyMapper = keySymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
@@ -160,22 +159,22 @@ public final class CreateNodeGenerator {
                 // Generate all members
                 // TODO: This is all quite clunky. Fix
                 for (MemberShape member : shape.members()) {
-                    Symbol memberSymbol = symbolProvider.toSymbol(member);
+                    Symbol memberSymbol = section.symbolProvider().toSymbol(member);
                     memberSymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
                     if (member.isRequired()) {
                         writer.write(".withMember($S, " + memberSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class) + ")",
-                                symbolProvider.toMemberName(member), symbolProvider.toMemberName(member));
-                    } else if (model.expectShape(member.getTarget()).isListShape()) {
+                                section.symbolProvider().toMemberName(member), section.symbolProvider().toMemberName(member));
+                    } else if (section.model().expectShape(member.getTarget()).isListShape()) {
                         writer.addImport(ArrayNode.class);
-                        Symbol listTargetSymbol = symbolProvider.toSymbol(model.expectShape(
-                                model.expectShape(member.getTarget()).asListShape().orElseThrow().getMember().getTarget()));
+                        Symbol listTargetSymbol = section.symbolProvider().toSymbol(section.model().expectShape(
+                                section.model().expectShape(member.getTarget()).asListShape().orElseThrow().getMember().getTarget()));
                         writer.write(".withMember($S, get$L().stream().map(s -> " + listTargetSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class)
                                         + ").collect(ArrayNode.collect()))",
-                                symbolProvider.toMemberName(member), StringUtils.capitalize(symbolProvider.toMemberName(member)), "s");
-                    } else if (model.expectShape(member.getTarget()).isMapShape()) {
-                        MapShape mapShape = model.expectShape(member.getTarget()).asMapShape().orElseThrow();
-                        Symbol keySymbol = symbolProvider.toSymbol(mapShape.getKey());
-                        Symbol valueSymbol = symbolProvider.toSymbol(mapShape.getValue());
+                                section.symbolProvider().toMemberName(member), StringUtils.capitalize(section.symbolProvider().toMemberName(member)), "s");
+                    } else if (section.model().expectShape(member.getTarget()).isMapShape()) {
+                        MapShape mapShape = section.model().expectShape(member.getTarget()).asMapShape().orElseThrow();
+                        Symbol keySymbol = section.symbolProvider().toSymbol(mapShape.getKey());
+                        Symbol valueSymbol = section.symbolProvider().toSymbol(mapShape.getValue());
                         keySymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
                         valueSymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
                         String keyMapper = keySymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
@@ -190,7 +189,7 @@ public final class CreateNodeGenerator {
                                         .write(".collect(ObjectNode.collect(Map.Entry::getKey, Map.Entry::getValue))"));
                     } else {
                         writer.write(".withOptionalMember($S, get$L().map(m -> " + memberSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class) + "))",
-                                symbolProvider.toMemberName(member), StringUtils.capitalize(symbolProvider.toMemberName(member)), "m");
+                                section.symbolProvider().toMemberName(member), StringUtils.capitalize(section.symbolProvider().toMemberName(member)), "m");
                     }
                 }
                 writer.write(".build();");
