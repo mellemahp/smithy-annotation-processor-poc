@@ -1,7 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
-import com.hmellema.smithy.traitcodegen.generators.common.BuilderConstructorGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.writer.sections.*;
 import software.amazon.smithy.model.traits.AbstractTrait;
@@ -26,7 +25,7 @@ public final class CollectionTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        new BuilderConstructorGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+        writer.injectSection(new ConstructorWithBuilderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
     }
 
     @Override

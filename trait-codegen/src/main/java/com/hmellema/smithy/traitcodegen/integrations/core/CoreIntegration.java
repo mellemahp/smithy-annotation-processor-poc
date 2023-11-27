@@ -22,6 +22,7 @@ public final class CoreIntegration implements TraitCodegenIntegration {
         return List.of(
                 new GeneratedAnnotationInterceptor(),
                 new PropertiesGeneratorInterceptor(),
+                new ConstructorWithBuilderInjector(),
                 new GetterSectionInterceptor(),
                 new ToNodeSectionInjector(),
                 new FromNodeSectionInjector(),
