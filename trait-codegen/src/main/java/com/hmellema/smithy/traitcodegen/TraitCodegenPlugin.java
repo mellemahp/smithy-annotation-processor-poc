@@ -6,7 +6,6 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.build.PluginContext;
 import software.amazon.smithy.build.SmithyBuildPlugin;
 import software.amazon.smithy.codegen.core.directed.CodegenDirector;
-import software.amazon.smithy.model.Model;
 
 import java.util.logging.Logger;
 
@@ -27,8 +26,7 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         runner.directedCodegen(new TraitCodegenDirectedCodegen());
         runner.integrationClass(TraitCodegenIntegration.class);
         runner.fileManifest(context.getFileManifest());
-        Model transformed = SyntheticTraitServiceTransformer.transform(context.getModel());
-        runner.model(transformed);
+        runner.model(SyntheticTraitServiceTransformer.transform(context.getModel()));
         runner.settings(TraitCodegenSettings.from(context.getSettings()));
         runner.service(SyntheticTraitServiceTransformer.SYNTHETIC_SERVICE_ID);
         runner.performDefaultCodegenTransforms();
