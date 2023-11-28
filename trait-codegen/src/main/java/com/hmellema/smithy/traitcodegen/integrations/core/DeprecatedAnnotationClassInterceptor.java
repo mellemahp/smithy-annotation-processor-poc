@@ -1,7 +1,7 @@
-package com.hmellema.smithy.traitcodegen.integrations.docs;
+package com.hmellema.smithy.traitcodegen.integrations.core;
 
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.sections.ClassSection;
 import software.amazon.smithy.model.traits.DeprecatedTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 

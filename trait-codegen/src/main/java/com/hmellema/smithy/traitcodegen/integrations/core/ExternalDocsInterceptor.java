@@ -1,7 +1,7 @@
-package com.hmellema.smithy.traitcodegen.integrations.docs;
+package com.hmellema.smithy.traitcodegen.integrations.core;
 
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.JavaDocSection;
+import com.hmellema.smithy.traitcodegen.sections.JavaDocSection;
 import software.amazon.smithy.model.traits.ExternalDocumentationTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 

@@ -1,8 +1,9 @@
 package com.hmellema.smithy.traitcodegen.generators.base;
 
+import com.hmellema.smithy.traitcodegen.generators.common.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.FromNodeSection;
+import com.hmellema.smithy.traitcodegen.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.sections.FromNodeSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -12,6 +13,7 @@ import software.amazon.smithy.model.shapes.Shape;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+// TODO: ToNode?
 abstract class AbstractEnumGenerator<T> implements Consumer<T> {
     private static final String VALUE_FIELD_TEMPLATE = "private final $T value;";
 
@@ -29,7 +31,8 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
 
                     writeValueGetter(writer);
                     writer.newLine();
-                    writer.injectSection(new FromNodeSection(enumShape, enumSymbol, provider, model));
+
+                    new FromNodeGenerator(writer, enumSymbol, enumShape, provider, model).run();
                 })
                 .popState();
     }

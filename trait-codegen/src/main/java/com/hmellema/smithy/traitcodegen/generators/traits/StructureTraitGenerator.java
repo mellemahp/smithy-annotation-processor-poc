@@ -1,14 +1,10 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.generators.common.*;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.*;
 import software.amazon.smithy.model.traits.AbstractTrait;
-import software.amazon.smithy.utils.CodeSection;
-import software.amazon.smithy.utils.ListUtils;
 import software.amazon.smithy.utils.ToSmithyBuilder;
-
-import java.util.List;
 
 public final class StructureTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $1T extends AbstractTrait implements ToSmithyBuilder<$1T> {";
@@ -24,18 +20,11 @@ public final class StructureTraitGenerator extends TraitGenerator {
     }
 
     @Override
-    protected void writeConstructors(TraitCodegenWriter writer, GenerateTraitDirective directive) {
-        writer.injectSection(new ConstructorWithBuilderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()));
-    }
-
-    @Override
-    protected List<CodeSection> additionalSections(GenerateTraitDirective directive) {
-        return ListUtils.of(
-                new ToNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()),
-                new FromNodeSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()),
-                new GetterSection(directive.shape(), directive.symbolProvider(), directive.model()),
-                new BuilderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider(), directive.model()),
-                new ProviderSection(directive.shape(), directive.traitSymbol(), directive.symbolProvider())
-        );
+    protected void writeTraitBody(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new ConstructorWithBuilderGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+        new ToNodeGenerator(writer, directive.shape(), directive.symbolProvider(), directive.model()).run();
+        new FromNodeGenerator(writer, directive.traitSymbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+        new GetterGenerator(writer, directive.symbolProvider(), directive.shape(), directive.model()).run();
+        new BuilderGenerator(writer, directive.traitSymbol(), directive.symbolProvider(), directive.shape(), directive.model()).run();
     }
 }

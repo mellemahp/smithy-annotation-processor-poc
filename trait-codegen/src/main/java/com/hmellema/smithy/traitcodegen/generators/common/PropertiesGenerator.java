@@ -1,27 +1,30 @@
-package com.hmellema.smithy.traitcodegen.integrations.core;
+package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.PropertiesSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.PropertySection;
+import com.hmellema.smithy.traitcodegen.sections.PropertySection;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.EnumValueTrait;
-import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.SetUtils;
 
 import java.util.Map;
 import java.util.Set;
 
-public final class PropertiesGeneratorInterceptor implements CodeInterceptor<PropertiesSection, TraitCodegenWriter> {
-    @Override
-    public Class<PropertiesSection> sectionType() {
-        return PropertiesSection.class;
+public final class PropertiesGenerator implements Runnable {
+    private final TraitCodegenWriter writer;
+    private final Shape shape;
+    private final SymbolProvider symbolProvider;
+
+    public PropertiesGenerator(TraitCodegenWriter writer, Shape shape, SymbolProvider symbolProvider) {
+        this.writer = writer;
+        this.shape = shape;
+        this.symbolProvider = symbolProvider;
     }
 
     @Override
-    public void write(TraitCodegenWriter writer, String previousText, PropertiesSection section) {
-        section.shape().accept(new PropertyGenerator(writer, section.symbolProvider()));
+    public void run() {
+        shape.accept(new PropertyGenerator(writer, symbolProvider));
         writer.newLine();
     }
 

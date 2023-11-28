@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public final class EnumTraitGenerator extends StringTraitGenerator {
-
     @Override
-    protected void writeAdditionalMethods(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+    protected void writeTraitBody(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        super.writeTraitBody(writer, directive);
         EnumShape shape = directive.shape().asEnumShape().orElseThrow();
         for (String memberKey : shape.getEnumValues().keySet()) {
             writer.openBlock("public boolean is$L() {", "}", getMethodName(memberKey),

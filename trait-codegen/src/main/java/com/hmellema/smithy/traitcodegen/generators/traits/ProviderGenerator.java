@@ -1,9 +1,10 @@
-package com.hmellema.smithy.traitcodegen.integrations.core;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.ProviderSection;
+import software.amazon.smithy.codegen.core.Symbol;
+import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.*;
@@ -11,32 +12,40 @@ import software.amazon.smithy.model.traits.AnnotationTrait;
 import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.model.traits.StringTrait;
 import software.amazon.smithy.model.traits.Trait;
-import software.amazon.smithy.utils.CodeInterceptor;
 
 
 /**
  * Adds provider class to use as the {@link software.amazon.smithy.model.traits.TraitService} implementation for this trait
  */
-public final class ProviderSectionInjector implements CodeInterceptor<ProviderSection, TraitCodegenWriter> {
+final class ProviderGenerator implements Runnable {
     private static final String PROVIDER_METHOD = "public Provider() {";
 
-    @Override
-    public Class<ProviderSection> sectionType() {
-        return ProviderSection.class;
+    private final TraitCodegenWriter writer;
+    private final Shape shape;
+    private final Symbol traitSymbol;
+    private final SymbolProvider symbolProvider;
+
+    ProviderGenerator(TraitCodegenWriter writer, Shape shape, Symbol traitSymbol, SymbolProvider symbolProvider) {
+        this.writer = writer;
+        this.shape = shape;
+        this.traitSymbol = traitSymbol;
+        this.symbolProvider = symbolProvider;
     }
 
     @Override
-    public void write(TraitCodegenWriter writer, String previousText, ProviderSection section) {
-        section.shape().accept(new ProviderMethodVisitor(writer, section));
+    public void run() {
+        shape.accept(new ProviderMethodVisitor(writer, traitSymbol, symbolProvider));
     }
 
     private static final class ProviderMethodVisitor extends ShapeVisitor.Default<Void> {
         private final TraitCodegenWriter writer;
-        private final ProviderSection section;
+        private final Symbol traitSymbol;
+        private final SymbolProvider symbolProvider;
 
-        private ProviderMethodVisitor(TraitCodegenWriter writer, ProviderSection section) {
+        private ProviderMethodVisitor(TraitCodegenWriter writer, Symbol traitSymbol, SymbolProvider symbolProvider) {
             this.writer = writer;
-            this.section = section;
+            this.traitSymbol = traitSymbol;
+            this.symbolProvider = symbolProvider;
         }
 
         @Override
@@ -108,7 +117,7 @@ public final class ProviderSectionInjector implements CodeInterceptor<ProviderSe
                 writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
                         () -> writer.write("return new $T(value.expectNumberNode().getValue().$L, value.getSourceLocation());",
-                                section.traitSymbol(), section.traitSymbol().expectProperty(SymbolProperties.VALUE_GETTER)));
+                                traitSymbol, traitSymbol.expectProperty(SymbolProperties.VALUE_GETTER)));
             });
             writer.newLine();
         }
@@ -116,7 +125,7 @@ public final class ProviderSectionInjector implements CodeInterceptor<ProviderSe
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isJavaString(section.symbolProvider().toSymbol(shape.getMember()))) {
+            if (SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getMember()))) {
                 generateSimpleProvider(StringListTrait.class);
                 return null;
             }
@@ -154,7 +163,7 @@ public final class ProviderSectionInjector implements CodeInterceptor<ProviderSe
                 writer.newLine();
                 writer.write("@Override");
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}", () -> {
-                    writer.write("$1T result = new NodeMapper().deserialize(value, $1T.class);", section.traitSymbol());
+                    writer.write("$1T result = new NodeMapper().deserialize(value, $1T.class);", traitSymbol);
                     writer.write("result.setNodeCache(value);");
                     writer.write("return result;");
                 });
@@ -165,8 +174,8 @@ public final class ProviderSectionInjector implements CodeInterceptor<ProviderSe
         private void generateSimpleProvider(Class<?> traitClass) {
             writer.addImport(traitClass);
             writer.openBlock("public static final class Provider extends $L.Provider<$T> {", "}",
-                    traitClass.getSimpleName(), section.traitSymbol(), () -> writer.openBlock(PROVIDER_METHOD, "}",
-                            () -> writer.write("super(ID, $T::new);", section.traitSymbol())));
+                    traitClass.getSimpleName(), traitSymbol, () -> writer.openBlock(PROVIDER_METHOD, "}",
+                            () -> writer.write("super(ID, $T::new);", traitSymbol)));
             writer.newLine();
         }
     }

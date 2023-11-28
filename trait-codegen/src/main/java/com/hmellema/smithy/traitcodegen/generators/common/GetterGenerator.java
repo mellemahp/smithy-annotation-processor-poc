@@ -1,36 +1,40 @@
-package com.hmellema.smithy.traitcodegen.integrations.core;
+package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.GetterSection;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.*;
-import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.StringUtils;
 
 import java.util.EnumSet;
 import java.util.Optional;
 
-public final class GetterSectionInterceptor implements CodeInterceptor<GetterSection, TraitCodegenWriter> {
+public final class GetterGenerator implements Runnable {
     private static final EnumSet<ShapeType> NO_OPTIONAL_WRAPPING_TYPES = EnumSet.of(ShapeType.MAP, ShapeType.LIST);
+    private final TraitCodegenWriter writer;
+    private final SymbolProvider symbolProvider;
+    private final Shape shape;
+    private final Model model;
 
-    @Override
-    public Class<GetterSection> sectionType() {
-        return GetterSection.class;
+    public GetterGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Shape shape, Model model) {
+        this.writer = writer;
+        this.symbolProvider = symbolProvider;
+        this.shape = shape;
+        this.model = model;
     }
 
     @Override
-    public void write(TraitCodegenWriter writer, String previousText, GetterSection section) {
-        section.shape().accept(new GetterGenerator(writer, section.symbolProvider(), section.model()));
+    public void run() {
+        shape.accept(new GetterVisitor(writer, symbolProvider, model));
     }
 
-    public static final class GetterGenerator extends ShapeVisitor.Default<Void> {
+    public static final class GetterVisitor extends ShapeVisitor.Default<Void> {
         private final TraitCodegenWriter writer;
         private final SymbolProvider symbolProvider;
         private final Model model;
 
-        private GetterGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
+        private GetterVisitor(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
             this.writer = writer;
             this.symbolProvider = symbolProvider;
             this.model = model;

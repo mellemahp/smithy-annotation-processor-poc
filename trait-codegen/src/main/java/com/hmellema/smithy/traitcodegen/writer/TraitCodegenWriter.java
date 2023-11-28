@@ -59,15 +59,6 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         write(" */").popState();
     }
 
-    public void writeComment(String contents) {
-        pushState().write("//")
-                .writeInline(" * ")
-                .write(StringUtils.wrap(contents.replace("\n", "\n// "), MAX_LINE_LENGTH - 8,
-                        System.lineSeparator() + "// ", false))
-                .write(" */")
-                .popState();
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

@@ -2,7 +2,7 @@ package com.hmellema.smithy.traitcodegen.integrations.core;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenPlugin;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.sections.ClassSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.utils.CodeInterceptor;
 

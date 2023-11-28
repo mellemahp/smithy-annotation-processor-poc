@@ -2,7 +2,8 @@ package com.hmellema.smithy.traitcodegen.generators.base;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
-import com.hmellema.smithy.traitcodegen.writer.sections.*;
+import com.hmellema.smithy.traitcodegen.generators.common.*;
+import com.hmellema.smithy.traitcodegen.sections.*;
 import software.amazon.smithy.codegen.core.directed.GenerateStructureDirective;
 import software.amazon.smithy.model.node.ToNode;
 
@@ -17,12 +18,12 @@ public class StructureGenerator implements Consumer<GenerateStructureDirective<T
             writer.addImport(ToNode.class);
             writer.pushState(new ClassSection(directive.shape()))
                     .openBlock(BASE_CLASS_TEMPLATE_STRING, "}", directive.symbol(), () -> {
-                        writer.injectSection(new PropertiesSection(directive.shape(), directive.symbolProvider()));
-                        writer.injectSection(new ConstructorWithBuilderSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
-                        writer.injectSection(new ToNodeSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
-                        writer.injectSection(new FromNodeSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
-                        writer.injectSection(new GetterSection(directive.shape(), directive.symbolProvider(), directive.model()));
-                        writer.injectSection(new BuilderSection(directive.shape(), directive.symbol(), directive.symbolProvider(), directive.model()));
+                        new PropertiesGenerator(writer, directive.shape(), directive.symbolProvider()).run();
+                        new ConstructorWithBuilderGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+                        new ToNodeGenerator(writer, directive.shape(), directive.symbolProvider(), directive.model()).run();
+                        new FromNodeGenerator(writer, directive.symbol(), directive.shape(), directive.symbolProvider(), directive.model()).run();
+                        new GetterGenerator(writer, directive.symbolProvider(), directive.shape(), directive.model()).run();
+                        new BuilderGenerator(writer, directive.symbol(), directive.symbolProvider(), directive.shape(), directive.model()).run();
                     })
                     .popState();
             writer.newLine();

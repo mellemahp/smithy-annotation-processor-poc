@@ -1,43 +1,69 @@
-package com.hmellema.smithy.traitcodegen.integrations.core;
+package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.writer.sections.BuilderClassSection;
-import com.hmellema.smithy.traitcodegen.writer.sections.BuilderSection;
+import com.hmellema.smithy.traitcodegen.sections.BuilderClassSection;
+import com.hmellema.smithy.traitcodegen.sections.BuilderSection;
 import software.amazon.smithy.codegen.core.Symbol;
+import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.AbstractTraitBuilder;
 import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.utils.BuilderRef;
-import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.SmithyBuilder;
 import software.amazon.smithy.utils.StringUtils;
+import software.amazon.smithy.utils.ToSmithyBuilder;
 
+import java.util.Iterator;
 import java.util.Optional;
 
-public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderSection, TraitCodegenWriter> {
+public final class BuilderGenerator implements Runnable {
     private static final String VALUES = "values";
     private static final String ACCESSOR_TEMPLATE = "public Builder $1L($2T $1L) {";
     private static final String RETURN_THIS = "return this;";
     private static final String BUILDER_REF_TEMPLATE = "private final BuilderRef<$T> $L = BuilderRef.$L;";
+    private static final String BUILDER_METHOD_TEMPLATE = "public static final Builder builder() {";
+    private static final String VALUES_FLUENT_SETTER = ".values(getValues());";
 
+    private final TraitCodegenWriter writer;
+    private final Symbol symbol;
+    private final SymbolProvider symbolProvider;
+    private final Shape shape;
+    private final Model model;
 
-    @Override
-    public Class<BuilderSection> sectionType() {
-        return BuilderSection.class;
+    public BuilderGenerator(TraitCodegenWriter writer, Symbol symbol, SymbolProvider symbolProvider, Shape shape, Model model) {
+        this.writer = writer;
+        this.symbol = symbol;
+        this.symbolProvider = symbolProvider;
+        this.shape = shape;
+        this.model = model;
     }
 
     @Override
-    public void write(TraitCodegenWriter writer, String previousText, BuilderSection section) {
-        writer.pushState(BuilderClassSection.fromBuilderSection(section));
-        writer.openDocstring();
-        writer.writeDocStringContents("Builder for {@link $T}.", section.symbol());
-        writer.closeDocstring();
+    public void run() {
+        writer.pushState(new BuilderSection(shape, symbol));
+        writeToBuilderMethod();
+        writeBuilderMethod();
+        writer.pushState(new BuilderClassSection(shape, symbol));
+        writeBuilderClassDocstring();
+        writeBuilderClass();
+        writer.popState();
+        writer.popState();
+        writer.newLine();
+    }
 
+    private void writeBuilderClassDocstring() {
+        writer.openDocstring();
+        writer.writeDocStringContents("Builder for {@link $T}.", symbol);
+        writer.closeDocstring();
+    }
+
+    private void writeBuilderClass() {
         String builderClassTemplate = "public static final class Builder ";
-        if (SymbolUtil.isTrait(section.shape())) {
-            if (SymbolUtil.isStringListTrait(section.shape(), section.symbolProvider())) {
+        if (SymbolUtil.isTrait(shape)) {
+            if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
                 writer.addImport(StringListTrait.class);
                 builderClassTemplate += "extends StringListTrait.Builder<$T, Builder> {";
             } else {
@@ -48,35 +74,79 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
             writer.addImport(SmithyBuilder.class);
             builderClassTemplate += "implements SmithyBuilder<$T> {";
         }
-        writer.openBlock(builderClassTemplate, "}", section.symbol(), () -> {
-            section.shape().accept(new BuilderPropertyGenerator(writer, section));
+        writer.openBlock(builderClassTemplate, "}", symbol, () -> {
+            shape.accept(new BuilderPropertyGenerator(writer, shape, symbolProvider, model));
             writer.newLine();
             writer.write("private Builder() {}").newLine();
-            section.shape().accept(new BuilderSetterGenerator(writer, section));
+            shape.accept(new BuilderSetterGenerator(writer, symbolProvider, model));
             writer.newLine();
             writer.override();
-            writer.openBlock("public $T build() {", "}", section.symbol(),
-                    () -> writeBuildMethodBody(writer, section));
+            writer.openBlock("public $T build() {", "}", symbol, this::writeBuildMethodBody);
         });
-        writer.newLine();
-        writer.popState();
     }
 
-    private void writeBuildMethodBody(TraitCodegenWriter writer, BuilderSection section) {
-        if (SymbolUtil.isStringListTrait(section.shape(), section.symbolProvider())) {
-            writer.write("return new $T(getValues(), getSourceLocation());", section.symbol());
+    private void writeToBuilderMethod() {
+        writer.openDocstring();
+        writer.writeDocStringContents("Creates a builder used to build a {@link $T}.", symbol);
+        writer.closeDocstring();
+
+        writer.addImports(SmithyBuilder.class, ToSmithyBuilder.class);
+        writer.override();
+        writer.openBlock("public SmithyBuilder<$T> toBuilder() {", "}", symbol, () -> {
+            writer.writeInline("return builder()");
+            writer.indent();
+            if (SymbolUtil.isTrait(shape)) {
+                writer.write(".sourceLocation(getSourceLocation())");
+            }
+
+            // TODO: lots of special casing for the string list traits. Probably a better approach
+            if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+                writer.write(VALUES_FLUENT_SETTER);
+            } else {
+                writeBasicBody();
+            }
+            writer.dedent();
+        });
+        writer.newLine();
+    }
+
+    private void writeBasicBody() {
+        Iterator<MemberShape> memberIterator = shape.members().iterator();
+        while (memberIterator.hasNext()) {
+            MemberShape member = memberIterator.next();
+            writer.writeInline(".$1L($1L)", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
+            if (memberIterator.hasNext()) {
+                writer.writeInline("\n");
+            } else {
+                writer.writeInline(";\n");
+            }
+        }
+    }
+
+    private void writeBuilderMethod() {
+        writer.openBlock(BUILDER_METHOD_TEMPLATE, "}", () -> writer.write("return new Builder();"));
+        writer.newLine();
+    }
+
+    private void writeBuildMethodBody() {
+        if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+            writer.write("return new $T(getValues(), getSourceLocation());", symbol);
         } else {
-            writer.write("return new $T(this);", section.symbol());
+            writer.write("return new $T(this);", symbol);
         }
     }
 
     private static final class BuilderPropertyGenerator extends ShapeVisitor.Default<Void> {
         private final TraitCodegenWriter writer;
-        private final BuilderSection section;
+        private final Shape shape;
+        private final SymbolProvider symbolProvider;
+        private final Model model;
 
-        private BuilderPropertyGenerator(TraitCodegenWriter writer, BuilderSection section) {
+        private BuilderPropertyGenerator(TraitCodegenWriter writer, Shape shape, SymbolProvider symbolProvider, Model model) {
             this.writer = writer;
-            this.section = section;
+            this.shape = shape;
+            this.symbolProvider = symbolProvider;
+            this.model = model;
         }
 
         @Override
@@ -86,7 +156,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isStringListTrait(section.shape(), section.symbolProvider())) {
+            if (SymbolUtil.isStringListTrait(this.shape, symbolProvider)) {
                 // Don't write any builder properties for StringListTraits. They inherit all properties
                 return null;
             }
@@ -107,20 +177,20 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
         }
 
         private void writeProperty(MemberShape shape) {
-            Optional<String> builderRefOptional = section.symbolProvider().toSymbol(shape).getProperty(SymbolProperties.BUILDER_REF_INITIALIZER, String.class);
+            Optional<String> builderRefOptional = symbolProvider.toSymbol(shape).getProperty(SymbolProperties.BUILDER_REF_INITIALIZER, String.class);
             if (builderRefOptional.isPresent()) {
                 writer.addImport(BuilderRef.class);
-                writer.write(BUILDER_REF_TEMPLATE, section.symbolProvider().toSymbol(shape),
-                        SymbolUtil.toMemberNameOrValues(shape, section.model(), section.symbolProvider()),
+                writer.write(BUILDER_REF_TEMPLATE, symbolProvider.toSymbol(shape),
+                        SymbolUtil.toMemberNameOrValues(shape, model, symbolProvider),
                         builderRefOptional.orElseThrow());
             } else {
-                writer.write("private $T $L;", section.symbolProvider().toSymbol(shape),
-                        SymbolUtil.toMemberNameOrValues(shape, section.model(), section.symbolProvider()));
+                writer.write("private $T $L;", symbolProvider.toSymbol(shape),
+                        SymbolUtil.toMemberNameOrValues(shape, model, symbolProvider));
             }
         }
 
         private void writeValuesProperty(Shape shape) {
-            Symbol collectionSymbol = section.symbolProvider().toSymbol(shape);
+            Symbol collectionSymbol = symbolProvider.toSymbol(shape);
             writer.addImport(BuilderRef.class);
             writer.write(BUILDER_REF_TEMPLATE, collectionSymbol, VALUES,
                     collectionSymbol.expectProperty(SymbolProperties.BUILDER_REF_INITIALIZER));
@@ -130,11 +200,13 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
     private static final class BuilderSetterGenerator extends ShapeVisitor.Default<Void> {
         private final TraitCodegenWriter writer;
-        private final BuilderSection section;
+        private final SymbolProvider symbolProvider;
+        private final Model model;
 
-        private BuilderSetterGenerator(TraitCodegenWriter writer, BuilderSection section) {
+        private BuilderSetterGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
             this.writer = writer;
-            this.section = section;
+            this.symbolProvider = symbolProvider;
+            this.model = model;
         }
 
         @Override
@@ -144,19 +216,19 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
         @Override
         public Void listShape(ListShape shape) {
-            shape.accept(new SetterVisitor(writer, section, VALUES));
+            shape.accept(new SetterVisitor(writer, shape, symbolProvider, model, VALUES));
             return null;
         }
 
         @Override
         public Void mapShape(MapShape shape) {
-            shape.accept(new SetterVisitor(writer, section, VALUES));
+            shape.accept(new SetterVisitor(writer, shape, symbolProvider, model, VALUES));
             return null;
         }
 
         @Override
         public Void structureShape(StructureShape shape) {
-            shape.members().forEach(memberShape -> memberShape.accept(new SetterVisitor(writer, section, section.symbolProvider().toMemberName(memberShape))));
+            shape.members().forEach(memberShape -> memberShape.accept(new SetterVisitor(writer, shape, symbolProvider, model, symbolProvider.toMemberName(memberShape))));
             writer.newLine();
             return null;
         }
@@ -165,13 +237,19 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
     private static final class SetterVisitor extends ShapeVisitor.Default<Void> {
         private final TraitCodegenWriter writer;
-        private final BuilderSection section;
+        private final Shape shape;
+        private final SymbolProvider symbolProvider;
+        private final Model model;
+
         private final String memberName;
 
-        private SetterVisitor(TraitCodegenWriter writer, BuilderSection section,  String memberName) {
+
+        private SetterVisitor(TraitCodegenWriter writer, Shape shape, SymbolProvider symbolProvider, Model model, String memberName) {
             this.writer = writer;
+            this.shape = shape;
+            this.symbolProvider = symbolProvider;
+            this.model = model;
             this.memberName = memberName;
-            this.section = section;
         }
 
         @Override
@@ -182,7 +260,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isStringListTrait(section.shape(), section.symbolProvider())) {
+            if (SymbolUtil.isStringListTrait(this.shape, symbolProvider)) {
                 // Don't write any builder setters for StringListTraits. They inherit setters
                 return null;
             }
@@ -198,12 +276,12 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
         @Override
         public Void memberShape(MemberShape shape) {
-            return section.model().expectShape(shape.getTarget()).accept(this);
+            return model.expectShape(shape.getTarget()).accept(this);
         }
 
         private void writeStandardAccessors(Shape shape) {
             writer.openBlock(ACCESSOR_TEMPLATE, "}",
-                    memberName, section.symbolProvider().toSymbol(shape), () -> {
+                    memberName, symbolProvider.toSymbol(shape), () -> {
                         writer.write("this.$1L = $1L;", memberName);
                         writer.write(RETURN_THIS);
                     });
@@ -212,7 +290,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
         private void writeListAccessors(ListShape listShape) {
             writer.openBlock(ACCESSOR_TEMPLATE, "}",
-                    memberName, section.symbolProvider().toSymbol(listShape), () -> {
+                    memberName, symbolProvider.toSymbol(listShape), () -> {
                         writer.write("clear$L();", StringUtils.capitalize(memberName));
                         writer.write("this.$1L.get().addAll($1L);", memberName);
                         writer.write(RETURN_THIS);
@@ -229,7 +307,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
             // Set one
             writer.openBlock("public Builder add$LItem($T $LItem) {", "}",
-                    StringUtils.capitalize(memberName), section.symbolProvider().toSymbol(listShape.getMember()), memberName, () -> {
+                    StringUtils.capitalize(memberName), symbolProvider.toSymbol(listShape.getMember()), memberName, () -> {
                         writer.write("$1L.get().add($1LItem);", memberName);
                         writer.write(RETURN_THIS);
                     });
@@ -237,7 +315,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
             // Remove one
             writer.openBlock("public Builder remove$LItem($T $LItem) {", "}",
-                    StringUtils.capitalize(memberName), section.symbolProvider().toSymbol(listShape.getMember()), memberName, () -> {
+                    StringUtils.capitalize(memberName), symbolProvider.toSymbol(listShape.getMember()), memberName, () -> {
                         writer.write("$1L.get().remove($1LItem);", memberName);
                         writer.write(RETURN_THIS);
                     });
@@ -246,7 +324,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
         private void writeMapAccessors(MapShape mapShape) {
             // Set all
             writer.openBlock(ACCESSOR_TEMPLATE, "}",
-                    memberName, section.symbolProvider().toSymbol(mapShape), () -> {
+                    memberName, symbolProvider.toSymbol(mapShape), () -> {
                         writer.write("clear$L();", StringUtils.capitalize(memberName));
                         writer.write("this.$1L.get().putAll($1L);", memberName);
                         writer.write(RETURN_THIS);
@@ -264,7 +342,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
             MemberShape keyShape = mapShape.getKey();
             MemberShape valueShape = mapShape.getValue();
             writer.openBlock("public Builder put$L($T key, $T value) {", "}",
-                    StringUtils.capitalize(memberName), section.symbolProvider().toSymbol(keyShape), section.symbolProvider().toSymbol(valueShape), () -> {
+                    StringUtils.capitalize(memberName), symbolProvider.toSymbol(keyShape), symbolProvider.toSymbol(valueShape), () -> {
                         writer.write("this.$L.get().put(key, value);", memberName);
                         writer.write(RETURN_THIS);
                     });
@@ -272,7 +350,7 @@ public final class BuilderSectionInterceptor implements CodeInterceptor<BuilderS
 
             // Remove one
             writer.openBlock("public Builder remove$L($T $L) {", "}",
-                    StringUtils.capitalize(memberName), section.symbolProvider().toSymbol(keyShape), memberName, () -> {
+                    StringUtils.capitalize(memberName), symbolProvider.toSymbol(keyShape), memberName, () -> {
                         writer.write("this.$1L.get().remove($1L);", memberName);
                         writer.write(RETURN_THIS);
                     });
