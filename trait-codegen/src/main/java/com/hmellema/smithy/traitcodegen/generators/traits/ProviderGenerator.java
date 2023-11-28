@@ -1,6 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
+import com.hmellema.smithy.traitcodegen.sections.ProviderSection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -34,7 +35,10 @@ final class ProviderGenerator implements Runnable {
 
     @Override
     public void run() {
+        writer.pushState(new ProviderSection(shape, traitSymbol));
         shape.accept(new ProviderMethodVisitor(writer, traitSymbol, symbolProvider));
+        writer.popState();
+        writer.newLine();
     }
 
     private static final class ProviderMethodVisitor extends ShapeVisitor.Default<Void> {
@@ -119,7 +123,6 @@ final class ProviderGenerator implements Runnable {
                         () -> writer.write("return new $T(value.expectNumberNode().getValue().$L, value.getSourceLocation());",
                                 traitSymbol, traitSymbol.expectProperty(SymbolProperties.VALUE_GETTER)));
             });
-            writer.newLine();
         }
 
 
@@ -168,7 +171,6 @@ final class ProviderGenerator implements Runnable {
                     writer.write("return result;");
                 });
             });
-            writer.newLine();
         }
 
         private void generateSimpleProvider(Class<?> traitClass) {
@@ -176,7 +178,6 @@ final class ProviderGenerator implements Runnable {
             writer.openBlock("public static final class Provider extends $L.Provider<$T> {", "}",
                     traitClass.getSimpleName(), traitSymbol, () -> writer.openBlock(PROVIDER_METHOD, "}",
                             () -> writer.write("super(ID, $T::new);", traitSymbol)));
-            writer.newLine();
         }
     }
 }
