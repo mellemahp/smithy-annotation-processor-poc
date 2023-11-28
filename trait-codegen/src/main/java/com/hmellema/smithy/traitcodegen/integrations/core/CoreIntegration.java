@@ -25,7 +25,10 @@ public final class CoreIntegration implements TraitCodegenIntegration {
                 new DeprecatedNoteInterceptor(),
                 new ClassJavaDocInterceptor(),
                 new ExternalDocsInterceptor(),
-                new PropertyJavaDocInterceptor()
+                new PropertyJavaDocInterceptor(),
+                new FromNodeDocsInterceptor(),
+                new BuilderMethodDocsInterceptor(),
+                new BuilderClassSectionDocsInterceptor()
         );
     }
 }

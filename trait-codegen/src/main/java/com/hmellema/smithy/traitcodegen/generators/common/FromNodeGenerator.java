@@ -1,6 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
+import com.hmellema.smithy.traitcodegen.sections.FromNodeSection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -31,21 +32,12 @@ public final class FromNodeGenerator implements Runnable {
 
     @Override
     public void run() {
-        writeJavaDoc();
+        writer.pushState(new FromNodeSection(shape, symbol));
         writer.addImport(Node.class);
         writer.openBlock(FROM_NODE_METHOD_TEMPLATE, "}", symbol,
                 () -> shape.accept(new FromNodeBodyGenerator(writer, symbolProvider, symbol, model)));
+        writer.popState();
         writer.newLine();
-    }
-
-    private void writeJavaDoc() {
-        writer.openDocstring();
-        writer.writeDocStringContents("Creates a {@link $T} from a {@link Node}.", symbol);
-        writer.writeDocStringContents("");
-        writer.writeDocStringContents("@param node Node to create the $T from.", symbol);
-        writer.writeDocStringContents("@return Returns the created $T.", symbol);
-        writer.writeDocStringContents("@throws ExpectationNotMetException if the given Node is invalid.");
-        writer.closeDocstring();
     }
 
     private static final class FromNodeBodyGenerator extends ShapeVisitor.Default<Void> {

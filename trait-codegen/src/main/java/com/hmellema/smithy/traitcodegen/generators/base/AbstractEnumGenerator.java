@@ -3,7 +3,6 @@ package com.hmellema.smithy.traitcodegen.generators.base;
 import com.hmellema.smithy.traitcodegen.generators.common.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.sections.ClassSection;
-import com.hmellema.smithy.traitcodegen.sections.FromNodeSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;

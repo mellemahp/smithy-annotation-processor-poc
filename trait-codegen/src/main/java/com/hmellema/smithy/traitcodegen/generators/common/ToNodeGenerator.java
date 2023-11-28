@@ -36,14 +36,9 @@ public final class ToNodeGenerator implements Runnable{
     @Override
     public void run() {
         writer.addImport(Node.class);
-        writer.write("@Override");
-        if (SymbolUtil.isTrait(shape)) {
-            writer.openBlock(CREATE_NODE_METHOD, "}",
-                    () -> shape.accept(new CreateNodeBodyGenerator(writer, symbolProvider, model)));
-        } else {
-            writer.openBlock(TO_NODE_METHOD, "}",
-                    () -> shape.accept(new CreateNodeBodyGenerator(writer, symbolProvider, model)));
-        }
+        writer.override();
+        writer.openBlock(SymbolUtil.isTrait(shape) ? CREATE_NODE_METHOD : TO_NODE_METHOD, "}",
+                () -> shape.accept(new CreateNodeBodyGenerator(writer, symbolProvider, model)));
         writer.newLine();
     }
 

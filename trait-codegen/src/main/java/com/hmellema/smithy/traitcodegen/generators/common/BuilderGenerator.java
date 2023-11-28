@@ -1,10 +1,10 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
+import com.hmellema.smithy.traitcodegen.sections.ToBuilderSection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.sections.BuilderClassSection;
-import com.hmellema.smithy.traitcodegen.sections.BuilderSection;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
@@ -43,24 +43,13 @@ public final class BuilderGenerator implements Runnable {
 
     @Override
     public void run() {
-        writer.pushState(new BuilderSection(shape, symbol));
         writeToBuilderMethod();
         writeBuilderMethod();
-        writer.pushState(new BuilderClassSection(shape, symbol));
-        writeBuilderClassDocstring();
         writeBuilderClass();
-        writer.popState();
-        writer.popState();
-        writer.newLine();
-    }
-
-    private void writeBuilderClassDocstring() {
-        writer.openDocstring();
-        writer.writeDocStringContents("Builder for {@link $T}.", symbol);
-        writer.closeDocstring();
     }
 
     private void writeBuilderClass() {
+        writer.pushState(new BuilderClassSection(shape, symbol));
         String builderClassTemplate = "public static final class Builder ";
         if (SymbolUtil.isTrait(shape)) {
             if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
@@ -83,13 +72,12 @@ public final class BuilderGenerator implements Runnable {
             writer.override();
             writer.openBlock("public $T build() {", "}", symbol, this::writeBuildMethodBody);
         });
+        writer.popState();
+        writer.newLine();
     }
 
     private void writeToBuilderMethod() {
-        writer.openDocstring();
-        writer.writeDocStringContents("Creates a builder used to build a {@link $T}.", symbol);
-        writer.closeDocstring();
-
+        writer.pushState(new ToBuilderSection(shape, symbol));
         writer.addImports(SmithyBuilder.class, ToSmithyBuilder.class);
         writer.override();
         writer.openBlock("public SmithyBuilder<$T> toBuilder() {", "}", symbol, () -> {
@@ -107,6 +95,7 @@ public final class BuilderGenerator implements Runnable {
             }
             writer.dedent();
         });
+        writer.popState();
         writer.newLine();
     }
 

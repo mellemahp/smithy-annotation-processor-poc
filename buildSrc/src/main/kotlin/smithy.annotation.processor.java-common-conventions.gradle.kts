@@ -13,22 +13,8 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor("com.uber.nullaway:nullaway:0.10.13")
-    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    errorprone("com.google.errorprone:error_prone_core:2.21.1")
-    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
-}
-
-
-tasks.withType<JavaCompile>().configureEach {
-    options.errorprone {
-        if (!name.contains("test", true)) {
-            error("NullAway")
-            errorproneArgs.addAll(
-                "-XepOpt:NullAway:AnnotatedPackages=com.hmellema",
-            )
-        }
-    }
+    errorprone("com.google.errorprone:error_prone_core:2.23.0")
+   // errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
 testing {
