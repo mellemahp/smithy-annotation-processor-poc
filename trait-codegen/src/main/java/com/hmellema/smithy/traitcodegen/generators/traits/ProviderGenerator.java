@@ -16,7 +16,7 @@ import software.amazon.smithy.model.traits.Trait;
 
 
 /**
- * Adds provider class to use as the {@link software.amazon.smithy.model.traits.TraitService} implementation for this trait
+ * Adds provider class to use as the {@link software.amazon.smithy.model.traits.TraitService} implementation for a trait
  */
 final class ProviderGenerator implements Runnable {
     private static final String PROVIDER_METHOD = "public Provider() {";
@@ -38,7 +38,6 @@ final class ProviderGenerator implements Runnable {
         writer.pushState(new ProviderSection(shape, traitSymbol));
         shape.accept(new ProviderMethodVisitor());
         writer.popState();
-        writer.newLine();
     }
 
     private final class ProviderMethodVisitor extends ShapeVisitor.Default<Void> {
@@ -154,7 +153,7 @@ final class ProviderGenerator implements Runnable {
             writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
                 writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
                 writer.newLine();
-                writer.write("@Override");
+                writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}", () -> {
                     writer.write("$1T result = new NodeMapper().deserialize(value, $1T.class);", traitSymbol);
                     writer.write("result.setNodeCache(value);");

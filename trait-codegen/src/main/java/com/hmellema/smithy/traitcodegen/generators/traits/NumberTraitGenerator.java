@@ -9,7 +9,7 @@ import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
 import software.amazon.smithy.model.traits.AbstractTrait;
 
-public class NumberTraitGenerator extends TraitGenerator {
+public final class NumberTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $T extends AbstractTrait {";
 
     @Override
