@@ -26,20 +26,10 @@ public final class GetterGenerator implements Runnable {
 
     @Override
     public void run() {
-        shape.accept(new GetterVisitor(writer, symbolProvider, model));
+        shape.accept(new GetterVisitor());
     }
 
-    public static final class GetterVisitor extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final SymbolProvider symbolProvider;
-        private final Model model;
-
-        private GetterVisitor(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
-            this.writer = writer;
-            this.symbolProvider = symbolProvider;
-            this.model = model;
-        }
-
+    public final class GetterVisitor extends ShapeVisitor.Default<Void> {
         @Override
         protected Void getDefault(Shape shape) {
             // Do not generate a getter by default

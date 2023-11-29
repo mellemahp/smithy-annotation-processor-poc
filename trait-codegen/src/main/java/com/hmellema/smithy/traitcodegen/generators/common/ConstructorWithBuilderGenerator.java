@@ -32,21 +32,12 @@ public final class ConstructorWithBuilderGenerator implements Runnable {
             if (SymbolUtil.isTrait(shape)) {
                 writer.write("super(ID, builder.getSourceLocation());");
             }
-            shape.accept(new InitializerVisitor(writer, symbolProvider, model));
+            shape.accept(new InitializerVisitor());
         });
         writer.newLine();
     }
 
-    private static final class InitializerVisitor extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final SymbolProvider symbolProvider;
-        private final Model model;
-
-        private InitializerVisitor(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
-            this.writer = writer;
-            this.symbolProvider = symbolProvider;
-            this.model = model;
-        }
+    private final class InitializerVisitor extends ShapeVisitor.Default<Void> {
 
         @Override
         protected Void getDefault(Shape shape) {

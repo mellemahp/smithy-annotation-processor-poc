@@ -24,20 +24,12 @@ public final class PropertiesGenerator implements Runnable {
 
     @Override
     public void run() {
-        shape.accept(new PropertyGenerator(writer, symbolProvider));
+        shape.accept(new PropertyGenerator());
         writer.newLine();
     }
 
-    private static final class PropertyGenerator extends ShapeVisitor.Default<Void> {
+    private final class PropertyGenerator extends ShapeVisitor.Default<Void> {
         private static final String PROPERTY_TEMPLATE = "private final $T $L;";
-
-        private final TraitCodegenWriter writer;
-        private final SymbolProvider symbolProvider;
-
-        public PropertyGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider) {
-            this.writer = writer;
-            this.symbolProvider = symbolProvider;
-        }
 
         @Override
         protected Void getDefault(Shape shape) {

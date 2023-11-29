@@ -30,14 +30,14 @@ public final class BuilderGenerator implements Runnable {
     private final TraitCodegenWriter writer;
     private final Symbol symbol;
     private final SymbolProvider symbolProvider;
-    private final Shape shape;
+    private final Shape baseShape;
     private final Model model;
 
-    public BuilderGenerator(TraitCodegenWriter writer, Symbol symbol, SymbolProvider symbolProvider, Shape shape, Model model) {
+    public BuilderGenerator(TraitCodegenWriter writer, Symbol symbol, SymbolProvider symbolProvider, Shape baseShape, Model model) {
         this.writer = writer;
         this.symbol = symbol;
         this.symbolProvider = symbolProvider;
-        this.shape = shape;
+        this.baseShape = baseShape;
         this.model = model;
     }
 
@@ -49,10 +49,10 @@ public final class BuilderGenerator implements Runnable {
     }
 
     private void writeBuilderClass() {
-        writer.pushState(new BuilderClassSection(shape, symbol));
+        writer.pushState(new BuilderClassSection(baseShape, symbol));
         String builderClassTemplate = "public static final class Builder ";
-        if (SymbolUtil.isTrait(shape)) {
-            if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+        if (SymbolUtil.isTrait(baseShape)) {
+            if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
                 writer.addImport(StringListTrait.class);
                 builderClassTemplate += "extends StringListTrait.Builder<$T, Builder> {";
             } else {
@@ -64,10 +64,10 @@ public final class BuilderGenerator implements Runnable {
             builderClassTemplate += "implements SmithyBuilder<$T> {";
         }
         writer.openBlock(builderClassTemplate, "}", symbol, () -> {
-            shape.accept(new BuilderPropertyGenerator(writer, shape, symbolProvider, model));
+            baseShape.accept(new BuilderPropertyGenerator());
             writer.newLine();
             writer.write("private Builder() {}").newLine();
-            shape.accept(new BuilderSetterGenerator(writer, symbolProvider, model));
+            baseShape.accept(new BuilderSetterGenerator());
             writer.newLine();
             writer.override();
             writer.openBlock("public $T build() {", "}", symbol, this::writeBuildMethodBody);
@@ -77,18 +77,18 @@ public final class BuilderGenerator implements Runnable {
     }
 
     private void writeToBuilderMethod() {
-        writer.pushState(new ToBuilderSection(shape, symbol));
+        writer.pushState(new ToBuilderSection(baseShape, symbol));
         writer.addImports(SmithyBuilder.class, ToSmithyBuilder.class);
         writer.override();
         writer.openBlock("public SmithyBuilder<$T> toBuilder() {", "}", symbol, () -> {
             writer.writeInline("return builder()");
             writer.indent();
-            if (SymbolUtil.isTrait(shape)) {
+            if (SymbolUtil.isTrait(baseShape)) {
                 writer.write(".sourceLocation(getSourceLocation())");
             }
 
             // TODO: lots of special casing for the string list traits. Probably a better approach
-            if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+            if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
                 writer.write(VALUES_FLUENT_SETTER);
             } else {
                 writeBasicBody();
@@ -100,7 +100,7 @@ public final class BuilderGenerator implements Runnable {
     }
 
     private void writeBasicBody() {
-        Iterator<MemberShape> memberIterator = shape.members().iterator();
+        Iterator<MemberShape> memberIterator = baseShape.members().iterator();
         while (memberIterator.hasNext()) {
             MemberShape member = memberIterator.next();
             writer.writeInline(".$1L($1L)", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
@@ -118,25 +118,14 @@ public final class BuilderGenerator implements Runnable {
     }
 
     private void writeBuildMethodBody() {
-        if (SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+        if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
             writer.write("return new $T(getValues(), getSourceLocation());", symbol);
         } else {
             writer.write("return new $T(this);", symbol);
         }
     }
 
-    private static final class BuilderPropertyGenerator extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final Shape shape;
-        private final SymbolProvider symbolProvider;
-        private final Model model;
-
-        private BuilderPropertyGenerator(TraitCodegenWriter writer, Shape shape, SymbolProvider symbolProvider, Model model) {
-            this.writer = writer;
-            this.shape = shape;
-            this.symbolProvider = symbolProvider;
-            this.model = model;
-        }
+    private final class BuilderPropertyGenerator extends ShapeVisitor.Default<Void> {
 
         @Override
         protected Void getDefault(Shape shape) {
@@ -145,7 +134,7 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isStringListTrait(this.shape, symbolProvider)) {
+            if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
                 // Don't write any builder properties for StringListTraits. They inherit all properties
                 return null;
             }
@@ -187,17 +176,7 @@ public final class BuilderGenerator implements Runnable {
     }
 
 
-    private static final class BuilderSetterGenerator extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final SymbolProvider symbolProvider;
-        private final Model model;
-
-        private BuilderSetterGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
-            this.writer = writer;
-            this.symbolProvider = symbolProvider;
-            this.model = model;
-        }
-
+    private final class BuilderSetterGenerator extends ShapeVisitor.Default<Void> {
         @Override
         protected Void getDefault(Shape shape) {
             throw new UnsupportedOperationException("Does not support shape of type: " + shape.getType());
@@ -205,39 +184,32 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            shape.accept(new SetterVisitor(writer, shape, symbolProvider, model, VALUES));
+            // Don't write any builder setters for StringListTraits. They inherit setters
+            if (!SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+                shape.accept(new SetterVisitor(VALUES));
+            }
             return null;
         }
 
         @Override
         public Void mapShape(MapShape shape) {
-            shape.accept(new SetterVisitor(writer, shape, symbolProvider, model, VALUES));
+            shape.accept(new SetterVisitor(VALUES));
             return null;
         }
 
         @Override
         public Void structureShape(StructureShape shape) {
-            shape.members().forEach(memberShape -> memberShape.accept(new SetterVisitor(writer, shape, symbolProvider, model, symbolProvider.toMemberName(memberShape))));
+            shape.members().forEach(memberShape -> memberShape.accept(new SetterVisitor(symbolProvider.toMemberName(memberShape))));
             writer.newLine();
             return null;
         }
     }
 
 
-    private static final class SetterVisitor extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final Shape shape;
-        private final SymbolProvider symbolProvider;
-        private final Model model;
-
+    private final class SetterVisitor extends ShapeVisitor.Default<Void> {
         private final String memberName;
 
-
-        private SetterVisitor(TraitCodegenWriter writer, Shape shape, SymbolProvider symbolProvider, Model model, String memberName) {
-            this.writer = writer;
-            this.shape = shape;
-            this.symbolProvider = symbolProvider;
-            this.model = model;
+        private SetterVisitor(String memberName) {
             this.memberName = memberName;
         }
 
@@ -249,10 +221,6 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isStringListTrait(this.shape, symbolProvider)) {
-                // Don't write any builder setters for StringListTraits. They inherit setters
-                return null;
-            }
             writeListAccessors(shape);
             return null;
         }

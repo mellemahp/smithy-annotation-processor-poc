@@ -38,21 +38,11 @@ public final class ToNodeGenerator implements Runnable{
         writer.addImport(Node.class);
         writer.override();
         writer.openBlock(SymbolUtil.isTrait(shape) ? CREATE_NODE_METHOD : TO_NODE_METHOD, "}",
-                () -> shape.accept(new CreateNodeBodyGenerator(writer, symbolProvider, model)));
+                () -> shape.accept(new CreateNodeBodyGenerator()));
         writer.newLine();
     }
 
-    private static final class CreateNodeBodyGenerator extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final SymbolProvider symbolProvider;
-        private final Model model;
-
-        private CreateNodeBodyGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Model model) {
-            this.writer = writer;
-            this.symbolProvider = symbolProvider;
-            this.model = model;
-        }
-
+    private final class CreateNodeBodyGenerator extends ShapeVisitor.Default<Void> {
         @Override
         protected Void getDefault(Shape shape) {
             // Do nothing by default

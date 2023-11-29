@@ -36,21 +36,12 @@ final class ProviderGenerator implements Runnable {
     @Override
     public void run() {
         writer.pushState(new ProviderSection(shape, traitSymbol));
-        shape.accept(new ProviderMethodVisitor(writer, traitSymbol, symbolProvider));
+        shape.accept(new ProviderMethodVisitor());
         writer.popState();
         writer.newLine();
     }
 
-    private static final class ProviderMethodVisitor extends ShapeVisitor.Default<Void> {
-        private final TraitCodegenWriter writer;
-        private final Symbol traitSymbol;
-        private final SymbolProvider symbolProvider;
-
-        private ProviderMethodVisitor(TraitCodegenWriter writer, Symbol traitSymbol, SymbolProvider symbolProvider) {
-            this.writer = writer;
-            this.traitSymbol = traitSymbol;
-            this.symbolProvider = symbolProvider;
-        }
+    private final class ProviderMethodVisitor extends ShapeVisitor.Default<Void> {
 
         @Override
         public Void getDefault(Shape shape) {
@@ -160,7 +151,6 @@ final class ProviderGenerator implements Runnable {
 
         private void generateAbstractTraitProvider() {
             writer.addImports(Trait.class, Node.class, NodeMapper.class);
-
             writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
                 writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
                 writer.newLine();

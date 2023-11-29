@@ -34,27 +34,14 @@ public final class FromNodeGenerator implements Runnable {
     public void run() {
         writer.pushState(new FromNodeSection(shape, symbol));
         writer.addImport(Node.class);
-        writer.openBlock(FROM_NODE_METHOD_TEMPLATE, "}", symbol,
-                () -> shape.accept(new FromNodeBodyGenerator(writer, symbolProvider, symbol, model)));
+        writer.openBlock(FROM_NODE_METHOD_TEMPLATE, "}", symbol, () -> shape.accept(new FromNodeBodyGenerator()));
         writer.popState();
         writer.newLine();
     }
 
-    private static final class FromNodeBodyGenerator extends ShapeVisitor.Default<Void> {
+    private final class FromNodeBodyGenerator extends ShapeVisitor.Default<Void> {
         private static final String BUILDER_INITIALIZER = "Builder builder = builder();";
         private static final String BUILD_AND_RETURN = "return builder.build();";
-
-        private final TraitCodegenWriter writer;
-        private final SymbolProvider symbolProvider;
-        private final Symbol symbol;
-        private final Model model;
-
-        private FromNodeBodyGenerator(TraitCodegenWriter writer, SymbolProvider symbolProvider, Symbol symbol, Model model) {
-            this.writer = writer;
-            this.symbolProvider = symbolProvider;
-            this.symbol = symbol;
-            this.model = model;
-        }
 
         @Override
         protected Void getDefault(Shape shape) {

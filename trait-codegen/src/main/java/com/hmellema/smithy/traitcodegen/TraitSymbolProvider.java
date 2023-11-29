@@ -21,7 +21,7 @@ public final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> impl
         if (shape.hasTrait(TraitDefinition.class)) {
             return shape.accept(this);
         }
-        throw new RuntimeException("Expected shape to have trait definition trait but was not found.");
+        throw new UnsupportedOperationException("Expected shape to have trait definition trait but was not found.");
     }
 
 
