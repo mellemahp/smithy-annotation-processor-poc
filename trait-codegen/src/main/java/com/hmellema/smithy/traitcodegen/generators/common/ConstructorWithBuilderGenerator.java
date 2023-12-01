@@ -1,6 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
+import com.hmellema.smithy.traitcodegen.utils.ShapeUtils;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -29,7 +30,7 @@ public final class ConstructorWithBuilderGenerator implements Runnable {
     @Override
     public void run() {
         writer.openBlock(CONSTRUCTOR_TEMPLATE, "}", symbol, () -> {
-            if (SymbolUtil.isTrait(shape)) {
+            if (ShapeUtils.isTrait(shape)) {
                 writer.write("super(ID, builder.getSourceLocation());");
             }
             shape.accept(new InitializerVisitor());
@@ -61,9 +62,9 @@ public final class ConstructorWithBuilderGenerator implements Runnable {
             for (MemberShape member : shape.members()) {
                 if (member.isRequired()) {
                     writer.addImport(SmithyBuilder.class);
-                    writer.write("this.$1L = SmithyBuilder.requiredState($1S, $2L);", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider), getBuilderValue(member));
+                    writer.write("this.$1L = SmithyBuilder.requiredState($1S, $2L);", ShapeUtils.toMemberNameOrValues(member, model, symbolProvider), getBuilderValue(member));
                 } else {
-                    writer.write("this.$L = $L;", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider), getBuilderValue(member));
+                    writer.write("this.$L = $L;", ShapeUtils.toMemberNameOrValues(member, model, symbolProvider), getBuilderValue(member));
                 }
             }
             return null;
@@ -71,9 +72,9 @@ public final class ConstructorWithBuilderGenerator implements Runnable {
 
         private String getBuilderValue(MemberShape member) {
             if (symbolProvider.toSymbol(member).getProperty(SymbolProperties.BUILDER_REF_INITIALIZER).isPresent()) {
-                return writer.format("builder.$L.copy()", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
+                return writer.format("builder.$L.copy()", ShapeUtils.toMemberNameOrValues(member, model, symbolProvider));
             } else {
-                return writer.format("builder.$L", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
+                return writer.format("builder.$L", ShapeUtils.toMemberNameOrValues(member, model, symbolProvider));
             }
         }
 

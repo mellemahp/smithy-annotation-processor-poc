@@ -1,16 +1,18 @@
 package com.hmellema.smithy.traitcodegen.utils;
 
 import software.amazon.smithy.codegen.core.Symbol;
-import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.model.Model;
-import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
-import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.StringUtils;
 
 public interface SymbolUtil {
-    Symbol JAVA_STRING = SymbolUtil.fromClass(String.class);
+    Symbol JAVA_STRING_SYMBOL = SymbolUtil.fromClass(String.class);
 
+    /**
+     * Gets a Smithy codegen {@link Symbol} for a Java class.
+     *
+     * @param clazz class to get symbol for.
+     * @return Symbol representing the provided class.
+     */
     static Symbol fromClass(Class<?> clazz) {
         return Symbol.builder()
                 .name(clazz.getSimpleName())
@@ -18,33 +20,33 @@ public interface SymbolUtil {
                 .build();
     }
 
+    /**
+     * Gets the default class name to use for a given Smithy {@link Shape}.
+     *
+     * @param shape Shape to get name for.
+     * @return Default name.
+     */
     static String getDefaultName(Shape shape) {
         return StringUtils.capitalize(shape.getId().getName());
     }
 
+    /**
+     * Gets the default name of a Shape that defines a trait.
+     *
+     * @param shape Shape to get name for.
+     * @return Default name.
+     */
     static String getDefaultTraitName(Shape shape) {
         return getDefaultName(shape) + "Trait";
     }
 
+    /**
+     * Checks if a symbol maps to a Java {@link String}.
+     *
+     * @param symbol Symbol to check.
+     * @return Returns true if the symbol maps to a Java String.
+     */
     static boolean isJavaString(Symbol symbol) {
-        return JAVA_STRING.getName().equals(symbol.getName()) && JAVA_STRING.getNamespace().equals(symbol.getNamespace());
-    }
-
-    static String toMemberNameOrValues(MemberShape member, Model model, SymbolProvider symbolProvider) {
-        Shape containerShape = model.expectShape(member.getContainer());
-        if (containerShape.isMapShape() || containerShape.isListShape()) {
-            return "values";
-        } else {
-            return symbolProvider.toMemberName(member);
-        }
-    }
-
-    // TODO: should be in shape utils!
-    static boolean isTrait(Shape shape) {
-        return shape.hasTrait(TraitDefinition.class);
-    }
-
-    static boolean isStringListTrait(Shape shape, SymbolProvider symbolProvider) {
-        return shape.isListShape() && isJavaString(symbolProvider.toSymbol(shape.asListShape().orElseThrow().getMember()));
+        return JAVA_STRING_SYMBOL.getName().equals(symbol.getName()) && JAVA_STRING_SYMBOL.getNamespace().equals(symbol.getNamespace());
     }
 }

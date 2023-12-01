@@ -4,7 +4,7 @@ import com.hmellema.smithy.traitcodegen.generators.base.EnumGenerator;
 import com.hmellema.smithy.traitcodegen.generators.base.IntEnumGenerator;
 import com.hmellema.smithy.traitcodegen.generators.base.StructureGenerator;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
-import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
+import com.hmellema.smithy.traitcodegen.utils.ShapeUtils;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.*;
 
@@ -38,7 +38,7 @@ final class TraitCodegenDirectedCodegen
 
     @Override
     public void generateStructure(GenerateStructureDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
-        if (!SymbolUtil.isTrait(directive.shape())) {
+        if (!ShapeUtils.isTrait(directive.shape())) {
             new StructureGenerator().accept(directive);
         }
     }
@@ -50,14 +50,14 @@ final class TraitCodegenDirectedCodegen
 
     @Override
     public void generateEnumShape(GenerateEnumDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
-        if (!SymbolUtil.isTrait(directive.shape())) {
+        if (!ShapeUtils.isTrait(directive.shape())) {
             new EnumGenerator().accept(directive);
         }
     }
 
     @Override
     public void generateIntEnumShape(GenerateIntEnumDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
-        if (!SymbolUtil.isTrait(directive.shape())) {
+        if (!ShapeUtils.isTrait(directive.shape())) {
             new IntEnumGenerator().accept(directive);
         }
     }

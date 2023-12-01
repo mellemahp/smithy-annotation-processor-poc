@@ -1,6 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
+import com.hmellema.smithy.traitcodegen.utils.ShapeUtils;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -37,7 +38,7 @@ public final class ToNodeGenerator implements Runnable{
     public void run() {
         writer.addImport(Node.class);
         writer.override();
-        writer.openBlock(SymbolUtil.isTrait(shape) ? CREATE_NODE_METHOD : TO_NODE_METHOD, "}",
+        writer.openBlock(ShapeUtils.isTrait(shape) ? CREATE_NODE_METHOD : TO_NODE_METHOD, "}",
                 () -> shape.accept(new CreateNodeBodyGenerator()));
         writer.newLine();
     }

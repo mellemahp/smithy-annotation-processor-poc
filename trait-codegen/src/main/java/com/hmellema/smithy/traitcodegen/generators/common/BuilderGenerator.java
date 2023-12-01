@@ -2,6 +2,7 @@ package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.sections.ToBuilderSection;
+import com.hmellema.smithy.traitcodegen.utils.ShapeUtils;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.sections.BuilderClassSection;
@@ -51,8 +52,8 @@ public final class BuilderGenerator implements Runnable {
     private void writeBuilderClass() {
         writer.pushState(new BuilderClassSection(baseShape, symbol));
         String builderClassTemplate = "public static final class Builder ";
-        if (SymbolUtil.isTrait(baseShape)) {
-            if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
+        if (ShapeUtils.isTrait(baseShape)) {
+            if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
                 writer.addImport(StringListTrait.class);
                 builderClassTemplate += "extends StringListTrait.Builder<$T, Builder> {";
             } else {
@@ -83,12 +84,12 @@ public final class BuilderGenerator implements Runnable {
         writer.openBlock("public SmithyBuilder<$T> toBuilder() {", "}", symbol, () -> {
             writer.writeInline("return builder()");
             writer.indent();
-            if (SymbolUtil.isTrait(baseShape)) {
+            if (ShapeUtils.isTrait(baseShape)) {
                 writer.write(".sourceLocation(getSourceLocation())");
             }
 
             // TODO: lots of special casing for the string list traits. Probably a better approach
-            if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
+            if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
                 writer.write(VALUES_FLUENT_SETTER);
             } else {
                 writeBasicBody();
@@ -103,7 +104,7 @@ public final class BuilderGenerator implements Runnable {
         Iterator<MemberShape> memberIterator = baseShape.members().iterator();
         while (memberIterator.hasNext()) {
             MemberShape member = memberIterator.next();
-            writer.writeInline(".$1L($1L)", SymbolUtil.toMemberNameOrValues(member, model, symbolProvider));
+            writer.writeInline(".$1L($1L)", ShapeUtils.toMemberNameOrValues(member, model, symbolProvider));
             if (memberIterator.hasNext()) {
                 writer.writeInline("\n");
             } else {
@@ -118,7 +119,7 @@ public final class BuilderGenerator implements Runnable {
     }
 
     private void writeBuildMethodBody() {
-        if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
+        if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
             writer.write("return new $T(getValues(), getSourceLocation());", symbol);
         } else {
             writer.write("return new $T(this);", symbol);
@@ -134,7 +135,7 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isStringListTrait(baseShape, symbolProvider)) {
+            if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
                 // Don't write any builder properties for StringListTraits. They inherit all properties
                 return null;
             }
@@ -159,11 +160,11 @@ public final class BuilderGenerator implements Runnable {
             if (builderRefOptional.isPresent()) {
                 writer.addImport(BuilderRef.class);
                 writer.write(BUILDER_REF_TEMPLATE, symbolProvider.toSymbol(shape),
-                        SymbolUtil.toMemberNameOrValues(shape, model, symbolProvider),
+                        ShapeUtils.toMemberNameOrValues(shape, model, symbolProvider),
                         builderRefOptional.orElseThrow());
             } else {
                 writer.write("private $T $L;", symbolProvider.toSymbol(shape),
-                        SymbolUtil.toMemberNameOrValues(shape, model, symbolProvider));
+                        ShapeUtils.toMemberNameOrValues(shape, model, symbolProvider));
             }
         }
 
@@ -185,7 +186,7 @@ public final class BuilderGenerator implements Runnable {
         @Override
         public Void listShape(ListShape shape) {
             // Don't write any builder setters for StringListTraits. They inherit setters
-            if (!SymbolUtil.isStringListTrait(shape, symbolProvider)) {
+            if (!ShapeUtils.isStringListTrait(shape, symbolProvider)) {
                 shape.accept(new SetterVisitor(VALUES));
             }
             return null;
