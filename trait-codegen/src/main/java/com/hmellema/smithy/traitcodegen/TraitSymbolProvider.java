@@ -7,7 +7,7 @@ import software.amazon.smithy.model.shapes.*;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
 
-public final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
+final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
     private final String packageName;
     private final String packagePath;
 

@@ -5,6 +5,7 @@ import com.google.auto.service.AutoService;
 import com.hmellema.smithy.processor.SmithyProcessor;
 import com.hmellema.smithy.processor.traitprocessor.annotations.GenerateSmithyTraits;
 import software.amazon.smithy.build.model.SmithyBuildConfig;
+import software.amazon.smithy.model.node.ArrayNode;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.ObjectNode;
 
@@ -34,6 +35,7 @@ public class TraitCodegenProcessor extends SmithyProcessor<GenerateSmithyTraits>
         Map<String, ObjectNode> pluginMap = new HashMap<>();
         pluginMap.put(getPluginName(), Node.objectNodeBuilder()
                 .withMember("package", annotation.packageName())
+                .withMember("header", ArrayNode.fromStrings(annotation.header()))
                 .build());
 
         return SmithyBuildConfig.builder().version("1.0").plugins(pluginMap).build();

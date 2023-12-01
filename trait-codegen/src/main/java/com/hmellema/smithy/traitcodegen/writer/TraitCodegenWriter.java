@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.writer;
 
+import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolReference;
@@ -14,11 +15,13 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
 
     private final String packageName;
     private final String fileName;
+    private final TraitCodegenSettings settings;
 
-    public TraitCodegenWriter(String fileName, String packageName) {
+    public TraitCodegenWriter(String fileName, String packageName, TraitCodegenSettings settings) {
         super(new TraitCodegenImportContainer());
         this.packageName = packageName;
         this.fileName = fileName;
+        this.settings = settings;
 
         putFormatter('T', new JavaTypeFormatter());
     }
@@ -63,9 +66,9 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
     public String toString() {
         StringBuilder builder = new StringBuilder();
         if (!fileName.startsWith("META-INF/services")) {
-            builder.append(getAttribution()).append(System.lineSeparator());
-            builder.append(getPackageHeader()).append(System.lineSeparator());
-            builder.append(getImportContainer().toString()).append(System.lineSeparator());
+            builder.append(getHeader()).append(getNewline());
+            builder.append(getPackageHeader()).append(getNewline());
+            builder.append(getImportContainer().toString()).append(getNewline());
         }
         builder.append(super.toString());
         return builder.toString();
@@ -75,12 +78,13 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         return String.format("package %s;%n", packageName);
     }
 
-    public String getAttribution() {
-        return """
-                /*
-                 * Copyright My.company
-                 */
-                """;
+    public String getHeader() {
+        StringBuilder builder = new StringBuilder().append("/**").append(getNewline());
+        for (String line : settings.headerLines()) {
+            builder.append(" * ").append(line).append(getNewline());
+        }
+        builder.append(" */").append(getNewline());
+        return builder.toString();
     }
 
     public void newLine() {
@@ -89,13 +93,6 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
 
     public void override() {
         write("@Override");
-    }
-
-    public static final class Factory implements SymbolWriter.Factory<TraitCodegenWriter> {
-        @Override
-        public TraitCodegenWriter apply(String file, String namespace) {
-            return new TraitCodegenWriter(file, namespace);
-        }
     }
 
     /**

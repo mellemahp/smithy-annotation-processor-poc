@@ -32,7 +32,6 @@ public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings,
         this.settings = settings;
         this.baseSymbolProvider = symbolProvider;
         this.traitSymbolProvider = SymbolProvider.cache(new TraitSymbolProvider(settings));
-
         this.fileManifest = fileManifest;
         this.integrations = integrations;
         this.writerDelegator = new WriterDelegator<>(fileManifest, shape -> {
@@ -41,7 +40,7 @@ public class TraitCodegenContext implements CodegenContext<TraitCodegenSettings,
             } else {
                 return baseSymbolProvider.toSymbol(shape);
             }
-        }, new TraitCodegenWriter.Factory());
+        }, (filename, namespace) -> new TraitCodegenWriter(filename, namespace, settings));
     }
 
     public static TraitCodegenContext fromDirective(

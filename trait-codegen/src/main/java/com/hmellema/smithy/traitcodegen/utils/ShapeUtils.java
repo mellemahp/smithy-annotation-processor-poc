@@ -4,6 +4,7 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeType;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
 public interface ShapeUtils {

@@ -2,7 +2,11 @@
   "version": "1.0",
   "plugins": {
     "trait-codegen": {
-      "package": "com.example.generated"
+      "package": "com.example.generated",
+      "header": [
+        "header line 1",
+        "header line 2. Woo!"
+      ]
     }
   }
 }
