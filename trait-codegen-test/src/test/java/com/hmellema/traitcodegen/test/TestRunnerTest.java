@@ -9,13 +9,13 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
 public class TestRunnerTest {
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource("source")
-//    public void testRunner(String filename, Callable<SmithyTestCase.Result> callable) throws Exception {
-//        callable.call();
-//    }
-//
-//    public static Stream<?> source() {
-//        return SmithyTestSuite.defaultParameterizedTestSource(TestRunnerTest.class);
-//    }
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("source")
+    public void testRunner(String filename, Callable<SmithyTestCase.Result> callable) throws Exception {
+        callable.call();
+    }
+
+    public static Stream<?> source() {
+        return SmithyTestSuite.defaultParameterizedTestSource(TestRunnerTest.class);
+    }
 }
