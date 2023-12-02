@@ -14,8 +14,21 @@ repositories {
 
 dependencies {
     errorprone("com.google.errorprone:error_prone_core:2.23.0")
-   // errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+
+    maxHeapSize = "1G"
+
+    testLogging {
+        events("passed")
+    }
+}
+
+
 
 testing {
     suites {

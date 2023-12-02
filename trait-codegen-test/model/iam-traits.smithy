@@ -49,28 +49,22 @@ structure ActionResource {
 }
 
 @private
-@uniqueItems
 list ConditionKeysList {
     member: String
 }
 
 @private
-@uniqueItems
 list RequiredActionsList {
     member: IamIdentifier
 }
 
 @private
-@uniqueItems
 list ResourceNameList {
     member: ResourceName
 }
 
 @private
 string IamIdentifier
-
-@private
-string ResourceName
 
 @private
 string ResourceName

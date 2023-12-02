@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
     private static final String NODE_FROM = "Node.from($L)";
@@ -109,7 +110,8 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol listShape(ListShape shape) {
-        return SymbolUtil.fromClass(List.class).toBuilder()
+        Class<?> shapeClass = shape.hasTrait(UniqueItemsTrait.class) ?  Set.class : List.class;
+        return SymbolUtil.fromClass(shapeClass).toBuilder()
                 .addReference(toSymbol(shape.getMember()))
                 .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER,
                         shape.hasTrait(UniqueItemsTrait.class) ? SET_INITIALIZER : LIST_INITIALIZER)
