@@ -63,12 +63,18 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol shortShape(ShortShape shape) {
-        return simpleShapeSymbolFrom(Short.class);
+        return simpleShapeSymbolFrom(Short.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectNumberNode().getValue().shortValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "shortValue()")
+                .build();
     }
 
     @Override
     public Symbol integerShape(IntegerShape shape) {
-        return simpleShapeSymbolFrom(Integer.class);
+        return simpleShapeSymbolFrom(Integer.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectNumberNode().getValue().intValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "intValue()")
+                .build();
     }
 
     @Override
@@ -85,22 +91,34 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol longShape(LongShape shape) {
-        return simpleShapeSymbolFrom(Long.class);
+        return simpleShapeSymbolFrom(Long.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectNumberNode().getValue().longValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "longValue()")
+                .build();
     }
 
     @Override
     public Symbol floatShape(FloatShape shape) {
-        return simpleShapeSymbolFrom(Float.class);
+        return simpleShapeSymbolFrom(Float.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectNumberNode().getValue().floatValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "floatValue()")
+                .build();
     }
 
     @Override
     public Symbol doubleShape(DoubleShape shape) {
-        return simpleShapeSymbolFrom(Double.class);
+        return simpleShapeSymbolFrom(Double.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectNumberNode().getValue().doubleValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "doubleValue()")
+                .build();
     }
 
     @Override
     public Symbol bigIntegerShape(BigIntegerShape shape) {
-        return simpleShapeSymbolFrom(BigInteger.class);
+        return simpleShapeSymbolFrom(BigInteger.class).toBuilder()
+                .putProperty(SymbolProperties.FROM_NODE_MAPPER, "$L.expectNumberNode().getValue().intValue()")
+                .putProperty(SymbolProperties.VALUE_GETTER, "intValue()")
+                .build();
     }
 
     @Override

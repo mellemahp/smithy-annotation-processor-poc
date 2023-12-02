@@ -141,13 +141,13 @@ public final class FromNodeGenerator implements Runnable {
 
         @Override
         public Void booleanShape(BooleanShape shape) {
-            writer.writeInline("$memberPrefix:LBooleanMember($1S, builder::$1L)", symbolProvider.toMemberName(member));
+            writer.writeInline("${memberPrefix:L}BooleanMember($1S, builder::$1L)", symbolProvider.toMemberName(member));
             return null;
         }
 
         @Override
         public Void listShape(ListShape shape) {
-            writer.writeInline("$memberPrefix:LArrayMember($S, n -> "
+            writer.writeInline("${memberPrefix:L}ArrayMember($S, n -> "
                     + symbolProvider.toSymbol(shape.getMember()).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class)
                     + ", builder::$L)", symbolProvider.toMemberName(member), "n", symbolProvider.toMemberName(member));
             return null;
@@ -200,7 +200,7 @@ public final class FromNodeGenerator implements Runnable {
             String keyMapper = symbolProvider.toSymbol(shape.getKey()).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class);
             String valueMapper = symbolProvider.toSymbol(shape.getValue()).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class);
             writer.disableNewlines();
-            writer.openBlock("$memberPrefix:LObjectMember($S, o -> o.getMembers().forEach((k, v) -> {\n", "}))", symbolProvider.toMemberName(member),
+            writer.openBlock("${memberPrefix:L}ObjectMember($S, o -> o.getMembers().forEach((k, v) -> {\n", "}))", symbolProvider.toMemberName(member),
                     () -> writer.write("builder.put$L(" + keyMapper + ", " + valueMapper + ");\n",
                             StringUtils.capitalize(symbolProvider.toMemberName(member)), "k", "v"));
             writer.enableNewlines();
@@ -208,7 +208,7 @@ public final class FromNodeGenerator implements Runnable {
         }
 
         private void generateNumberMember(NumberShape shape) {
-            writer.writeInline("$memberPrefix:LNumberMember($1S, n -> builder.$1L(n.$L))",
+            writer.writeInline("${memberPrefix:L}NumberMember($1S, n -> builder.$1L(n.$2L))",
                     symbolProvider.toMemberName(member),
                     symbolProvider.toSymbol(shape).expectProperty(SymbolProperties.VALUE_GETTER));
         }
@@ -216,7 +216,7 @@ public final class FromNodeGenerator implements Runnable {
         @Override
         public Void stringShape(StringShape shape) {
             if (SymbolUtil.isJavaString(symbolProvider.toSymbol(shape))) {
-                writer.writeInline("$memberPrefix:LStringMember($1S, builder::$1L)", symbolProvider.toMemberName(member));
+                writer.writeInline("${memberPrefix:L}StringMember($1S, builder::$1L)", symbolProvider.toMemberName(member));
             } else {
                 generateGenericMember(shape);
             }
@@ -230,7 +230,7 @@ public final class FromNodeGenerator implements Runnable {
         }
 
         private void generateGenericMember(Shape shape) {
-            writer.writeInline("$memberPrefix:LMember($S, n -> "
+            writer.writeInline("${memberPrefix:L}Member($S, n -> "
                     + symbolProvider.toSymbol(shape).expectProperty(SymbolProperties.FROM_NODE_MAPPER, String.class)
                     + ", builder::$L)", symbolProvider.toMemberName(member), "n", symbolProvider.toMemberName(member));
         }

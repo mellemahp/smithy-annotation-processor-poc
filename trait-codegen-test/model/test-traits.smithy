@@ -33,8 +33,46 @@ double HttpCodeDouble
 // ===========
 /// A list with only a simple string member
 @trait
-list stringListTrait {
-    member: MyString
+list StringListTrait {
+    member: String
 }
 
-string MyString
+@trait
+list NumberListTrait {
+    member: Integer
+}
+
+@trait
+list StructureListTrait {
+    member: listMember
+}
+
+@private
+structure listMember {
+    a: String
+    b: Integer
+    c: String
+}
+
+// ===========
+// Map traits
+// ===========
+/// Map of only simple strings. These are handled slightly differently than
+/// other maps
+@trait
+map StringStringMap {
+    key: String
+    value: String
+}
+
+@trait
+map StringToStructMap {
+    key: String
+    value: MapValue
+}
+
+@private
+structure MapValue {
+    a: String
+    b: Integer
+}
