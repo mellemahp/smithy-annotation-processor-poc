@@ -1,7 +1,6 @@
 package com.hmellema.traitcodegen.test;
 
 import com.example.generated.StringListTraitTrait;
-import com.example.generated.StringTraitTrait;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;

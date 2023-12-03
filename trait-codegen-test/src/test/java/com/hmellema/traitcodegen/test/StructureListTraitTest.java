@@ -33,16 +33,15 @@ class StructureListTraitTest {
             ListMember.builder().a("first").b(1).c("other").build(),
             ListMember.builder().a("second").b(2).c("more").build()
         );
-        // TODO: Make this work better with custom equals impls
-        assertEquals(actual.size(), expected.size());
-        assertEquals(actual.size(), 2);
-        assertEquals(actual.get(0).getA(), expected.get(0).getA());
-        assertEquals(actual.get(0).getB(), expected.get(0).getB());
-        assertEquals(actual.get(0).getC(), expected.get(0).getC());
+        assertEquals(expected.size(), actual.size());
+        assertEquals(2, actual.size());
+        assertEquals(expected.get(0).getA(), actual.get(0).getA());
+        assertEquals(expected.get(0).getB(), actual.get(0).getB());
+        assertEquals(expected.get(0).getC(), actual.get(0).getC());
 
-        assertEquals(actual.get(1).getA(), expected.get(1).getA());
-        assertEquals(actual.get(1).getB(), expected.get(1).getB());
-        assertEquals(actual.get(1).getC(), expected.get(1).getC());
+        assertEquals(expected.get(1).getA(), actual.get(1).getA());
+        assertEquals(expected.get(1).getB(), actual.get(1).getB());
+        assertEquals( expected.get(1).getC(), actual.get(1).getC());
     }
 
     @Test

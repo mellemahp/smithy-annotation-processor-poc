@@ -1,0 +1,54 @@
+package com.hmellema.traitcodegen.test;
+
+import com.example.generated.*;
+import org.junit.jupiter.api.Test;
+import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeId;
+import software.amazon.smithy.model.traits.IdRefTrait;
+import software.amazon.smithy.utils.ListUtils;
+
+import java.util.List;
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class IdRefTest {
+    private static final ShapeId TARGET_ONE = ShapeId.from("test.smithy.traitcodegen#IdRefTarget1");
+    private static final ShapeId TARGET_TWO = ShapeId.from("test.smithy.traitcodegen#IdRefTarget2");
+
+    @Test
+    void loadsFromModel() {
+        Model result = Model.assembler()
+                .discoverModels(getClass().getClassLoader())
+                .addImport(Objects.requireNonNull(getClass().getResource("id-ref.smithy")))
+                .assemble()
+                .unwrap();
+        Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
+
+        // Single Shape ID value
+        // TODO: Fix this? A string trait with an ID ref should be return a ShapeID
+        IdRefStringTrait idRefStringTrait = shape.expectTrait(IdRefStringTrait.class);
+
+        // List of ShapeIDs
+        IdRefListTrait idRefListTrait = shape.expectTrait(IdRefListTrait.class);
+        assertIterableEquals(ListUtils.of(TARGET_ONE, TARGET_TWO), idRefListTrait.getValues());
+
+        // Map of ShapeIDs
+        IdRefMapTrait idRefMapTrait = shape.expectTrait(IdRefMapTrait.class);
+        assertEquals(2, idRefMapTrait.getValues().size());
+        assertEquals(TARGET_ONE, idRefMapTrait.getValues().get("a"));
+        assertEquals(TARGET_TWO, idRefMapTrait.getValues().get("b"));
+
+        // Shape ID as member of a structure
+        IdRefStructTrait idRefStructTrait = shape.expectTrait(IdRefStructTrait.class);
+        assertTrue(idRefStructTrait.getFieldA().isPresent());
+        assertEquals(TARGET_ONE, idRefStructTrait.getFieldA().get());
+
+        IdRefStructWithNestedIdsTrait idRefStructWithNestedIds = shape.expectTrait(IdRefStructWithNestedIdsTrait.class);
+        assertEquals(TARGET_ONE, idRefStructWithNestedIds.getIdRefHolder().getId());
+        assertIterableEquals(ListUtils.of(TARGET_ONE, TARGET_TWO), idRefStructWithNestedIds.getIdList());
+        assertEquals(TARGET_ONE, idRefStructWithNestedIds.getIdMap().get("a"));
+        assertEquals(TARGET_TWO, idRefStructWithNestedIds.getIdMap().get("b"));
+    }
+}

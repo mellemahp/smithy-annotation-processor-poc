@@ -76,3 +76,138 @@ structure MapValue {
     a: String
     b: Integer
 }
+
+// ===============
+//  Structure traits
+// ===============
+@trait
+structure structureTrait {
+    @required
+    @pattern("^[^#+]+$")
+    fieldA: String
+
+    /// Some member documentation
+    fieldB: Boolean
+
+    @documentation("More documentation")
+    fieldC: NestedA
+
+    fieldD: ListD
+
+    fieldE: MyMap
+}
+
+@private
+list ListD {
+    member: String
+}
+
+@private
+map MyMap {
+    key: String
+    value: String
+}
+
+@private
+structure NestedA {
+    @required
+    fieldN: String
+
+    fieldQ: Boolean
+
+    fieldZ: NestedB
+}
+
+@private
+enum NestedB {
+    A
+    B
+}
+
+// ===============
+//  Enum traits
+// ===============
+@trait
+enum ResponseType {
+    /// Positive response
+    YES = "yes"
+
+    /// Negative response
+    NO = "no"
+}
+
+// ===============
+//  IntEnum traits
+// ===============
+@trait
+intEnum ResponseTypeInt {
+    /// Positive response
+    YES = 1
+
+    /// Negative response
+    NO = 2
+}
+
+// ==================
+//  Deprecation tests
+// ==================
+/// Checks that a deprecated annotation is added to deprecated traits
+@deprecated(since: "a long long time ago", message: "because you should stop using it")
+@trait
+string DeprecatedStringTrait
+
+// ==================
+//  Deprecation tests
+// ==================
+// The following traits check to make sure that Strings are converted to ShapeIds
+// when an @IdRef trait is added to a string
+@trait
+@idRef
+string IdRefString
+
+@trait
+list IdRefList {
+    member: IdRefmember
+}
+
+@trait
+map IdRefMap {
+    key: String
+    value: IdRefmember
+}
+
+@trait
+structure IdRefStruct {
+    fieldA: IdRefmember
+}
+
+@trait
+structure IdRefStructWithNestedIds {
+    @required
+    idRefHolder: NestedIdRefHolder
+
+    idList: NestedIdList
+
+    idMap: NestedIdMap
+}
+
+@private
+structure NestedIdRefHolder {
+    @required
+    id: IdRefmember
+}
+
+@private
+list NestedIdList {
+    member: IdRefmember
+}
+
+@private
+map NestedIdMap {
+    key: String
+    value: IdRefmember
+}
+
+@private
+@idRef
+string IdRefmember

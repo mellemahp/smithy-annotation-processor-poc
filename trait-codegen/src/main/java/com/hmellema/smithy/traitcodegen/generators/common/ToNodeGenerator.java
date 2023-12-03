@@ -175,7 +175,9 @@ public final class ToNodeGenerator implements Runnable{
                         String valueMapper = valueSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class);
 
                         writer.addImports(AbstractMap.class, Map.class, ObjectNode.class);
-                        writer.openBlock(".withMember($1S, get$1L().entrySet().stream()", ")", StringUtils.capitalize(member.getMemberName()),
+                        writer.openBlock(".withMember($S, get$L().entrySet().stream()", ")",
+                                member.getMemberName(),
+                                StringUtils.capitalize(member.getMemberName()),
                                 () -> writer.write(".map(entry -> new AbstractMap.SimpleImmutableEntry<>(")
                                         .indent()
                                         .write(keyMapper + ", " + valueMapper + "))", "entry.getKey()", "entry.getValue()")

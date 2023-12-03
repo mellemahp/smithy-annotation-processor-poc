@@ -1,7 +1,6 @@
 package com.hmellema.traitcodegen.test;
 
 import com.example.generated.MapValue;
-import com.example.generated.StringStringMapTrait;
 import com.example.generated.StringToStructMapTrait;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
@@ -11,14 +10,9 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
-import software.amazon.smithy.utils.BuilderRef;
-import software.amazon.smithy.utils.MapUtils;
-
-import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class StringToStructMapTraitTest {
     @Test
@@ -30,11 +24,13 @@ class StringToStructMapTraitTest {
                 .unwrap();
         Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
         StringToStructMapTrait trait = shape.expectTrait(StringToStructMapTrait.class);
-        BuilderRef<Map<String, MapValue>> ref = BuilderRef.forOrderedMap();
-        ref.get().put("one", MapValue.builder().a("foo").b(2).build());
-        ref.get().put("two", MapValue.builder().a("bar").b(4).build());
-        // TODO: Doesnt work right because of lack of struct equals impl
-        //assertIterableEquals(ref.copy().entrySet(), trait.getValues().entrySet());
+
+        MapValue one = trait.getValues().get("one");
+        MapValue two = trait.getValues().get("two");
+        assertEquals("foo", one.getA().get());
+        assertEquals(2, one.getB().get());
+        assertEquals("bar", two.getA().get());
+        assertEquals(4, two.getB().get());
     }
 
     @Test

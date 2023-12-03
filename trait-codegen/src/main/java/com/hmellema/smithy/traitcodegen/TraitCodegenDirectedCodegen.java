@@ -45,7 +45,7 @@ final class TraitCodegenDirectedCodegen
 
     @Override
     public void generateUnion(GenerateUnionDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
-        // TODO: Implement
+        throw new UnsupportedOperationException("trait codegen does not support generation of union traits");
     }
 
     @Override
