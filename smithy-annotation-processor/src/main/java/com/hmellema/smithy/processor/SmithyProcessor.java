@@ -10,6 +10,8 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import software.amazon.smithy.build.SmithyBuild;
@@ -18,6 +20,9 @@ import software.amazon.smithy.build.model.SmithyBuildConfig;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.ModelAssembler;
 import software.amazon.smithy.model.loader.ModelDiscovery;
+import software.amazon.smithy.model.node.ArrayNode;
+import software.amazon.smithy.model.node.Node;
+import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.utils.IoUtils;
 
 public abstract class SmithyProcessor<A extends Annotation> extends AbstractProcessor {
@@ -66,13 +71,19 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
      */
     protected abstract Class<A> getAnnotationClass();
 
+    private SmithyBuildConfig createBuildConfig(A annotation) {
+        Map<String, ObjectNode> pluginMap = new HashMap<>();
+        pluginMap.put(getPluginName(), createPluginNode(annotation));
+        return SmithyBuildConfig.builder().version("1.0").plugins(pluginMap).build();
+    }
+
     /**
-     * Creates a Smithy Build Config based on the annotation data
+     * Maps annotation data to a plugin configuration node.
      *
      * @param annotation instance of generator annotation to use to create the build config.
-     * @return instantiation of the build config.
+     * @return ObjectNode to use as plugin configuration node.
      */
-    protected abstract SmithyBuildConfig createBuildConfig(A annotation);
+    protected abstract ObjectNode createPluginNode(A annotation);
 
     private SmithyBuildResult executeSmithyBuild(SmithyBuildConfig config) {
         ModelAssembler assembler = Model.assembler();
