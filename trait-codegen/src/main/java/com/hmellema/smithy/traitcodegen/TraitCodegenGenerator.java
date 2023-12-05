@@ -18,7 +18,13 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
 
     @Override
     protected Void getDefault(Shape shape) {
-        return null;
+        throw new UnsupportedOperationException("Trait code generation does not support shapes of type: " + shape.getType());
+    }
+
+    @Override
+    public Void booleanShape(BooleanShape shape) {
+        throw new UnsupportedOperationException("Boolean shapes not supported for trait code generation. "
+                + "Consider using an Annotation trait instead");
     }
 
     @Override

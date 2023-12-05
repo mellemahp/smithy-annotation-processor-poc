@@ -26,7 +26,7 @@ class IdRefTest {
 
         // Single Shape ID value
         // TODO: Fix this? A string trait with an ID ref should be return a ShapeID
-        IdRefStringTrait idRefStringTrait = shape.expectTrait(IdRefStringTrait.class);
+        shape.expectTrait(IdRefStringTrait.class); //IdRefStringTrait idRefStringTrait =
 
         // List of ShapeIDs
         IdRefListTrait idRefListTrait = shape.expectTrait(IdRefListTrait.class);
