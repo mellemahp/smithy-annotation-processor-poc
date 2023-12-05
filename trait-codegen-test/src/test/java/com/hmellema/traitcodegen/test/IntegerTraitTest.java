@@ -1,6 +1,6 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.generated.HttpCodeIntegerTrait;
+import com.example.traits.HttpCodeIntegerTrait;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;

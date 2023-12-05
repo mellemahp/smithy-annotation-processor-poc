@@ -1,7 +1,7 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.generated.MapValue;
-import com.example.generated.StringToStructMapTrait;
+import com.example.traits.MapValue;
+import com.example.traits.StringToStructMapTrait;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;

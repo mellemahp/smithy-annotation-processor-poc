@@ -2,31 +2,21 @@ description = "Test of Trait code generation"
 
 plugins {
     id("smithy.annotation.processor.java-library-conventions")
-    id("software.amazon.smithy.gradle.smithy-jar") version "0.9.0"
-}
-
-sourceSets {
-    main {
-        java {
-            setSrcDirs(listOf("$buildDir/smithyprojections/trait-codegen-test/source/trait-codegen"))
-        }
-        resources {
-            srcDir("$buildDir/smithyprojections/trait-codegen-test/source/trait-codegen")
-            include("META-INF/**")
-        }
-    }
-
-    test {
-        resources {
-            srcDirs += main.get().resources.srcDirs
-        }
-    }
 }
 
 dependencies {
-    smithyBuild(project(":trait-codegen"))
+    compileOnly(project(":trait-processor:annotation"))
+    annotationProcessor(project(":trait-processor:processor"))
     implementation("software.amazon.smithy:smithy-codegen-core:1.40.0")
 }
 
-tasks["compileJava"].dependsOn("smithyBuild")
-tasks["processResources"].dependsOn("smithyBuild")
+tasks.withType<JavaCompile>().configureEach {
+    options.sourcepath = files(sourceSets["main"].java.srcDirs) + sourceSets["main"].resources.sourceDirectories
+}
+//
+//val test = tasks.withType<JavaCompile>().getByName("compileTestJava") {
+//    dependsOn("jar")
+//    doFirst {
+//        classpath += tasks["jar"].outputs.files
+//    }
+//}

@@ -1,6 +1,6 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.generated.ResponseTypeTrait;
+import com.example.traits.ResponseTypeTrait;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;

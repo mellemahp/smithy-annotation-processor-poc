@@ -1,8 +1,8 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.generated.NestedA;
-import com.example.generated.NestedB;
-import com.example.generated.StructureTraitTrait;
+import com.example.traits.NestedA;
+import com.example.traits.NestedB;
+import com.example.traits.StructureTraitTrait;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;

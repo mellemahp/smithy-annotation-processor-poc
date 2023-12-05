@@ -1,6 +1,6 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.generated.DeprecatedStringTraitTrait;
+import com.example.traits.DeprecatedStringTraitTrait;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

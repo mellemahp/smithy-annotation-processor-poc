@@ -1,14 +1,12 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.generated.*;
+import com.example.traits.*;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
-import software.amazon.smithy.model.traits.IdRefTrait;
 import software.amazon.smithy.utils.ListUtils;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
