@@ -1,7 +1,6 @@
 package com.hmellema.smithy.processor.traitprocessor.processor;
 
 
-import com.google.auto.service.AutoService;
 import com.hmellema.smithy.processor.SmithyProcessor;
 import com.hmellema.smithy.processor.traitprocessor.annotations.GenerateSmithyTraits;
 import software.amazon.smithy.build.model.SmithyBuildConfig;
@@ -9,16 +8,14 @@ import software.amazon.smithy.model.node.ArrayNode;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.ObjectNode;
 
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import java.util.HashMap;
 import java.util.Map;
 
-@AutoService(Processor.class)
 @SupportedAnnotationTypes(GenerateSmithyTraits.NAME)
-@SupportedSourceVersion(SourceVersion.RELEASE_17)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class TraitCodegenProcessor extends SmithyProcessor<GenerateSmithyTraits> {
     @Override
     protected String getPluginName() {

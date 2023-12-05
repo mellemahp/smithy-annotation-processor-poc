@@ -1,6 +1,5 @@
 package com.hmellema.smithy.traitcodegen.integrations.core;
 
-import com.google.auto.service.AutoService;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
@@ -9,7 +8,6 @@ import software.amazon.smithy.utils.CodeSection;
 
 import java.util.List;
 
-@AutoService(TraitCodegenIntegration.class)
 public final class CoreIntegration implements TraitCodegenIntegration {
 
     @Override

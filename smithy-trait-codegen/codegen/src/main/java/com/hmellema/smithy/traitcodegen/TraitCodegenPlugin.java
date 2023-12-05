@@ -1,6 +1,5 @@
 package com.hmellema.smithy.traitcodegen;
 
-import com.google.auto.service.AutoService;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.build.PluginContext;
@@ -9,7 +8,6 @@ import software.amazon.smithy.codegen.core.directed.CodegenDirector;
 
 import java.util.logging.Logger;
 
-@AutoService(SmithyBuildPlugin.class)
 public class TraitCodegenPlugin implements SmithyBuildPlugin {
     private static final Logger LOGGER = Logger.getLogger(TraitCodegenPlugin.class.getName());
     private static final String NAME = "trait-codegen";

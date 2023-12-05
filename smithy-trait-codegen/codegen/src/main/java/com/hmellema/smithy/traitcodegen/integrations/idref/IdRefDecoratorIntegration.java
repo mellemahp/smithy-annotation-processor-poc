@@ -1,6 +1,5 @@
 package com.hmellema.smithy.traitcodegen.integrations.idref;
 
-import com.google.auto.service.AutoService;
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
@@ -17,7 +16,6 @@ import software.amazon.smithy.model.traits.IdRefTrait;
 
 import java.util.List;
 
-@AutoService(TraitCodegenIntegration.class)
 public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
     private static final String INTEGRATION_NAME = "id-ref-integration-core";
     private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class).toBuilder()
