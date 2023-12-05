@@ -1,6 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.traits;
 
-import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
+import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.BuilderGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;

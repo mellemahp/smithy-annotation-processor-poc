@@ -1,6 +1,5 @@
 package com.hmellema.smithy.traitcodegen;
 
-import com.hmellema.smithy.traitcodegen.directives.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.traits.*;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.directed.CustomizeDirective;

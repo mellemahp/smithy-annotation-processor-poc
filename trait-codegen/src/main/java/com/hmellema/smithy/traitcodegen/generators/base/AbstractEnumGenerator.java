@@ -17,7 +17,7 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
     private static final String VALUE_FIELD_TEMPLATE = "private final $T value;";
 
     protected void writeEnum(Shape enumShape, SymbolProvider provider, TraitCodegenWriter writer, Model model) {
-        var enumSymbol = provider.toSymbol(enumShape);
+        Symbol enumSymbol = provider.toSymbol(enumShape);
         writer.pushState(new ClassSection(enumShape))
                 .openBlock("public enum $L {", "}", enumSymbol.getName(), () -> {
                     writeVariants(enumShape, provider, writer);

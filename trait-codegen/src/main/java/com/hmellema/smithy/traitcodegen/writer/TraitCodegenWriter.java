@@ -101,9 +101,10 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
     private final class JavaTypeFormatter implements BiFunction<Object, String, String> {
         @Override
         public String apply(Object type, String indent) {
-            if (!(type instanceof Symbol typeSymbol)) {
-                throw new RuntimeException("Invalid type provided for $T. Expected a Symbol but found: `" + type + "`.");
+            if (!(type instanceof Symbol)) {
+                throw new IllegalArgumentException("Invalid type provided for $T. Expected a Symbol but found: `" + type + "`.");
             }
+            Symbol typeSymbol = (Symbol) type;
             addImport(typeSymbol);
             if (typeSymbol.getReferences().isEmpty()) {
                 return typeSymbol.getName();

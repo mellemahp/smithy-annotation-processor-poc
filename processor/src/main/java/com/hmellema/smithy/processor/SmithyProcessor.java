@@ -35,7 +35,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        var elements = roundEnv.getElementsAnnotatedWith(getAnnotationClass());
+        Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(getAnnotationClass());
         if (elements.size() != 1) {
             if (elements.size() > 1) {
                 messager.printMessage(Diagnostic.Kind.ERROR,
