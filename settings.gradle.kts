@@ -1,4 +1,5 @@
 
-rootProject.name = "smithy-annotation-processor"
-include("processor", ":trait-processor:annotation", ":trait-processor:processor")
-include("trait-codegen", "trait-codegen-test")
+rootProject.name = "trait-codegen-poc"
+include("smithy-annotation-processor")
+include(":smithy-trait-codegen:processor:annotation", ":smithy-trait-codegen:processor:processor")
+include(":smithy-trait-codegen:codegen", ":smithy-trait-codegen:codegen-test")

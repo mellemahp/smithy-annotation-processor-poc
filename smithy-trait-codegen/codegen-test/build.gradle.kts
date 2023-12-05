@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    compileOnly(project(":trait-processor:annotation"))
-    annotationProcessor(project(":trait-processor:processor"))
+    compileOnly(project(":smithy-trait-codegen:processor:annotation"))
+    annotationProcessor(project(":smithy-trait-codegen:processor:processor"))
     implementation("software.amazon.smithy:smithy-codegen-core:1.40.0")
 }
 
