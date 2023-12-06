@@ -8,14 +8,18 @@ import software.amazon.smithy.utils.CodeInterceptor;
 public class DeprecatedAnnotationClassInterceptor implements CodeInterceptor.Prepender<ClassSection, TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, ClassSection section) {
-        section.shape().getTrait(DeprecatedTrait.class).ifPresent(t ->  {
-            writer.putContext("since", t.getSince());
-            writer.write("@Deprecated${?since}(since = ${since:S})${/since}");
-        });
+        DeprecatedTrait trait = section.shape().expectTrait(DeprecatedTrait.class);
+        writer.putContext("since", trait.getSince());
+        writer.write("@Deprecated${?since}(since = ${since:S})${/since}");
     }
 
     @Override
     public Class<ClassSection> sectionType() {
         return ClassSection.class;
+    }
+
+    @Override
+    public boolean isIntercepted(ClassSection section) {
+        return section.shape().hasTrait(DeprecatedTrait.class);
     }
 }

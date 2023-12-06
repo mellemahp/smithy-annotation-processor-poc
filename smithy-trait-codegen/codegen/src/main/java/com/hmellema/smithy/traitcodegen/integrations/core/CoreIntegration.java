@@ -19,7 +19,6 @@ public final class CoreIntegration implements TraitCodegenIntegration {
     @Override
     public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(TraitCodegenContext codegenContext) {
         return ListUtils.of(
-                new GeneratedAnnotationInterceptor(),
                 new DeprecatedAnnotationClassInterceptor(),
                 new DeprecatedNoteInterceptor(),
                 new ClassJavaDocInterceptor(),
