@@ -30,8 +30,6 @@ public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirec
 
     @Override
     Object getEnumValue(MemberShape member) {
-        return member.getTrait(EnumValueTrait.class)
-                .flatMap(EnumValueTrait::getIntValue)
-                .orElseThrow();
+        return member.expectTrait(EnumValueTrait.class).expectIntValue();
     }
 }

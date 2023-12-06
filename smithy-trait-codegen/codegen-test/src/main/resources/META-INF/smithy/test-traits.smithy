@@ -120,7 +120,9 @@ structure NestedA {
 
 @private
 enum NestedB {
+    /// An A!
     A
+    /// A B!
     B
 }
 

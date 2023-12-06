@@ -5,6 +5,7 @@ import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.CodeSection;
+import software.amazon.smithy.utils.ListUtils;
 
 import java.util.List;
 
@@ -17,16 +18,17 @@ public final class CoreIntegration implements TraitCodegenIntegration {
 
     @Override
     public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(TraitCodegenContext codegenContext) {
-        return List.of(
+        return ListUtils.of(
                 new GeneratedAnnotationInterceptor(),
                 new DeprecatedAnnotationClassInterceptor(),
                 new DeprecatedNoteInterceptor(),
                 new ClassJavaDocInterceptor(),
                 new ExternalDocsInterceptor(),
-                new PropertyJavaDocInterceptor(),
                 new FromNodeDocsInterceptor(),
                 new BuilderMethodDocsInterceptor(),
-                new BuilderClassSectionDocsInterceptor()
+                new BuilderClassSectionDocsInterceptor(),
+                new GetterJavaDocInterceptor(),
+                new EnumVariantJavaDocInterceptor()
         );
     }
 }

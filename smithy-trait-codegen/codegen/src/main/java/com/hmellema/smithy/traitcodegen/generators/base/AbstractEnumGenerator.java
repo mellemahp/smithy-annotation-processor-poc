@@ -1,6 +1,7 @@
 package com.hmellema.smithy.traitcodegen.generators.base;
 
 import com.hmellema.smithy.traitcodegen.generators.common.FromNodeGenerator;
+import com.hmellema.smithy.traitcodegen.sections.EnumVariantSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.sections.ClassSection;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -48,11 +49,13 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
         while (memberIterator.hasNext()) {
             MemberShape member = memberIterator.next();
             String name = provider.toMemberName(member);
+            writer.pushState(new EnumVariantSection(member));
             if (memberIterator.hasNext()) {
                 writer.write(template + ",", name, getEnumValue(member));
             } else {
                 writer.write(template + ";", name, getEnumValue(member));
             }
+            writer.popState();
         }
     }
 

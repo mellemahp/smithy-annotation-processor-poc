@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
+import com.hmellema.smithy.traitcodegen.sections.GetterSection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.SymbolProvider;
@@ -99,8 +100,10 @@ public final class GetterGenerator implements Runnable {
         @Override
         public Void intEnumShape(IntEnumShape shape) {
             writer.addImport(Integer.class);
+            writer.pushState(new GetterSection(shape));
             writer.openBlock("public Integer getValue() {", "}",
                     () -> writer.write("return value;"));
+            writer.popState();
             writer.newLine();
             return null;
         }
@@ -119,29 +122,37 @@ public final class GetterGenerator implements Runnable {
         }
 
         private void generateNonOptionalGetter(MemberShape member) {
+            writer.pushState(new GetterSection(member));
             writer.openBlock("public $T get$L() {", "}",
                     symbolProvider.toSymbol(member), StringUtils.capitalize(symbolProvider.toMemberName(member)),
                     () -> writer.write("return $L;", symbolProvider.toMemberName(member)));
+            writer.popState();
             writer.newLine();
         }
 
         private void generateOptionalGetter(MemberShape member) {
             writer.addImport(Optional.class);
+            writer.pushState(new GetterSection(member));
             writer.openBlock("public Optional<$T> get$L() {", "}",
                     symbolProvider.toSymbol(member), StringUtils.capitalize(symbolProvider.toMemberName(member)),
                     () -> writer.write("return Optional.ofNullable($L);", symbolProvider.toMemberName(member)));
+            writer.popState();
             writer.newLine();
         }
 
         private void generateValuesGetter(Shape shape) {
+            writer.pushState(new GetterSection(shape));
             writer.openBlock("public $T getValues() {", "}",
                     symbolProvider.toSymbol(shape), () -> writer.write("return values;"));
+            writer.popState();
             writer.newLine();
         }
 
         private void generateValueGetter(Shape shape) {
+            writer.pushState(new GetterSection(shape));
             writer.openBlock("public $T getValue() {", "}",
                     symbolProvider.toSymbol(shape), () -> writer.write("return value;"));
+            writer.popState();
             writer.newLine();
         }
     }

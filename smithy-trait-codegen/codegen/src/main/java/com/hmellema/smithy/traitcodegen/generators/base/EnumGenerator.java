@@ -32,8 +32,6 @@ public final class EnumGenerator extends AbstractEnumGenerator<GenerateEnumDirec
 
     @Override
     Object getEnumValue(MemberShape member) {
-        return member.getTrait(EnumValueTrait.class)
-                .flatMap(EnumValueTrait::getStringValue)
-                .orElseGet(() -> member.getMemberName().toUpperCase(Locale.ENGLISH));
+        return member.expectTrait(EnumValueTrait.class).expectStringValue();
     }
 }

@@ -1,5 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
+import com.hmellema.smithy.traitcodegen.sections.EnumVariantSection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.sections.PropertySection;
@@ -62,7 +63,7 @@ public final class PropertiesGenerator implements Runnable {
             writer.addImport(Integer.class);
             writer.write("private final Integer value;");
             for (Map.Entry<String, MemberShape> memberEntry : shape.getAllMembers().entrySet()) {
-                writer.pushState(new PropertySection(memberEntry.getValue()));
+                writer.pushState(new EnumVariantSection(memberEntry.getValue()));
                 writer.write("public static final Integer $L = $L;", memberEntry.getKey(),
                         memberEntry.getValue().expectTrait(EnumValueTrait.class).expectIntValue());
                 writer.popState();
@@ -116,7 +117,7 @@ public final class PropertiesGenerator implements Runnable {
         @Override
         public Void enumShape(EnumShape shape) {
             for (Map.Entry<String, MemberShape> memberEntry : shape.getAllMembers().entrySet()) {
-                writer.pushState(new PropertySection(memberEntry.getValue()));
+                writer.pushState(new EnumVariantSection(memberEntry.getValue()));
                 writer.write("public static final String $L = $S;", memberEntry.getKey(),
                         memberEntry.getValue().expectTrait(EnumValueTrait.class).expectStringValue());
                 writer.popState();
