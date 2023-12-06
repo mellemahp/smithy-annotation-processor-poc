@@ -1,20 +1,37 @@
 package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
-import software.amazon.smithy.codegen.core.Symbol;
-import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
-import software.amazon.smithy.model.Model;
-import software.amazon.smithy.model.node.Node;
-import software.amazon.smithy.model.shapes.*;
-import software.amazon.smithy.model.traits.UniqueItemsTrait;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import software.amazon.smithy.codegen.core.Symbol;
+import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
+import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.node.Node;
+import software.amazon.smithy.model.shapes.BigDecimalShape;
+import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.BlobShape;
+import software.amazon.smithy.model.shapes.BooleanShape;
+import software.amazon.smithy.model.shapes.ByteShape;
+import software.amazon.smithy.model.shapes.DoubleShape;
+import software.amazon.smithy.model.shapes.EnumShape;
+import software.amazon.smithy.model.shapes.FloatShape;
+import software.amazon.smithy.model.shapes.IntEnumShape;
+import software.amazon.smithy.model.shapes.IntegerShape;
+import software.amazon.smithy.model.shapes.ListShape;
+import software.amazon.smithy.model.shapes.LongShape;
+import software.amazon.smithy.model.shapes.MapShape;
+import software.amazon.smithy.model.shapes.MemberShape;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
+import software.amazon.smithy.model.shapes.StructureShape;
+import software.amazon.smithy.model.traits.UniqueItemsTrait;
 
 final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
     private static final String NODE_FROM = "Node.from($L)";
@@ -128,7 +145,7 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol listShape(ListShape shape) {
-        Class<?> shapeClass = shape.hasTrait(UniqueItemsTrait.class) ?  Set.class : List.class;
+        Class<?> shapeClass = shape.hasTrait(UniqueItemsTrait.class) ? Set.class : List.class;
         return SymbolUtil.fromClass(shapeClass).toBuilder()
                 .addReference(toSymbol(shape.getMember()))
                 .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER,

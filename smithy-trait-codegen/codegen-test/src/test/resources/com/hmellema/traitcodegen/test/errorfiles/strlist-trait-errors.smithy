@@ -2,7 +2,7 @@ $version: "2.0"
 
 namespace test.smithy.traitcodegen
 
-@StringListTrait([1,2,3])
+@StringListTrait([1, 2, 3])
 structure badInputTypes {}
 
 @StringListTrait(1)

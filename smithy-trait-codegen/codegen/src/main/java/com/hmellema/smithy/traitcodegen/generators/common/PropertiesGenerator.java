@@ -1,16 +1,30 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.sections.EnumVariantSection;
+import com.hmellema.smithy.traitcodegen.sections.PropertySection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.sections.PropertySection;
-import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.model.shapes.*;
-import software.amazon.smithy.model.traits.EnumValueTrait;
-import software.amazon.smithy.utils.SetUtils;
-
 import java.util.Map;
 import java.util.Set;
+import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.model.shapes.BigDecimalShape;
+import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.DoubleShape;
+import software.amazon.smithy.model.shapes.EnumShape;
+import software.amazon.smithy.model.shapes.FloatShape;
+import software.amazon.smithy.model.shapes.IntEnumShape;
+import software.amazon.smithy.model.shapes.IntegerShape;
+import software.amazon.smithy.model.shapes.ListShape;
+import software.amazon.smithy.model.shapes.LongShape;
+import software.amazon.smithy.model.shapes.MapShape;
+import software.amazon.smithy.model.shapes.MemberShape;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
+import software.amazon.smithy.model.shapes.StructureShape;
+import software.amazon.smithy.model.traits.EnumValueTrait;
+import software.amazon.smithy.utils.SetUtils;
 
 public final class PropertiesGenerator implements Runnable {
     private final TraitCodegenWriter writer;

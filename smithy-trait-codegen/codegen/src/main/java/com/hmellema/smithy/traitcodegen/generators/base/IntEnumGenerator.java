@@ -8,7 +8,8 @@ import software.amazon.smithy.codegen.core.directed.GenerateIntEnumDirective;
 import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.traits.EnumValueTrait;
 
-public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirective<TraitCodegenContext, TraitCodegenSettings>> {
+public class IntEnumGenerator extends AbstractEnumGenerator<GenerateIntEnumDirective<TraitCodegenContext,
+        TraitCodegenSettings>> {
     private static final String VARIANT_TEMPLATE = "$L($L)";
     private static final Symbol VALUE_TYPE = SymbolUtil.fromClass(int.class);
 

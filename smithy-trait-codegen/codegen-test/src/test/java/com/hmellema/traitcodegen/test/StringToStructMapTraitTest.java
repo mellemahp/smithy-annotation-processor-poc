@@ -1,7 +1,10 @@
 package com.hmellema.traitcodegen.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.example.traits.MapValue;
 import com.example.traits.StringToStructMapTrait;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;
@@ -10,9 +13,6 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StringToStructMapTraitTest {
     @Test
@@ -27,10 +27,10 @@ class StringToStructMapTraitTest {
 
         MapValue one = trait.getValues().get("one");
         MapValue two = trait.getValues().get("two");
-        assertEquals("foo", one.getA().get());
-        assertEquals(2, one.getB().get());
-        assertEquals("bar", two.getA().get());
-        assertEquals(4, two.getB().get());
+        assertEquals("foo", one.getA().orElseThrow(RuntimeException::new));
+        assertEquals(2, one.getB().orElseThrow(RuntimeException::new));
+        assertEquals("bar", two.getA().orElseThrow(RuntimeException::new));
+        assertEquals(4, two.getB().orElseThrow(RuntimeException::new));
     }
 
     @Test
@@ -44,6 +44,7 @@ class StringToStructMapTraitTest {
         Trait trait = provider.createTrait(StringToStructMapTrait.ID, id, node).orElseThrow(RuntimeException::new);
         StringToStructMapTrait annotation = (StringToStructMapTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StringToStructMapTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait,
+                provider.createTrait(StringToStructMapTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

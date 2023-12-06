@@ -1,7 +1,11 @@
 package com.hmellema.traitcodegen.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.example.traits.ListMember;
 import com.example.traits.StructureListTraitTrait;
+import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;
@@ -12,11 +16,6 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
 import software.amazon.smithy.utils.ListUtils;
-
-import java.util.List;
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StructureListTraitTest {
     @Test
@@ -30,8 +29,8 @@ class StructureListTraitTest {
         StructureListTraitTrait trait = shape.expectTrait(StructureListTraitTrait.class);
         List<ListMember> actual = trait.getValues();
         List<ListMember> expected = ListUtils.of(
-            ListMember.builder().a("first").b(1).c("other").build(),
-            ListMember.builder().a("second").b(2).c("more").build()
+                ListMember.builder().a("first").b(1).c("other").build(),
+                ListMember.builder().a("second").b(2).c("more").build()
         );
         assertEquals(expected.size(), actual.size());
         assertEquals(2, actual.size());
@@ -41,7 +40,7 @@ class StructureListTraitTest {
 
         assertEquals(expected.get(1).getA(), actual.get(1).getA());
         assertEquals(expected.get(1).getB(), actual.get(1).getB());
-        assertEquals( expected.get(1).getC(), actual.get(1).getC());
+        assertEquals(expected.get(1).getC(), actual.get(1).getC());
     }
 
     @Test
@@ -55,6 +54,7 @@ class StructureListTraitTest {
         Trait trait = provider.createTrait(StructureListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
         StructureListTraitTrait annotation = (StructureListTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StructureListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait,
+                provider.createTrait(StructureListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

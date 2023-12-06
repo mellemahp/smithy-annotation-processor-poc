@@ -1,9 +1,5 @@
 package com.hmellema.smithy.processor;
 
-import javax.annotation.processing.*;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.tools.*;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -13,15 +9,21 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.StandardLocation;
 import software.amazon.smithy.build.SmithyBuild;
 import software.amazon.smithy.build.SmithyBuildResult;
 import software.amazon.smithy.build.model.SmithyBuildConfig;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.ModelAssembler;
 import software.amazon.smithy.model.loader.ModelDiscovery;
-import software.amazon.smithy.model.node.ArrayNode;
-import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.utils.IoUtils;
 
@@ -59,7 +61,21 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         return false;
     }
 
+    /**
+     * Name of the Smithy build plugin to execute with this annotation processor.
+     *
+     * @return name of plugin to run.
+     */
     protected abstract String getPluginName();
+
+    /**
+     * Maps annotation data to a plugin configuration node.
+     *
+     * @param annotation instance of generator annotation to use to create the build config.
+     * @return ObjectNode to use as plugin configuration node.
+     */
+    protected abstract ObjectNode createPluginNode(A annotation);
+
 
     /**
      * Annotation class for the processor.
@@ -76,14 +92,6 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         pluginMap.put(getPluginName(), createPluginNode(annotation));
         return SmithyBuildConfig.builder().version("1.0").plugins(pluginMap).build();
     }
-
-    /**
-     * Maps annotation data to a plugin configuration node.
-     *
-     * @param annotation instance of generator annotation to use to create the build config.
-     * @return ObjectNode to use as plugin configuration node.
-     */
-    protected abstract ObjectNode createPluginNode(A annotation);
 
     private SmithyBuildResult executeSmithyBuild(SmithyBuildConfig config) {
         ModelAssembler assembler = Model.assembler();
@@ -110,7 +118,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
                 try (Writer writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputPath).openWriter()) {
                     writer.write(IoUtils.readUtf8File(path));
                 }
-            // All other files are written to the source output
+                // All other files are written to the source output
             } else {
                 outputPath = outputPath.replace("/", ".").substring(0, outputPath.lastIndexOf(".java"));
                 try (Writer writer = filer.createSourceFile(outputPath).openWriter()) {
@@ -126,7 +134,8 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
         return elements.stream()
                 .findFirst()
                 .map(element -> element.getAnnotation(getAnnotationClass()))
-                .orElseThrow(() -> new IllegalStateException("No annotation of type " + getAnnotationClass() + " found on element"));
+                .orElseThrow(() -> new IllegalStateException("No annotation of type "
+                        + getAnnotationClass() + " found on element"));
     }
 
     private URL getManifestUrl() {

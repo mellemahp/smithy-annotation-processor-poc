@@ -10,7 +10,8 @@ import software.amazon.smithy.model.SourceLocation;
 import software.amazon.smithy.model.traits.StringListTrait;
 
 public final class StringListTraitGenerator extends TraitGenerator {
-    private static final String CLASS_TEMPLATE = "public final class $1T extends StringListTrait implements ToSmithyBuilder<$1T> {";
+    private static final String CLASS_TEMPLATE = "public final class $1T extends StringListTrait implements "
+            + "ToSmithyBuilder<$1T> {";
 
     @Override
     protected void imports(TraitCodegenWriter writer) {
@@ -27,7 +28,8 @@ public final class StringListTraitGenerator extends TraitGenerator {
         writeConstructorWithSourceLocation(writer, directive.traitSymbol(), directive.baseSymbol());
         writeConstructor(writer, directive.traitSymbol(), directive.baseSymbol());
         new GetterGenerator(writer, directive.symbolProvider(), directive.shape(), directive.model()).run();
-        new BuilderGenerator(writer, directive.traitSymbol(), directive.symbolProvider(), directive.shape(), directive.model()).run();
+        new BuilderGenerator(writer, directive.traitSymbol(), directive.symbolProvider(), directive.shape(),
+                directive.model()).run();
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {

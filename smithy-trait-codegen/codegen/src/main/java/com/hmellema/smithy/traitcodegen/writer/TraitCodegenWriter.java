@@ -2,13 +2,12 @@ package com.hmellema.smithy.traitcodegen.writer;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenSettings;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
+import java.util.Iterator;
+import java.util.function.BiFunction;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolReference;
 import software.amazon.smithy.codegen.core.SymbolWriter;
 import software.amazon.smithy.utils.StringUtils;
-
-import java.util.Iterator;
-import java.util.function.BiFunction;
 
 public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCodegenImportContainer> {
     private static final int MAX_LINE_LENGTH = 120;
@@ -102,7 +101,8 @@ public class TraitCodegenWriter extends SymbolWriter<TraitCodegenWriter, TraitCo
         @Override
         public String apply(Object type, String indent) {
             if (!(type instanceof Symbol)) {
-                throw new IllegalArgumentException("Invalid type provided for $T. Expected a Symbol but found: `" + type + "`.");
+                throw new IllegalArgumentException("Invalid type provided for $T. Expected a Symbol but found: `"
+                        + type + "`.");
             }
             Symbol typeSymbol = (Symbol) type;
             addImport(typeSymbol);

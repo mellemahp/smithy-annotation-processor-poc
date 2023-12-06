@@ -16,7 +16,7 @@ public interface SymbolUtil {
     static Symbol fromClass(Class<?> clazz) {
         return Symbol.builder()
                 .name(clazz.getSimpleName())
-                .namespace(clazz.getPackageName(), ".")
+                .namespace(clazz.getCanonicalName().replace("." + clazz.getSimpleName(), ""), ".")
                 .build();
     }
 
@@ -47,6 +47,7 @@ public interface SymbolUtil {
      * @return Returns true if the symbol maps to a Java String.
      */
     static boolean isJavaString(Symbol symbol) {
-        return JAVA_STRING_SYMBOL.getName().equals(symbol.getName()) && JAVA_STRING_SYMBOL.getNamespace().equals(symbol.getNamespace());
+        return JAVA_STRING_SYMBOL.getName().equals(symbol.getName())
+                && JAVA_STRING_SYMBOL.getNamespace().equals(symbol.getNamespace());
     }
 }

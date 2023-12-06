@@ -3,7 +3,20 @@ package com.hmellema.smithy.traitcodegen;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.model.shapes.DoubleShape;
+import software.amazon.smithy.model.shapes.FloatShape;
+import software.amazon.smithy.model.shapes.IntegerShape;
+import software.amazon.smithy.model.shapes.ListShape;
+import software.amazon.smithy.model.shapes.LongShape;
+import software.amazon.smithy.model.shapes.MapShape;
+import software.amazon.smithy.model.shapes.MemberShape;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
+import software.amazon.smithy.model.shapes.StructureShape;
+import software.amazon.smithy.model.shapes.TimestampShape;
+import software.amazon.smithy.model.shapes.UnionShape;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
 
@@ -11,7 +24,7 @@ final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements 
     private final String packageName;
     private final String packagePath;
 
-    public TraitSymbolProvider(TraitCodegenSettings settings) {
+    TraitSymbolProvider(TraitCodegenSettings settings) {
         this.packageName = settings.packageName();
         this.packagePath = "./" + packageName.replace(".", "/");
     }

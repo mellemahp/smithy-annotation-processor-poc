@@ -1,14 +1,13 @@
 package com.hmellema.smithy.traitcodegen.writer;
 
-import software.amazon.smithy.codegen.core.ImportContainer;
-import software.amazon.smithy.codegen.core.Symbol;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import software.amazon.smithy.codegen.core.ImportContainer;
+import software.amazon.smithy.codegen.core.Symbol;
 
-public class TraitCodegenImportContainer implements ImportContainer {
+final class TraitCodegenImportContainer implements ImportContainer {
     private static final String JAVA_NAMESPACE_PREFIX = "java.lang";
     private final Set<Symbol> imports = new HashSet<>();
 

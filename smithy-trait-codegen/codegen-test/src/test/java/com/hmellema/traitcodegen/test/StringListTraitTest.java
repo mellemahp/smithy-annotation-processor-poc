@@ -1,6 +1,10 @@
 package com.hmellema.traitcodegen.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+
 import com.example.traits.StringListTraitTrait;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;
@@ -10,11 +14,6 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
 import software.amazon.smithy.utils.ListUtils;
-
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class StringListTraitTest {
     @Test
@@ -37,6 +36,7 @@ class StringListTraitTest {
         Trait trait = provider.createTrait(StringListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
         StringListTraitTrait annotation = (StringListTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StringListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait,
+                provider.createTrait(StringListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

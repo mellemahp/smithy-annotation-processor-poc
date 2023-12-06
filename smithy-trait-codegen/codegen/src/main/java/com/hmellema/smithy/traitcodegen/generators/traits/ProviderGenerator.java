@@ -8,7 +8,22 @@ import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
-import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.model.shapes.BigDecimalShape;
+import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.DoubleShape;
+import software.amazon.smithy.model.shapes.EnumShape;
+import software.amazon.smithy.model.shapes.FloatShape;
+import software.amazon.smithy.model.shapes.IntEnumShape;
+import software.amazon.smithy.model.shapes.IntegerShape;
+import software.amazon.smithy.model.shapes.ListShape;
+import software.amazon.smithy.model.shapes.LongShape;
+import software.amazon.smithy.model.shapes.MapShape;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeId;
+import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
+import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.AnnotationTrait;
 import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.model.traits.StringTrait;
@@ -16,7 +31,8 @@ import software.amazon.smithy.model.traits.Trait;
 
 
 /**
- * Adds provider class to use as the {@link software.amazon.smithy.model.traits.TraitService} implementation for a trait
+ * Adds provider class to use as the {@link software.amazon.smithy.model.traits.TraitService} implementation for a
+ * trait.
  */
 final class ProviderGenerator implements Runnable {
     private static final String PROVIDER_METHOD = "public Provider() {";
@@ -110,7 +126,8 @@ final class ProviderGenerator implements Runnable {
                 writer.addImports(Trait.class, ShapeId.class, Node.class);
                 writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
-                        () -> writer.write("return new $T(value.expectNumberNode().getValue().$L, value.getSourceLocation());",
+                        () -> writer.write("return new $T(value.expectNumberNode().getValue().$L, value"
+                                        + ".getSourceLocation());",
                                 traitSymbol, traitSymbol.expectProperty(SymbolProperties.VALUE_GETTER)));
             });
         }

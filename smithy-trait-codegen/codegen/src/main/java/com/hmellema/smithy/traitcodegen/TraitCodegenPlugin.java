@@ -2,16 +2,16 @@ package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import java.util.logging.Logger;
 import software.amazon.smithy.build.PluginContext;
 import software.amazon.smithy.build.SmithyBuildPlugin;
 import software.amazon.smithy.codegen.core.directed.CodegenDirector;
 
-import java.util.logging.Logger;
-
 public class TraitCodegenPlugin implements SmithyBuildPlugin {
     private static final Logger LOGGER = Logger.getLogger(TraitCodegenPlugin.class.getName());
     private static final String NAME = "trait-codegen";
-    private final CodegenDirector<TraitCodegenWriter, TraitCodegenIntegration, TraitCodegenContext, TraitCodegenSettings> runner =
+    private final CodegenDirector<TraitCodegenWriter, TraitCodegenIntegration, TraitCodegenContext,
+            TraitCodegenSettings> runner =
             new CodegenDirector<>();
 
     @Override

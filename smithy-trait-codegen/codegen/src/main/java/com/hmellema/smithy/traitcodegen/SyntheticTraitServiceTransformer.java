@@ -1,5 +1,8 @@
 package com.hmellema.smithy.traitcodegen;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.Prelude;
 import software.amazon.smithy.model.shapes.OperationShape;
@@ -9,10 +12,6 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.PrivateTrait;
 import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.model.transform.ModelTransformer;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 interface SyntheticTraitServiceTransformer {
     ShapeId SYNTHETIC_SERVICE_ID = ShapeId.from("smithy.synthetic#TraitService");

@@ -1,15 +1,20 @@
 package com.hmellema.traitcodegen.test;
 
-import com.example.traits.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.example.traits.IdRefListTrait;
+import com.example.traits.IdRefMapTrait;
+import com.example.traits.IdRefStringTrait;
+import com.example.traits.IdRefStructTrait;
+import com.example.traits.IdRefStructWithNestedIdsTrait;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.utils.ListUtils;
-
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class IdRefTest {
     private static final ShapeId TARGET_ONE = ShapeId.from("test.smithy.traitcodegen#IdRefTarget1");

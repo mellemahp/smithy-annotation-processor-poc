@@ -1,12 +1,13 @@
 package com.hmellema.smithy.traitcodegen.integrations.core;
 
 import com.hmellema.smithy.traitcodegen.sections.EnumVariantSection;
-import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import com.hmellema.smithy.traitcodegen.sections.JavaDocSection;
+import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.DocumentationTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class EnumVariantJavaDocInterceptor implements CodeInterceptor.Prepender<EnumVariantSection, TraitCodegenWriter> {
+public class EnumVariantJavaDocInterceptor implements CodeInterceptor.Prepender<EnumVariantSection,
+        TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, EnumVariantSection section) {
         DocumentationTrait trait = section.memberShape().expectTrait(DocumentationTrait.class);

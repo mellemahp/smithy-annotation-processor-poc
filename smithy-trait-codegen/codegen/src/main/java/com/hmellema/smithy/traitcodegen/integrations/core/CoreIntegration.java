@@ -3,11 +3,10 @@ package com.hmellema.smithy.traitcodegen.integrations.core;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import java.util.List;
 import software.amazon.smithy.utils.CodeInterceptor;
 import software.amazon.smithy.utils.CodeSection;
 import software.amazon.smithy.utils.ListUtils;
-
-import java.util.List;
 
 public final class CoreIntegration implements TraitCodegenIntegration {
 
@@ -17,7 +16,8 @@ public final class CoreIntegration implements TraitCodegenIntegration {
     }
 
     @Override
-    public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(TraitCodegenContext codegenContext) {
+    public List<? extends CodeInterceptor<? extends CodeSection, TraitCodegenWriter>> interceptors(
+            TraitCodegenContext codegenContext) {
         return ListUtils.of(
                 new DeprecatedAnnotationClassInterceptor(),
                 new DeprecatedNoteInterceptor(),

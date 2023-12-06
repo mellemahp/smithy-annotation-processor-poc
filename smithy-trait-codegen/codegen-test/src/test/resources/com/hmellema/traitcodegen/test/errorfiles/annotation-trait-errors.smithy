@@ -4,5 +4,5 @@ namespace test.smithy.traitcodegen
 
 @basicAnnotationTrait
 structure myStruct {
-    fieldA : String
+    fieldA: String
 }

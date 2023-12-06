@@ -13,8 +13,7 @@ import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.IdRefTrait;
-
-import java.util.List;
+import software.amazon.smithy.utils.ListUtils;
 
 public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
     private static final String INTEGRATION_NAME = "id-ref-integration-core";
@@ -29,7 +28,8 @@ public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
     }
 
     @Override
-    public SymbolProvider decorateSymbolProvider(Model model, TraitCodegenSettings settings, SymbolProvider symbolProvider) {
+    public SymbolProvider decorateSymbolProvider(Model model, TraitCodegenSettings settings,
+                                                 SymbolProvider symbolProvider) {
         return shape -> provideSymbol(shape, symbolProvider, model);
     }
 
@@ -44,14 +44,14 @@ public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
             // toSymbol(member)
             MemberShape member = shape.asListShape().orElseThrow(RuntimeException::new).getMember();
             return symbolProvider.toSymbol(shape).toBuilder()
-                    .references(List.of(new SymbolReference(provideSymbol(member, symbolProvider, model))))
+                    .references(ListUtils.of(new SymbolReference(provideSymbol(member, symbolProvider, model))))
                     .build();
         } else if (shape.isMapShape()) {
             // Same as list replacement but for map shapes
             MapShape mapShape = shape.asMapShape().orElseThrow(RuntimeException::new);
             return symbolProvider.toSymbol(shape)
                     .toBuilder()
-                    .references(List.of(
+                    .references(ListUtils.of(
                             new SymbolReference(provideSymbol(mapShape.getKey(), symbolProvider, model)),
                             new SymbolReference(provideSymbol(mapShape.getValue(), symbolProvider, model))
                     ))

@@ -1,6 +1,9 @@
 package com.hmellema.traitcodegen.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.example.traits.HttpCodeLongTrait;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;
@@ -9,10 +12,6 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
-
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LongTraitTest {
     @Test
@@ -34,6 +33,7 @@ class LongTraitTest {
         Trait trait = provider.createTrait(HttpCodeLongTrait.ID, id, Node.from(1L)).orElseThrow(RuntimeException::new);
         HttpCodeLongTrait annotation = (HttpCodeLongTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(HttpCodeLongTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait,
+                provider.createTrait(HttpCodeLongTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

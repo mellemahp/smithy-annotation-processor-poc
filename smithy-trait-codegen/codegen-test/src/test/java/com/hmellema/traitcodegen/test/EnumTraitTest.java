@@ -1,6 +1,10 @@
 package com.hmellema.traitcodegen.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.example.traits.ResponseTypeTrait;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;
@@ -9,11 +13,6 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
-
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EnumTraitTest {
     @Test
@@ -38,6 +37,7 @@ public class EnumTraitTest {
         ResponseTypeTrait enumTrait = (ResponseTypeTrait) trait;
         assertEquals(SourceLocation.NONE, enumTrait.getSourceLocation());
         assertEquals("no", enumTrait.getValue());
-        assertEquals(trait, provider.createTrait(ResponseTypeTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait,
+                provider.createTrait(ResponseTypeTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

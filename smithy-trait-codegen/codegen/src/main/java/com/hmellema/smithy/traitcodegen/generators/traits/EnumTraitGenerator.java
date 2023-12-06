@@ -2,11 +2,10 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import software.amazon.smithy.model.shapes.EnumShape;
-import software.amazon.smithy.utils.StringUtils;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import software.amazon.smithy.model.shapes.EnumShape;
+import software.amazon.smithy.utils.StringUtils;
 
 public final class EnumTraitGenerator extends StringTraitGenerator {
     @Override

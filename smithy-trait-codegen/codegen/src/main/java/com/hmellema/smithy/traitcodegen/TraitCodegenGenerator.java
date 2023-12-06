@@ -1,23 +1,46 @@
 package com.hmellema.smithy.traitcodegen;
 
-import com.hmellema.smithy.traitcodegen.generators.traits.*;
+import com.hmellema.smithy.traitcodegen.generators.traits.AnnotationTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.CollectionTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.EnumTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.IntEnumTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.NumberTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.StringListTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.StringTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.StructureTraitGenerator;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
-import software.amazon.smithy.model.shapes.*;
+import software.amazon.smithy.model.shapes.BigDecimalShape;
+import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.BooleanShape;
+import software.amazon.smithy.model.shapes.DoubleShape;
+import software.amazon.smithy.model.shapes.EnumShape;
+import software.amazon.smithy.model.shapes.FloatShape;
+import software.amazon.smithy.model.shapes.IntEnumShape;
+import software.amazon.smithy.model.shapes.IntegerShape;
+import software.amazon.smithy.model.shapes.ListShape;
+import software.amazon.smithy.model.shapes.LongShape;
+import software.amazon.smithy.model.shapes.MapShape;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
+import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.TraitDefinition;
 
 final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements Runnable {
     private final CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive;
     private final TraitSymbolProvider traitSymbolProvider;
 
-    public TraitCodegenGenerator(CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
+    TraitCodegenGenerator(CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
         this.directive = directive;
         this.traitSymbolProvider = new TraitSymbolProvider(directive.settings());
     }
 
     @Override
     protected Void getDefault(Shape shape) {
-        throw new UnsupportedOperationException("Trait code generation does not support shapes of type: " + shape.getType());
+        throw new UnsupportedOperationException("Trait code generation does not support shapes of type: "
+                + shape.getType());
     }
 
     @Override

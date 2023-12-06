@@ -1,6 +1,9 @@
 package com.hmellema.traitcodegen.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.example.traits.HttpCodeIntegerTrait;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.SourceLocation;
@@ -9,10 +12,6 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
-
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IntegerTraitTest {
     @Test
@@ -31,9 +30,11 @@ class IntegerTraitTest {
     void createsTrait() {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(HttpCodeIntegerTrait.ID, id, Node.from(1)).orElseThrow(RuntimeException::new);
+        Trait trait =
+                provider.createTrait(HttpCodeIntegerTrait.ID, id, Node.from(1)).orElseThrow(RuntimeException::new);
         HttpCodeIntegerTrait annotation = (HttpCodeIntegerTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(HttpCodeIntegerTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait,
+                provider.createTrait(HttpCodeIntegerTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

@@ -4,7 +4,8 @@ import com.hmellema.smithy.traitcodegen.sections.FromNodeSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class FromNodeDocsInterceptor implements CodeInterceptor.Prepender<FromNodeSection, TraitCodegenWriter> {
+public class FromNodeDocsInterceptor
+        implements CodeInterceptor.Prepender<FromNodeSection, TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, FromNodeSection section) {
         writer.openDocstring();
@@ -12,7 +13,8 @@ public class FromNodeDocsInterceptor implements CodeInterceptor.Prepender<FromNo
         writer.writeDocStringContents("");
         writer.writeDocStringContents("@param node Node to create the $T from.", section.symbol());
         writer.writeDocStringContents("@return Returns the created $T.", section.symbol());
-        writer.writeDocStringContents("@throws ExpectationNotMetException if the given Node is invalid.");
+        writer.writeDocStringContents("@throws software.amazon.smithy.model.node.ExpectationNotMetException if the "
+                + "given Node is invalid.");
         writer.closeDocstring();
     }
 

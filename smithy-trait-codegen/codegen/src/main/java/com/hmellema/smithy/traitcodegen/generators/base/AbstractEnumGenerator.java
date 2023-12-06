@@ -1,17 +1,16 @@
 package com.hmellema.smithy.traitcodegen.generators.base;
 
 import com.hmellema.smithy.traitcodegen.generators.common.FromNodeGenerator;
+import com.hmellema.smithy.traitcodegen.sections.ClassSection;
 import com.hmellema.smithy.traitcodegen.sections.EnumVariantSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import com.hmellema.smithy.traitcodegen.sections.ClassSection;
+import java.util.Iterator;
+import java.util.function.Consumer;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
-
-import java.util.Iterator;
-import java.util.function.Consumer;
 
 // TODO: ToNode?
 abstract class AbstractEnumGenerator<T> implements Consumer<T> {

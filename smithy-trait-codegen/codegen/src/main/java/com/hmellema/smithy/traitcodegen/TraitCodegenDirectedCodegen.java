@@ -6,7 +6,17 @@ import com.hmellema.smithy.traitcodegen.generators.base.StructureGenerator;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.utils.ShapeUtils;
 import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.codegen.core.directed.*;
+import software.amazon.smithy.codegen.core.directed.CreateContextDirective;
+import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
+import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
+import software.amazon.smithy.codegen.core.directed.DirectedCodegen;
+import software.amazon.smithy.codegen.core.directed.GenerateEnumDirective;
+import software.amazon.smithy.codegen.core.directed.GenerateErrorDirective;
+import software.amazon.smithy.codegen.core.directed.GenerateIntEnumDirective;
+import software.amazon.smithy.codegen.core.directed.GenerateOperationDirective;
+import software.amazon.smithy.codegen.core.directed.GenerateServiceDirective;
+import software.amazon.smithy.codegen.core.directed.GenerateStructureDirective;
+import software.amazon.smithy.codegen.core.directed.GenerateUnionDirective;
 
 final class TraitCodegenDirectedCodegen
         implements DirectedCodegen<TraitCodegenContext, TraitCodegenSettings, TraitCodegenIntegration> {
@@ -17,17 +27,23 @@ final class TraitCodegenDirectedCodegen
     }
 
     @Override
-    public TraitCodegenContext createContext(CreateContextDirective<TraitCodegenSettings, TraitCodegenIntegration> directive) {
+    public TraitCodegenContext createContext(
+            CreateContextDirective<TraitCodegenSettings, TraitCodegenIntegration> directive
+    ) {
         return TraitCodegenContext.fromDirective(directive);
     }
 
     @Override
-    public void generateService(GenerateServiceDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
+    public void generateService(
+            GenerateServiceDirective<TraitCodegenContext, TraitCodegenSettings> directive
+    ) {
         // Do nothing on service generation
     }
 
     @Override
-    public void generateOperation(GenerateOperationDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
+    public void generateOperation(
+            GenerateOperationDirective<TraitCodegenContext, TraitCodegenSettings> directive
+    ) {
         // Do nothing for operation generation
     }
 
@@ -63,7 +79,9 @@ final class TraitCodegenDirectedCodegen
     }
 
     @Override
-    public void customizeBeforeShapeGeneration(CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive) {
+    public void customizeBeforeShapeGeneration(
+            CustomizeDirective<TraitCodegenContext, TraitCodegenSettings> directive
+    ) {
         new TraitCodegenGenerator(directive).run();
     }
 }

@@ -3,12 +3,11 @@ package com.hmellema.smithy.processor.traitprocessor.processor;
 
 import com.hmellema.smithy.processor.SmithyProcessor;
 import com.hmellema.smithy.processor.traitprocessor.annotations.GenerateSmithyTraits;
-import software.amazon.smithy.model.node.Node;
-import software.amazon.smithy.model.node.ObjectNode;
-
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import software.amazon.smithy.model.node.Node;
+import software.amazon.smithy.model.node.ObjectNode;
 
 @SupportedAnnotationTypes(GenerateSmithyTraits.NAME)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)

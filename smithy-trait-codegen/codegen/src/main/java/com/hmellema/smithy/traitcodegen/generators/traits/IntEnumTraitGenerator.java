@@ -4,15 +4,14 @@ import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.ToNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.FromSourceLocation;
 import software.amazon.smithy.model.SourceLocation;
 import software.amazon.smithy.model.shapes.IntEnumShape;
 import software.amazon.smithy.model.traits.AbstractTrait;
 import software.amazon.smithy.utils.StringUtils;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public final class IntEnumTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $T extends AbstractTrait {";

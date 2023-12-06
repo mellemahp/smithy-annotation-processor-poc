@@ -3,13 +3,26 @@ package com.hmellema.smithy.traitcodegen.generators.common;
 import com.hmellema.smithy.traitcodegen.sections.GetterSection;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import software.amazon.smithy.codegen.core.SymbolProvider;
-import software.amazon.smithy.model.Model;
-import software.amazon.smithy.model.shapes.*;
-import software.amazon.smithy.utils.StringUtils;
-
 import java.util.EnumSet;
 import java.util.Optional;
+import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.shapes.BigDecimalShape;
+import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.DoubleShape;
+import software.amazon.smithy.model.shapes.FloatShape;
+import software.amazon.smithy.model.shapes.IntEnumShape;
+import software.amazon.smithy.model.shapes.IntegerShape;
+import software.amazon.smithy.model.shapes.ListShape;
+import software.amazon.smithy.model.shapes.LongShape;
+import software.amazon.smithy.model.shapes.MapShape;
+import software.amazon.smithy.model.shapes.MemberShape;
+import software.amazon.smithy.model.shapes.Shape;
+import software.amazon.smithy.model.shapes.ShapeType;
+import software.amazon.smithy.model.shapes.ShapeVisitor;
+import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StructureShape;
+import software.amazon.smithy.utils.StringUtils;
 
 public final class GetterGenerator implements Runnable {
     private static final EnumSet<ShapeType> NO_OPTIONAL_WRAPPING_TYPES = EnumSet.of(ShapeType.MAP, ShapeType.LIST);
@@ -111,7 +124,8 @@ public final class GetterGenerator implements Runnable {
         @Override
         public Void structureShape(StructureShape shape) {
             for (MemberShape member : shape.members()) {
-                if (member.isRequired() || NO_OPTIONAL_WRAPPING_TYPES.contains(model.expectShape(member.getTarget()).getType())) {
+                if (member.isRequired()
+                        || NO_OPTIONAL_WRAPPING_TYPES.contains(model.expectShape(member.getTarget()).getType())) {
                     generateNonOptionalGetter(member);
                 } else {
                     generateOptionalGetter(member);
