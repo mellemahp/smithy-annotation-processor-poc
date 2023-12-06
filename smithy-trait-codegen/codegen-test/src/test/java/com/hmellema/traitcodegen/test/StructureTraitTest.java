@@ -57,9 +57,9 @@ class StructureTraitTest {
                 .fieldD(ListUtils.of("a", "b", "c"))
                 .fieldE(MapUtils.of("a", "one", "b", "two"))
                 .build();
-        Trait trait = provider.createTrait(StructureTraitTrait.ID, id, struct.toNode()).orElseThrow();
+        Trait trait = provider.createTrait(StructureTraitTrait.ID, id, struct.toNode()).orElseThrow(RuntimeException::new);
         StructureTraitTrait annotation = (StructureTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StructureTraitTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(StructureTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

@@ -41,9 +41,9 @@ class StringToStructMapTraitTest {
                 .putValues("one", MapValue.builder().a("foo").b(2).build())
                 .putValues("two", MapValue.builder().a("bar").b(4).build())
                 .build().toNode();
-        Trait trait = provider.createTrait(StringToStructMapTrait.ID, id, node).orElseThrow();
+        Trait trait = provider.createTrait(StringToStructMapTrait.ID, id, node).orElseThrow(RuntimeException::new);
         StringToStructMapTrait annotation = (StringToStructMapTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StringToStructMapTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(StringToStructMapTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

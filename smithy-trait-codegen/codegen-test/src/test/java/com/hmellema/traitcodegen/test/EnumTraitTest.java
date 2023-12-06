@@ -34,10 +34,10 @@ public class EnumTraitTest {
         ShapeId id = ShapeId.from("ns.foo#foo");
         Node node = Node.from("no");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(ResponseTypeTrait.ID, id, node).orElseThrow();
+        Trait trait = provider.createTrait(ResponseTypeTrait.ID, id, node).orElseThrow(RuntimeException::new);
         ResponseTypeTrait enumTrait = (ResponseTypeTrait) trait;
         assertEquals(SourceLocation.NONE, enumTrait.getSourceLocation());
         assertEquals("no", enumTrait.getValue());
-        assertEquals(trait, provider.createTrait(ResponseTypeTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(ResponseTypeTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

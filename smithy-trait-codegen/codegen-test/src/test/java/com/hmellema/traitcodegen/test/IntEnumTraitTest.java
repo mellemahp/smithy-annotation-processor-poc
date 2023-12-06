@@ -34,10 +34,10 @@ class IntEnumTraitTest {
         ShapeId id = ShapeId.from("ns.foo#foo");
         Node node = Node.from(2);
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(ResponseTypeIntTrait.ID, id, node).orElseThrow();
+        Trait trait = provider.createTrait(ResponseTypeIntTrait.ID, id, node).orElseThrow(RuntimeException::new);
         ResponseTypeIntTrait enumTrait = (ResponseTypeIntTrait) trait;
         assertEquals(SourceLocation.NONE, enumTrait.getSourceLocation());
         assertEquals(2, enumTrait.getValue());
-        assertEquals(trait, provider.createTrait(ResponseTypeIntTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(ResponseTypeIntTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

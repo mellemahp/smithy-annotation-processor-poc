@@ -30,9 +30,9 @@ class AnnotationTraitTest {
     void createsTrait() {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(BasicAnnotationTraitTrait.ID, id, Node.objectNode()).orElseThrow();
+        Trait trait = provider.createTrait(BasicAnnotationTraitTrait.ID, id, Node.objectNode()).orElseThrow(RuntimeException::new);
         BasicAnnotationTraitTrait annotation = (BasicAnnotationTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(BasicAnnotationTraitTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(BasicAnnotationTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

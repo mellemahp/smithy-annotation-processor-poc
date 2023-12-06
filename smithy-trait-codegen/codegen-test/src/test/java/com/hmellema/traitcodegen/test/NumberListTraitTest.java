@@ -35,9 +35,9 @@ class NumberListTraitTest {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
         ArrayNode input = ArrayNode.fromNodes(Node.from(1), Node.from(2), Node.from(3));
-        Trait trait = provider.createTrait(NumberListTraitTrait.ID, id, input).orElseThrow();
+        Trait trait = provider.createTrait(NumberListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
         NumberListTraitTrait annotation = (NumberListTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(NumberListTraitTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(NumberListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

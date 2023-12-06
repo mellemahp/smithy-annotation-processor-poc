@@ -29,7 +29,7 @@ public interface ShapeUtils {
      * @return Returns true if the shape is a StringListShape.
      */
     static boolean isStringListTrait(Shape shape, SymbolProvider symbolProvider) {
-        return shape.isListShape() && SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.asListShape().orElseThrow().getMember()));
+        return shape.isListShape() && SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.asListShape().orElseThrow(RuntimeException::new).getMember()));
     }
 
 

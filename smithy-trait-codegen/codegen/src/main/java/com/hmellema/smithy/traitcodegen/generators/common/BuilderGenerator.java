@@ -161,7 +161,7 @@ public final class BuilderGenerator implements Runnable {
                 writer.addImport(BuilderRef.class);
                 writer.write(BUILDER_REF_TEMPLATE, symbolProvider.toSymbol(shape),
                         ShapeUtils.toMemberNameOrValues(shape, model, symbolProvider),
-                        builderRefOptional.orElseThrow());
+                        builderRefOptional.orElseThrow(RuntimeException::new));
             } else {
                 writer.write("private $T $L;", symbolProvider.toSymbol(shape),
                         ShapeUtils.toMemberNameOrValues(shape, model, symbolProvider));

@@ -37,18 +37,18 @@ public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
         if (shape.hasTrait(IdRefTrait.class)) {
             return SHAPE_ID_SYMBOL;
         } else if (shape.isMemberShape()) {
-            Shape target = model.expectShape(shape.asMemberShape().orElseThrow().getTarget());
+            Shape target = model.expectShape(shape.asMemberShape().orElseThrow(RuntimeException::new).getTarget());
             return provideSymbol(target, symbolProvider, model);
         } else if (shape.isListShape()) {
             // Replace any members reference by a list shape as the decorator does wrap the internal call from the
             // toSymbol(member)
-            MemberShape member = shape.asListShape().orElseThrow().getMember();
+            MemberShape member = shape.asListShape().orElseThrow(RuntimeException::new).getMember();
             return symbolProvider.toSymbol(shape).toBuilder()
                     .references(List.of(new SymbolReference(provideSymbol(member, symbolProvider, model))))
                     .build();
         } else if (shape.isMapShape()) {
             // Same as list replacement but for map shapes
-            MapShape mapShape = shape.asMapShape().orElseThrow();
+            MapShape mapShape = shape.asMapShape().orElseThrow(RuntimeException::new);
             return symbolProvider.toSymbol(shape)
                     .toBuilder()
                     .references(List.of(

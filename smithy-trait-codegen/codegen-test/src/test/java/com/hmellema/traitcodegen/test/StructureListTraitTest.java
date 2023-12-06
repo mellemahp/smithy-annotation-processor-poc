@@ -52,9 +52,9 @@ class StructureListTraitTest {
                 ListMember.builder().a("first").b(1).c("other").build().toNode(),
                 ListMember.builder().a("second").b(2).c("more").build().toNode()
         );
-        Trait trait = provider.createTrait(StructureListTraitTrait.ID, id, input).orElseThrow();
+        Trait trait = provider.createTrait(StructureListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
         StructureListTraitTrait annotation = (StructureListTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StructureListTraitTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(StructureListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

@@ -31,9 +31,9 @@ class LongTraitTest {
     void createsTrait() {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(HttpCodeLongTrait.ID, id, Node.from(1L)).orElseThrow();
+        Trait trait = provider.createTrait(HttpCodeLongTrait.ID, id, Node.from(1L)).orElseThrow(RuntimeException::new);
         HttpCodeLongTrait annotation = (HttpCodeLongTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(HttpCodeLongTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(HttpCodeLongTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

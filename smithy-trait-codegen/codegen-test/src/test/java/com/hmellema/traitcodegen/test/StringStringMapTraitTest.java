@@ -36,9 +36,9 @@ class StringStringMapTraitTest {
         Node node = StringStringMapTrait.builder()
                 .putValues("a", "first")
                 .putValues("b", "other").build().toNode();
-        Trait trait = provider.createTrait(StringStringMapTrait.ID, id, node).orElseThrow();
+        Trait trait = provider.createTrait(StringStringMapTrait.ID, id, node).orElseThrow(RuntimeException::new);
         StringStringMapTrait annotation = (StringStringMapTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StringStringMapTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(StringStringMapTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

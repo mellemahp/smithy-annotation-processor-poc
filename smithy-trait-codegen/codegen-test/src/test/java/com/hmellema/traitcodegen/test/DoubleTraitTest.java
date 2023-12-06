@@ -31,9 +31,9 @@ class DoubleTraitTest {
     void createsTrait() {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(HttpCodeDoubleTrait.ID, id, Node.from(1.2)).orElseThrow();
+        Trait trait = provider.createTrait(HttpCodeDoubleTrait.ID, id, Node.from(1.2)).orElseThrow(RuntimeException::new);
         HttpCodeDoubleTrait annotation = (HttpCodeDoubleTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(HttpCodeDoubleTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(HttpCodeDoubleTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

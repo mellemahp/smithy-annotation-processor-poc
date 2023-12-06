@@ -34,9 +34,9 @@ class StringListTraitTest {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
         ArrayNode input = ArrayNode.fromStrings("a", "b", "c");
-        Trait trait = provider.createTrait(StringListTraitTrait.ID, id, input).orElseThrow();
+        Trait trait = provider.createTrait(StringListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
         StringListTraitTrait annotation = (StringListTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait, provider.createTrait(StringListTraitTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(StringListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

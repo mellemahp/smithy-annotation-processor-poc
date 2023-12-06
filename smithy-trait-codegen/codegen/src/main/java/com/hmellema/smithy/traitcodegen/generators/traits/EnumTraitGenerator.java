@@ -12,7 +12,7 @@ public final class EnumTraitGenerator extends StringTraitGenerator {
     @Override
     protected void writeTraitBody(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         super.writeTraitBody(writer, directive);
-        EnumShape shape = directive.shape().asEnumShape().orElseThrow();
+        EnumShape shape = directive.shape().asEnumShape().orElseThrow(RuntimeException::new);
         for (String memberKey : shape.getEnumValues().keySet()) {
             writer.openBlock("public boolean is$L() {", "}", getMethodName(memberKey),
                             () -> writer.write("return $L.equals(getValue());", memberKey))

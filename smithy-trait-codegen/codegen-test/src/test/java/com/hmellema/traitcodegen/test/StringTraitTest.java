@@ -32,10 +32,10 @@ class StringTraitTest {
         ShapeId id = ShapeId.from("ns.foo#foo");
         Node node = Node.from("SPORKZ SPOONS YAY! Utensils.");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(StringTraitTrait.ID, id, node).orElseThrow();
+        Trait trait = provider.createTrait(StringTraitTrait.ID, id, node).orElseThrow(RuntimeException::new);
         StringTraitTrait annotation = (StringTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
         assertEquals("SPORKZ SPOONS YAY! Utensils.", annotation.getValue());
-        assertEquals(trait, provider.createTrait(StringTraitTrait.ID, id, trait.toNode()).orElseThrow());
+        assertEquals(trait, provider.createTrait(StringTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

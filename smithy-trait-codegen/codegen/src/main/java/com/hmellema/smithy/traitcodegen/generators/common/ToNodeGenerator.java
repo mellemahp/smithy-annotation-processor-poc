@@ -161,12 +161,12 @@ public final class ToNodeGenerator implements Runnable{
                                 symbolProvider.toMemberName(member), symbolProvider.toMemberName(member));
                     } else if (model.expectShape(member.getTarget()).isListShape()) {
                         writer.addImport(ArrayNode.class);
-                        Symbol listTargetSymbol = symbolProvider.toSymbol(model.expectShape(member.getTarget()).asListShape().orElseThrow().getMember());
+                        Symbol listTargetSymbol = symbolProvider.toSymbol(model.expectShape(member.getTarget()).asListShape().orElseThrow(RuntimeException::new).getMember());
                         writer.write(".withMember($S, get$L().stream().map(s -> " + listTargetSymbol.expectProperty(SymbolProperties.TO_NODE_MAPPER, String.class)
                                         + ").collect(ArrayNode.collect()))",
                                 symbolProvider.toMemberName(member), StringUtils.capitalize(symbolProvider.toMemberName(member)), "s");
                     } else if (model.expectShape(member.getTarget()).isMapShape()) {
-                        MapShape mapShape = model.expectShape(member.getTarget()).asMapShape().orElseThrow();
+                        MapShape mapShape = model.expectShape(member.getTarget()).asMapShape().orElseThrow(RuntimeException::new);
                         Symbol keySymbol = symbolProvider.toSymbol(mapShape.getKey());
                         Symbol valueSymbol = symbolProvider.toSymbol(mapShape.getValue());
                         keySymbol.getProperty(SymbolProperties.NODE_MAPPING_IMPORTS, Symbol.class).ifPresent(writer::addImport);
