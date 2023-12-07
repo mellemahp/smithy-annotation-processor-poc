@@ -158,6 +158,12 @@ intEnum ResponseTypeInt {
     NO = 2
 }
 
+// ===============
+//  Document traits
+// ===============
+@trait
+document JsonMetadata
+
 // ==================
 //  Deprecation tests
 // ==================

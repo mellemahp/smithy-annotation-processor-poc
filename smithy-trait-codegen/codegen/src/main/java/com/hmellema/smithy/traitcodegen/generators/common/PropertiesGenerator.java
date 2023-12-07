@@ -9,6 +9,7 @@ import java.util.Set;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.ByteShape;
+import software.amazon.smithy.model.shapes.DocumentShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -102,6 +103,12 @@ public final class PropertiesGenerator implements Runnable {
         @Override
         public Void floatShape(FloatShape shape) {
             createValueProperty(shape);
+            return null;
+        }
+
+        @Override
+        public Void documentShape(DocumentShape shape) {
+            // Document shapes have no properties
             return null;
         }
 

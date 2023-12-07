@@ -10,6 +10,7 @@ import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.ByteShape;
+import software.amazon.smithy.model.shapes.DocumentShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -91,6 +92,21 @@ final class ProviderGenerator implements Runnable {
         @Override
         public Void floatShape(FloatShape shape) {
             generateNumericTraitProvider();
+            return null;
+        }
+
+        @Override
+        public Void documentShape(DocumentShape shape) {
+            writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
+                // Basic constructor
+                writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+                writer.newLine();
+                // Provider method
+                writer.addImports(Trait.class, ShapeId.class, Node.class);
+                writer.override();
+                writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
+                        () -> writer.write("return new $T(value);", traitSymbol));
+            });
             return null;
         }
 

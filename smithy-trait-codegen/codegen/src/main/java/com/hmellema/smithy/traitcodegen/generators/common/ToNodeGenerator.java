@@ -15,6 +15,7 @@ import software.amazon.smithy.model.node.NumberNode;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.ByteShape;
+import software.amazon.smithy.model.shapes.DocumentShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
 import software.amazon.smithy.model.shapes.IntEnumShape;
@@ -109,6 +110,12 @@ public final class ToNodeGenerator implements Runnable {
         @Override
         public Void floatShape(FloatShape shape) {
             generateNumberTraitCreator();
+            return null;
+        }
+
+        @Override
+        public Void documentShape(DocumentShape shape) {
+            writer.write("throw new UnsupportedOperationException(\"NodeCache is always set\");");
             return null;
         }
 

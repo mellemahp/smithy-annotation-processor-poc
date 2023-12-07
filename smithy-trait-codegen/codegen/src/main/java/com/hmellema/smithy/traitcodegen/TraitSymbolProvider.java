@@ -5,6 +5,7 @@ import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.ByteShape;
+import software.amazon.smithy.model.shapes.DocumentShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
 import software.amazon.smithy.model.shapes.IntegerShape;
@@ -42,7 +43,7 @@ final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements 
 
     @Override
     protected Symbol getDefault(Shape shape) {
-        throw new UnsupportedOperationException("Shape type" + shape.getType() + " not supported by Trait Codegen");
+        throw new UnsupportedOperationException("Shape type " + shape.getType() + " is not supported by Trait Codegen");
     }
 
     @Override
@@ -76,6 +77,11 @@ final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements 
         return getSymbolBuilder(shape)
                 .putProperty(SymbolProperties.VALUE_GETTER, "floatValue()")
                 .build();
+    }
+
+    @Override
+    public Symbol documentShape(DocumentShape shape) {
+        return getSymbolBuilder(shape).build();
     }
 
     @Override

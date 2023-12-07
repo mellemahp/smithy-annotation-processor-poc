@@ -2,6 +2,7 @@ package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.generators.traits.AnnotationTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.CollectionTraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.DocumentTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.EnumTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.IntEnumTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.NumberTraitGenerator;
@@ -13,6 +14,7 @@ import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BooleanShape;
 import software.amazon.smithy.model.shapes.ByteShape;
+import software.amazon.smithy.model.shapes.DocumentShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -104,6 +106,12 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
     @Override
     public Void floatShape(FloatShape shape) {
         generateNumberTrait(shape);
+        return null;
+    }
+
+    @Override
+    public Void documentShape(DocumentShape shape) {
+        new DocumentTraitGenerator().accept(getDirective(shape));
         return null;
     }
 
