@@ -9,6 +9,7 @@ import java.util.Set;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -48,7 +49,8 @@ public final class PropertiesGenerator implements Runnable {
 
         @Override
         protected Void getDefault(Shape shape) {
-            return null;
+            throw new UnsupportedOperationException("Property generator does not support shape "
+                    + shape + " of type " + shape.getType());
         }
 
         @Override
@@ -57,6 +59,12 @@ public final class PropertiesGenerator implements Runnable {
             if (!SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getMember()))) {
                 createValuesProperty(shape);
             }
+            return null;
+        }
+
+        @Override
+        public Void byteShape(ByteShape shape) {
+            createValueProperty(shape);
             return null;
         }
 

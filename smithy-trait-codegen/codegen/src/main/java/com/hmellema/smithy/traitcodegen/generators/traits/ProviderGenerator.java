@@ -10,6 +10,7 @@ import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -60,7 +61,8 @@ final class ProviderGenerator implements Runnable {
 
         @Override
         public Void getDefault(Shape shape) {
-            return null;
+            throw new UnsupportedOperationException("Provider generator does not support shape "
+                    + shape + " of type " + shape.getType());
         }
 
         @Override
@@ -140,6 +142,12 @@ final class ProviderGenerator implements Runnable {
                 return null;
             }
             generateAbstractTraitProvider();
+            return null;
+        }
+
+        @Override
+        public Void byteShape(ByteShape shape) {
+            generateNumericTraitProvider();
             return null;
         }
 

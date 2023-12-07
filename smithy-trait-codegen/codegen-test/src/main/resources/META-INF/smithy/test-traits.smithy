@@ -28,6 +28,9 @@ float HttpCodeFloat
 @trait
 double HttpCodeDouble
 
+@trait
+byte HttpCodeByte
+
 // ===========
 // List traits
 // ===========

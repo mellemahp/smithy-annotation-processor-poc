@@ -193,7 +193,8 @@ public final class FromNodeGenerator implements Runnable {
 
         @Override
         protected Void getDefault(Shape shape) {
-            return null;
+            throw new UnsupportedOperationException("From Node Generator does not support shape "
+                    + shape + " of type " + shape.getType());
         }
 
         @Override

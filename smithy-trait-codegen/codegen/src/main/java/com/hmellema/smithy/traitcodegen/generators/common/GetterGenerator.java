@@ -9,6 +9,7 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
 import software.amazon.smithy.model.shapes.IntEnumShape;
@@ -100,6 +101,12 @@ public final class GetterGenerator implements Runnable {
             }
 
             generateValuesGetter(shape);
+            return null;
+        }
+
+        @Override
+        public Void byteShape(ByteShape shape) {
+            generateValueGetter(shape);
             return null;
         }
 

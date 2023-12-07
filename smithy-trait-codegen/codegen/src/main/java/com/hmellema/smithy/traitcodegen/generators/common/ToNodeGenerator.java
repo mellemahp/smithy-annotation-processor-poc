@@ -15,6 +15,7 @@ import software.amazon.smithy.model.node.NumberNode;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BigIntegerShape;
+import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
 import software.amazon.smithy.model.shapes.IntEnumShape;
@@ -58,8 +59,8 @@ public final class ToNodeGenerator implements Runnable {
     private final class CreateNodeBodyGenerator extends ShapeVisitor.Default<Void> {
         @Override
         protected Void getDefault(Shape shape) {
-            // Do nothing by default
-            return null;
+            throw new UnsupportedOperationException("CreateNodeBodyGenerator does not support shape "
+                    + shape + " of type " + shape.getType());
         }
 
         @Override
@@ -73,6 +74,12 @@ public final class ToNodeGenerator implements Runnable {
                             "s")
                     .write(".collect(ArrayNode.collect(getSourceLocation()));")
                     .dedent();
+            return null;
+        }
+
+        @Override
+        public Void byteShape(ByteShape shape) {
+            generateNumberTraitCreator();
             return null;
         }
 
