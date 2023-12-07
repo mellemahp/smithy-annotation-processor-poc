@@ -27,6 +27,8 @@ public class TraitCodegenProcessor extends SmithyProcessor<GenerateSmithyTraits>
         return Node.objectNodeBuilder()
                 .withMember("package", annotation.packageName())
                 .withMember("header", Node.fromStrings(annotation.header()))
+                .withMember("excludeTags", Node.fromStrings(annotation.excludeTags()))
                 .build();
     }
 }
+

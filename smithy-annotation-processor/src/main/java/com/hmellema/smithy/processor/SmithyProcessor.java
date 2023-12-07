@@ -27,6 +27,7 @@ import software.amazon.smithy.model.loader.ModelDiscovery;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.utils.IoUtils;
 
+
 public abstract class SmithyProcessor<A extends Annotation> extends AbstractProcessor {
     private static final String MANIFEST_PATH = "META-INF/smithy/manifest";
     private static final String SOURCE_PROJECTION_PATH = "build/smithy/source/";

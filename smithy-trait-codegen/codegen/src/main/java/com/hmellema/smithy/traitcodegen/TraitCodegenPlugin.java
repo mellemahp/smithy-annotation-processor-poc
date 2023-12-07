@@ -2,17 +2,21 @@ package com.hmellema.smithy.traitcodegen;
 
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
+import java.util.List;
 import java.util.logging.Logger;
 import software.amazon.smithy.build.PluginContext;
 import software.amazon.smithy.build.SmithyBuildPlugin;
+import software.amazon.smithy.build.TransformContext;
+import software.amazon.smithy.build.transforms.ExcludeTraitsByTag;
 import software.amazon.smithy.codegen.core.directed.CodegenDirector;
+import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.node.Node;
 
 public class TraitCodegenPlugin implements SmithyBuildPlugin {
     private static final Logger LOGGER = Logger.getLogger(TraitCodegenPlugin.class.getName());
     private static final String NAME = "trait-codegen";
     private final CodegenDirector<TraitCodegenWriter, TraitCodegenIntegration, TraitCodegenContext,
-            TraitCodegenSettings> runner =
-            new CodegenDirector<>();
+            TraitCodegenSettings> runner = new CodegenDirector<>();
 
     @Override
     public String getName() {
@@ -24,12 +28,24 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         runner.directedCodegen(new TraitCodegenDirectedCodegen());
         runner.integrationClass(TraitCodegenIntegration.class);
         runner.fileManifest(context.getFileManifest());
-        runner.model(SyntheticTraitServiceTransformer.transform(context.getModel()));
-        runner.settings(TraitCodegenSettings.from(context.getSettings()));
+        TraitCodegenSettings settings = TraitCodegenSettings.from(context.getSettings());
+        Model model = removeTraitsWithTags(context.getModel(), settings.excludeTags());
+        runner.model(SyntheticTraitServiceTransformer.transform(model));
+        runner.settings(settings);
         runner.service(SyntheticTraitServiceTransformer.SYNTHETIC_SERVICE_ID);
         runner.performDefaultCodegenTransforms();
         LOGGER.info("Plugin Initialized. Executing Trait Codegen Plugin.");
         runner.run();
         LOGGER.info("Trait Codegen plugin executed successfully.");
+    }
+
+    private Model removeTraitsWithTags(Model model, List<String> tags) {
+        if (tags.isEmpty()) {
+            return model;
+        }
+        return new ExcludeTraitsByTag().transform(TransformContext.builder()
+                .model(model)
+                .settings(Node.objectNode().withMember("tags", Node.fromStrings(tags)))
+                .build());
     }
 }

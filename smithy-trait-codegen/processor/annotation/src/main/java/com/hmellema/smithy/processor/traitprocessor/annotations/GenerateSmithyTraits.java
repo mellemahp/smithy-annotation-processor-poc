@@ -14,4 +14,6 @@ public @interface GenerateSmithyTraits {
     String packageName();
 
     String[] header();
+
+    String[] excludeTags() default {};
 }
