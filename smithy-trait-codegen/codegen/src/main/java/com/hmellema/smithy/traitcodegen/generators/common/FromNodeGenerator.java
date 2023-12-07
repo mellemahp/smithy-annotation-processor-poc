@@ -10,7 +10,6 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
-import software.amazon.smithy.model.shapes.BigIntegerShape;
 import software.amazon.smithy.model.shapes.BooleanShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
@@ -129,14 +128,9 @@ public final class FromNodeGenerator implements Runnable {
         }
 
         @Override
-        public Void bigIntegerShape(BigIntegerShape shape) {
-            generateNumberMember(shape);
-            return null;
-        }
-
-        @Override
         public Void bigDecimalShape(BigDecimalShape shape) {
-            generateNumberMember(shape);
+            writer.writeInline("${memberPrefix:L}Member($1S, n -> n.expectNumberNode().asBigDecimal().get(), "
+                            + "builder::$1L)", symbolProvider.toMemberName(member));
             return null;
         }
 

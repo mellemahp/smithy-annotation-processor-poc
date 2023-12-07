@@ -11,7 +11,6 @@ import com.hmellema.smithy.traitcodegen.generators.traits.StructureTraitGenerato
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.directed.CustomizeDirective;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
-import software.amazon.smithy.model.shapes.BigIntegerShape;
 import software.amazon.smithy.model.shapes.BooleanShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
@@ -110,12 +109,6 @@ final class TraitCodegenGenerator extends ShapeVisitor.Default<Void> implements 
 
     @Override
     public Void doubleShape(DoubleShape shape) {
-        generateNumberTrait(shape);
-        return null;
-    }
-
-    @Override
-    public Void bigIntegerShape(BigIntegerShape shape) {
         generateNumberTrait(shape);
         return null;
     }

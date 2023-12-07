@@ -9,7 +9,6 @@ import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
-import software.amazon.smithy.model.shapes.BigIntegerShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
@@ -102,14 +101,18 @@ final class ProviderGenerator implements Runnable {
         }
 
         @Override
-        public Void bigIntegerShape(BigIntegerShape shape) {
-            generateNumericTraitProvider();
-            return null;
-        }
-
-        @Override
         public Void bigDecimalShape(BigDecimalShape shape) {
-            generateNumericTraitProvider();
+            writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
+                // Basic constructor
+                writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+                writer.newLine();
+                // Provider method
+                writer.addImports(Trait.class, ShapeId.class, Node.class);
+                writer.override();
+                writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
+                        () -> writer.write("return new $T(value.expectNumberNode().asBigDecimal().get(), value"
+                                        + ".getSourceLocation());", traitSymbol));
+            });
             return null;
         }
 

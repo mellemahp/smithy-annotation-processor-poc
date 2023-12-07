@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
-import software.amazon.smithy.model.shapes.BigIntegerShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.EnumShape;
@@ -108,12 +107,6 @@ public final class PropertiesGenerator implements Runnable {
 
         @Override
         public Void doubleShape(DoubleShape shape) {
-            createValueProperty(shape);
-            return null;
-        }
-
-        @Override
-        public Void bigIntegerShape(BigIntegerShape shape) {
             createValueProperty(shape);
             return null;
         }

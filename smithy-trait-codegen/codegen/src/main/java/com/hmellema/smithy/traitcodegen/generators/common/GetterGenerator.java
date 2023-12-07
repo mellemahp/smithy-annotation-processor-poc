@@ -8,7 +8,6 @@ import java.util.Optional;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
-import software.amazon.smithy.model.shapes.BigIntegerShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -77,12 +76,6 @@ public final class GetterGenerator implements Runnable {
 
         @Override
         public Void doubleShape(DoubleShape shape) {
-            generateValueGetter(shape);
-            return null;
-        }
-
-        @Override
-        public Void bigIntegerShape(BigIntegerShape shape) {
             generateValueGetter(shape);
             return null;
         }

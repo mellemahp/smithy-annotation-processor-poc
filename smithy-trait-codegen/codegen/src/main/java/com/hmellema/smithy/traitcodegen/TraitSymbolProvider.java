@@ -3,6 +3,7 @@ package com.hmellema.smithy.traitcodegen;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
+import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -82,6 +83,11 @@ final class TraitSymbolProvider extends ShapeVisitor.Default<Symbol> implements 
         return getSymbolBuilder(shape)
                 .putProperty(SymbolProperties.VALUE_GETTER, "doubleValue()")
                 .build();
+    }
+
+    @Override
+    public Symbol bigDecimalShape(BigDecimalShape shape) {
+        return getSymbolBuilder(shape).build();
     }
 
     @Override

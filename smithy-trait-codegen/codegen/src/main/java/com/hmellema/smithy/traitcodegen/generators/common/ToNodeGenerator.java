@@ -14,7 +14,6 @@ import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NumberNode;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
-import software.amazon.smithy.model.shapes.BigIntegerShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DoubleShape;
 import software.amazon.smithy.model.shapes.FloatShape;
@@ -115,12 +114,6 @@ public final class ToNodeGenerator implements Runnable {
 
         @Override
         public Void doubleShape(DoubleShape shape) {
-            generateNumberTraitCreator();
-            return null;
-        }
-
-        @Override
-        public Void bigIntegerShape(BigIntegerShape shape) {
             generateNumberTraitCreator();
             return null;
         }
