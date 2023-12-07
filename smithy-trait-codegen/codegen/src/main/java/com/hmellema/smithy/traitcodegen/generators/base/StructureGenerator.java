@@ -9,7 +9,9 @@ import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.PropertiesGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.ToNodeGenerator;
 import com.hmellema.smithy.traitcodegen.sections.ClassSection;
+import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import java.util.function.Consumer;
+import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.directed.GenerateStructureDirective;
 import software.amazon.smithy.model.node.ToNode;
 
@@ -35,9 +37,34 @@ public class StructureGenerator implements Consumer<GenerateStructureDirective<T
                                 directive.model()).run();
                         new BuilderGenerator(writer, directive.symbol(), directive.symbolProvider(),
                                 directive.shape(), directive.model()).run();
+                        writeEquals(writer, directive.symbol());
+                        writeHashCode(writer);
                     })
                     .popState();
             writer.newLine();
         });
+    }
+
+    private void writeEquals(TraitCodegenWriter writer, Symbol symbol) {
+        writer.override();
+        writer.openBlock("public boolean equals(Object other) {", "}", () -> {
+            writer.disableNewlines();
+            writer.openBlock("if (other == this) {\n", "}",
+                    () -> writer.write("return true;").newLine());
+            writer.openBlock(" else if (!(other instanceof $T)) {\n", "}", symbol,
+                    () -> writer.write("return false;").newLine());
+            writer.openBlock(" else {\n", "}", () -> {
+                writer.write("$1T b = ($1T) other;", symbol).newLine();
+                writer.write("return toNode().equals(b.toNode());\n");
+            }).newLine();
+            writer.enableNewlines();
+        });
+        writer.newLine();
+    }
+
+    private void writeHashCode(TraitCodegenWriter writer) {
+        writer.override();
+        writer.openBlock("public int hashCode() {", "}",
+                () -> writer.write("return toNode().hashCode();"));
     }
 }

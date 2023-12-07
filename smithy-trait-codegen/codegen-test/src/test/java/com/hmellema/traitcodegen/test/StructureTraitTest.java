@@ -1,9 +1,6 @@
 package com.hmellema.traitcodegen.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.traits.NestedA;
 import com.example.traits.NestedB;
@@ -18,7 +15,6 @@ import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
 import software.amazon.smithy.utils.ListUtils;
 import software.amazon.smithy.utils.MapUtils;
-import software.amazon.smithy.utils.SetUtils;
 
 class StructureTraitTest {
     @Test
@@ -30,17 +26,18 @@ class StructureTraitTest {
                 .unwrap();
         Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
         StructureTraitTrait trait = shape.expectTrait(StructureTraitTrait.class);
-        assertEquals("first", trait.getFieldA());
-        assertTrue(trait.getFieldB().isPresent());
-        assertFalse(trait.getFieldB().get());
-        assertTrue(trait.getFieldC().isPresent());
-        NestedA nestedA = trait.getFieldC().get();
-        assertEquals("nested", nestedA.getFieldN());
-        assertTrue(nestedA.getFieldQ().orElseThrow(RuntimeException::new));
-        assertEquals(NestedB.A, nestedA.getFieldZ().orElseThrow(RuntimeException::new));
-        assertIterableEquals(ListUtils.of("a", "b", "c"), trait.getFieldD());
-        assertIterableEquals(SetUtils.of("a", "b"), trait.getFieldE().keySet());
-        assertIterableEquals(ListUtils.of("one", "two"), trait.getFieldE().values());
+        StructureTraitTrait expectedTrait = StructureTraitTrait.builder()
+                .fieldA("first")
+                .fieldB(false)
+                .fieldC(NestedA.builder()
+                        .fieldN("nested")
+                        .fieldQ(true)
+                        .fieldZ(NestedB.A)
+                        .build()
+                ).fieldD(ListUtils.of("a", "b", "c"))
+                .fieldE(MapUtils.of("a", "one", "b", "two"))
+                .build();
+        assertEquals(expectedTrait, trait);
     }
 
     @Test
@@ -59,11 +56,11 @@ class StructureTraitTest {
                 .fieldD(ListUtils.of("a", "b", "c"))
                 .fieldE(MapUtils.of("a", "one", "b", "two"))
                 .build();
-        Trait trait =
-                provider.createTrait(StructureTraitTrait.ID, id, struct.toNode()).orElseThrow(RuntimeException::new);
+        Trait trait = provider.createTrait(StructureTraitTrait.ID, id, struct.toNode())
+                .orElseThrow(RuntimeException::new);
         StructureTraitTrait annotation = (StructureTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
-        assertEquals(trait,
-                provider.createTrait(StructureTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+        assertEquals(trait, provider.createTrait(StructureTraitTrait.ID, id, trait.toNode())
+                .orElseThrow(RuntimeException::new));
     }
 }
