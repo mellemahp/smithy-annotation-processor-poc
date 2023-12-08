@@ -2,7 +2,6 @@ $version: "2.0"
 
 namespace test.smithy.traitcodegen
 
-@IdRefString(IdRefTarget1)
 @IdRefList([IdRefTarget1, IdRefTarget2])
 @IdRefMap(
     a: IdRefTarget1

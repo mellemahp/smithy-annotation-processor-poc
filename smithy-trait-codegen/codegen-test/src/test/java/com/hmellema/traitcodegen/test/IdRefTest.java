@@ -29,10 +29,6 @@ class IdRefTest {
                 .unwrap();
         Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
 
-        // Single Shape ID value
-        // TODO: Fix this? A string trait with an ID ref should be return a ShapeID
-        shape.expectTrait(IdRefStringTrait.class); //IdRefStringTrait idRefStringTrait =
-
         // List of ShapeIDs
         IdRefListTrait idRefListTrait = shape.expectTrait(IdRefListTrait.class);
         assertIterableEquals(ListUtils.of(TARGET_ONE, TARGET_TWO), idRefListTrait.getValues());
