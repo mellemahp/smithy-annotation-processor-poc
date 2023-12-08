@@ -60,6 +60,21 @@ structure listMember {
     c: String
 }
 
+// ========================
+// Unique List (set) traits
+// ========================
+@trait
+@uniqueItems
+list NumberSetTrait {
+    member: Integer
+}
+
+@trait
+@uniqueItems
+list StructureSetTrait {
+    member: listMember
+}
+
 // ===========
 // Map traits
 // ===========

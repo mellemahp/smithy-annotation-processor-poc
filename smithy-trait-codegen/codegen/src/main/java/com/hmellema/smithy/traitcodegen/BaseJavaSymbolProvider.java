@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.codegen.core.directed.CreateSymbolProviderDirective;
@@ -31,13 +30,11 @@ import software.amazon.smithy.model.shapes.ShapeVisitor;
 import software.amazon.smithy.model.shapes.ShortShape;
 import software.amazon.smithy.model.shapes.StringShape;
 import software.amazon.smithy.model.shapes.StructureShape;
-import software.amazon.smithy.model.traits.UniqueItemsTrait;
 
 final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implements SymbolProvider {
     private static final String NODE_FROM = "Node.from($L)";
     private static final String TO_NODE = "$L.toNode()";
     private static final String LIST_INITIALIZER = "forList()";
-    private static final String SET_INITIALIZER = "forOrderedSet()";
     private static final String MAP_INITIALIZER = "forOrderedMap()";
 
     private final String packageName;
@@ -145,11 +142,9 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol listShape(ListShape shape) {
-        Class<?> shapeClass = shape.hasTrait(UniqueItemsTrait.class) ? Set.class : List.class;
-        return SymbolUtil.fromClass(shapeClass).toBuilder()
+        return SymbolUtil.fromClass(List.class).toBuilder()
                 .addReference(toSymbol(shape.getMember()))
-                .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER,
-                        shape.hasTrait(UniqueItemsTrait.class) ? SET_INITIALIZER : LIST_INITIALIZER)
+                .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER, LIST_INITIALIZER)
                 .build();
     }
 

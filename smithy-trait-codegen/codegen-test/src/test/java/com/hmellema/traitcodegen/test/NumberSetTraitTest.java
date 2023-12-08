@@ -3,9 +3,8 @@ package com.hmellema.traitcodegen.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-import com.example.traits.ListMember;
-import com.example.traits.StructureListTraitTrait;
-import java.util.List;
+import com.example.traits.NumberListTraitTrait;
+import com.example.traits.NumberSetTraitTrait;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
@@ -17,37 +16,30 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
 import software.amazon.smithy.utils.ListUtils;
+import software.amazon.smithy.utils.SetUtils;
 
-class StructureListTraitTest {
+class NumberSetTraitTest {
     @Test
     void loadsFromModel() {
         Model result = Model.assembler()
                 .discoverModels(getClass().getClassLoader())
-                .addImport(Objects.requireNonNull(getClass().getResource("structure-list-trait.smithy")))
+                .addImport(Objects.requireNonNull(getClass().getResource("number-set-trait.smithy")))
                 .assemble()
                 .unwrap();
         Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
-        StructureListTraitTrait trait = shape.expectTrait(StructureListTraitTrait.class);
-        List<ListMember> actual = trait.getValues();
-        List<ListMember> expected = ListUtils.of(
-                ListMember.builder().a("first").b(1).c("other").build(),
-                ListMember.builder().a("second").b(2).c("more").build()
-        );
-        assertIterableEquals(expected, actual);
+        NumberSetTraitTrait trait = shape.expectTrait(NumberSetTraitTrait.class);
+        assertIterableEquals(SetUtils.of(1, 2, 3, 4), trait.getValues());
     }
 
     @Test
     void createsTrait() {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Node input = ArrayNode.fromNodes(
-                ListMember.builder().a("first").b(1).c("other").build().toNode(),
-                ListMember.builder().a("second").b(2).c("more").build().toNode()
-        );
-        Trait trait = provider.createTrait(StructureListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
-        StructureListTraitTrait annotation = (StructureListTraitTrait) trait;
+        ArrayNode input = ArrayNode.fromNodes(Node.from(1), Node.from(2), Node.from(3));
+        Trait trait = provider.createTrait(NumberSetTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
+        NumberSetTraitTrait annotation = (NumberSetTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
         assertEquals(trait,
-                provider.createTrait(StructureListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+                provider.createTrait(NumberSetTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

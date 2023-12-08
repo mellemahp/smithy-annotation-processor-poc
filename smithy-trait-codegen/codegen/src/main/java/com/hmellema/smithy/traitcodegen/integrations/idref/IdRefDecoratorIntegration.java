@@ -16,7 +16,7 @@ import software.amazon.smithy.model.traits.IdRefTrait;
 import software.amazon.smithy.utils.ListUtils;
 
 public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
-    private static final String INTEGRATION_NAME = "id-ref-integration-core";
+    private static final String INTEGRATION_NAME = "id-ref-integration";
     private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class).toBuilder()
             .putProperty(SymbolProperties.TO_NODE_MAPPER, "Node.from($L.toString())")
             .putProperty(SymbolProperties.FROM_NODE_MAPPER, "ShapeId.fromNode($L)")
