@@ -9,7 +9,6 @@ import software.amazon.smithy.model.shapes.OperationShape;
 import software.amazon.smithy.model.shapes.ServiceShape;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
-import software.amazon.smithy.model.traits.PrivateTrait;
 import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.model.transform.ModelTransformer;
 
@@ -17,10 +16,9 @@ interface SyntheticTraitServiceTransformer {
     ShapeId SYNTHETIC_SERVICE_ID = ShapeId.from("smithy.synthetic#TraitService");
 
     static Model transform(Model model) {
-        // Find all trait definition shapes excluding private traits and traits in the prelude.
+        // Find all trait definition shapes excluding traits in the prelude.
         Set<Shape> toGenerate = model.getShapesWithTrait(TraitDefinition.class).stream()
                 .filter(shape -> !Prelude.isPreludeShape(shape))
-                .filter(shape -> !shape.hasTrait(PrivateTrait.class))
                 .collect(Collectors.toSet());
 
         Set<Shape> shapesToAdd = new HashSet<>();
