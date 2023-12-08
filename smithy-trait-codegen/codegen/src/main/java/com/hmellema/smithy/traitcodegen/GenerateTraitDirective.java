@@ -11,23 +11,15 @@ public final class GenerateTraitDirective {
     private final Symbol baseSymbol;
     private final SymbolProvider symbolProvider;
     private final TraitCodegenContext context;
-    private final TraitCodegenSettings settings;
     private final Model model;
 
-    GenerateTraitDirective(Shape shape,
-                           Symbol traitSymbol,
-                           Symbol baseSymbol,
-                           SymbolProvider symbolProvider,
-                           TraitCodegenContext context,
-                           TraitCodegenSettings settings,
-                           Model model) {
+    GenerateTraitDirective(TraitCodegenContext context, Shape shape) {
         this.shape = shape;
-        this.traitSymbol = traitSymbol;
-        this.baseSymbol = baseSymbol;
-        this.symbolProvider = symbolProvider;
+        this.traitSymbol = context.traitSymbolProvider().toSymbol(shape);
+        this.baseSymbol = context.symbolProvider().toSymbol(shape);
+        this.symbolProvider = context.symbolProvider();
         this.context = context;
-        this.settings = settings;
-        this.model = model;
+        this.model = context.model();
     }
 
     public Shape shape() {
@@ -48,10 +40,6 @@ public final class GenerateTraitDirective {
 
     public TraitCodegenContext context() {
         return context;
-    }
-
-    public TraitCodegenSettings settings() {
-        return settings;
     }
 
     public Model model() {

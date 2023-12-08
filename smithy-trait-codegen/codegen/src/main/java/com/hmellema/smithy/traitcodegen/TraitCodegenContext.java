@@ -84,4 +84,8 @@ public final class TraitCodegenContext implements CodegenContext<TraitCodegenSet
     public List<TraitCodegenIntegration> integrations() {
         return integrations;
     }
+
+    public SymbolProvider traitSymbolProvider() {
+        return traitSymbolProvider;
+    }
 }

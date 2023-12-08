@@ -98,10 +98,9 @@ final class ProviderGenerator implements Runnable {
         @Override
         public Void documentShape(DocumentShape shape) {
             writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
-                // Basic constructor
-                writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+                generateProviderConstructor();
                 writer.newLine();
-                // Provider method
+
                 writer.addImports(Trait.class, ShapeId.class, Node.class);
                 writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
@@ -119,10 +118,9 @@ final class ProviderGenerator implements Runnable {
         @Override
         public Void bigDecimalShape(BigDecimalShape shape) {
             writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
-                // Basic constructor
-                writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+                generateProviderConstructor();
                 writer.newLine();
-                // Provider method
+
                 writer.addImports(Trait.class, ShapeId.class, Node.class);
                 writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
@@ -141,8 +139,9 @@ final class ProviderGenerator implements Runnable {
         private void generateNumericTraitProvider() {
             writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
                 // Basic constructor
-                writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+                generateProviderConstructor();
                 writer.newLine();
+
                 // Provider method
                 writer.addImports(Trait.class, ShapeId.class, Node.class);
                 writer.override();
@@ -195,8 +194,9 @@ final class ProviderGenerator implements Runnable {
         private void generateAbstractTraitProvider() {
             writer.addImports(Trait.class, Node.class, NodeMapper.class);
             writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
-                writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
+                generateProviderConstructor();
                 writer.newLine();
+
                 writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}", () -> {
                     writer.write("$1T result = new NodeMapper().deserialize(value, $1T.class);", traitSymbol);
@@ -204,6 +204,10 @@ final class ProviderGenerator implements Runnable {
                     writer.write("return result;");
                 });
             });
+        }
+
+        private void generateProviderConstructor() {
+            writer.openBlock(PROVIDER_METHOD, "}", () -> writer.write("super(ID);"));
         }
 
         private void generateSimpleProvider(Class<?> traitClass) {

@@ -7,7 +7,7 @@ plugins {
 dependencies {
     compileOnly(project(":smithy-trait-codegen:processor:annotation"))
     annotationProcessor(project(":smithy-trait-codegen:processor:processor"))
-    implementation("software.amazon.smithy:smithy-model:1.40.0")
+    implementation("software.amazon.smithy:smithy-model:1.42.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {

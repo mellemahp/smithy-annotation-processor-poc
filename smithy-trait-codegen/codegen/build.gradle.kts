@@ -5,5 +5,5 @@ plugins {
 }
 
 dependencies {
-    implementation("software.amazon.smithy:smithy-codegen-core:1.40.0")
+    implementation("software.amazon.smithy:smithy-codegen-core:1.42.0")
 }
