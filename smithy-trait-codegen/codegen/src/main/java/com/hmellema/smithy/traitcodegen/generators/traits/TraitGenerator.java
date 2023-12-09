@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.shapes.ShapeId;
 
-abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
+public abstract class TraitGenerator implements Consumer<GenerateTraitDirective> {
     private static final String PROVIDER_FILE = "META-INF/services/software.amazon.smithy.model.traits.TraitService";
     private static final String TRAIT_ID_TEMPLATE = "public static final ShapeId ID = ShapeId.from($S);";
 

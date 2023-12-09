@@ -36,7 +36,8 @@ public class UniqueItemDecoratorIntegration implements TraitCodegenIntegration {
     private Symbol provideSymbol(Shape shape, SymbolProvider symbolProvider, Model model) {
         if (shape.isListShape() && shape.hasTrait(UniqueItemsTrait.class)) {
             return SymbolUtil.fromClass(Set.class).toBuilder()
-                    .addReference(symbolProvider.toSymbol(shape.asListShape().get().getMember()))
+                    .addReference(symbolProvider.toSymbol(shape.asListShape()
+                            .orElseThrow(RuntimeException::new).getMember()))
                     .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER, SET_INITIALIZER)
                     .build();
         } else if (shape.isMemberShape()) {

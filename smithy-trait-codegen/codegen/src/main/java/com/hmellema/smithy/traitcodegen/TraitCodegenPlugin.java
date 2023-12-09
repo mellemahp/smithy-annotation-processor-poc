@@ -39,7 +39,7 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         LOGGER.info("Trait Codegen plugin executed successfully.");
     }
 
-    private Model removeTraitsWithTags(Model model, List<String> tags) {
+    private static Model removeTraitsWithTags(Model model, List<String> tags) {
         if (tags.isEmpty()) {
             return model;
         }
