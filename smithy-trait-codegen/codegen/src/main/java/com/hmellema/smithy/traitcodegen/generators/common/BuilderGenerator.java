@@ -17,7 +17,6 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeVisitor;
 import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.AbstractTraitBuilder;
-import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.utils.BuilderRef;
 import software.amazon.smithy.utils.SmithyBuilder;
 import software.amazon.smithy.utils.StringUtils;
@@ -29,7 +28,6 @@ public final class BuilderGenerator implements Runnable {
     private static final String RETURN_THIS = "return this;";
     private static final String BUILDER_REF_TEMPLATE = "private final BuilderRef<$T> $L = BuilderRef.$L;";
     private static final String BUILDER_METHOD_TEMPLATE = "public static Builder builder() {";
-    private static final String VALUES_FLUENT_SETTER = ".values(getValues());";
 
     private final TraitCodegenWriter writer;
     private final Symbol symbol;
@@ -57,13 +55,8 @@ public final class BuilderGenerator implements Runnable {
         writer.pushState(new BuilderClassSection(baseShape, symbol));
         String builderClassTemplate = "public static final class Builder ";
         if (ShapeUtils.isTrait(baseShape)) {
-            if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
-                writer.addImport(StringListTrait.class);
-                builderClassTemplate += "extends StringListTrait.Builder<$T, Builder> {";
-            } else {
-                writer.addImport(AbstractTraitBuilder.class);
-                builderClassTemplate += "extends AbstractTraitBuilder<$T, Builder> {";
-            }
+            writer.addImport(AbstractTraitBuilder.class);
+            builderClassTemplate += "extends AbstractTraitBuilder<$T, Builder> {";
         } else {
             writer.addImport(SmithyBuilder.class);
             builderClassTemplate += "implements SmithyBuilder<$T> {";
@@ -75,7 +68,8 @@ public final class BuilderGenerator implements Runnable {
             baseShape.accept(new BuilderSetterGenerator());
             writer.newLine();
             writer.override();
-            writer.openBlock("public $T build() {", "}", symbol, this::writeBuildMethodBody);
+            writer.openBlock("public $T build() {", "}", symbol,
+                    () -> writer.write("return new $T(this);", symbol));
         });
         writer.popState();
         writer.newLine();
@@ -91,13 +85,7 @@ public final class BuilderGenerator implements Runnable {
             if (ShapeUtils.isTrait(baseShape)) {
                 writer.write(".sourceLocation(getSourceLocation())");
             }
-
-            // TODO: lots of special casing for the string list traits. Probably a better approach
-            if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
-                writer.write(VALUES_FLUENT_SETTER);
-            } else {
-                writeBasicBody();
-            }
+            writeBasicBody();
             writer.dedent();
         });
         writer.popState();
@@ -122,14 +110,6 @@ public final class BuilderGenerator implements Runnable {
         writer.newLine();
     }
 
-    private void writeBuildMethodBody() {
-        if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
-            writer.write("return new $T(getValues(), getSourceLocation());", symbol);
-        } else {
-            writer.write("return new $T(this);", symbol);
-        }
-    }
-
     private final class BuilderPropertyGenerator extends ShapeVisitor.Default<Void> {
 
         @Override
@@ -139,10 +119,6 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            if (ShapeUtils.isStringListTrait(baseShape, symbolProvider)) {
-                // Don't write any builder properties for StringListTraits. They inherit all properties
-                return null;
-            }
             writeValuesProperty(shape);
             return null;
         }
@@ -190,10 +166,7 @@ public final class BuilderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            // Don't write any builder setters for StringListTraits. They inherit setters
-            if (!ShapeUtils.isStringListTrait(shape, symbolProvider)) {
-                shape.accept(new SetterVisitor(VALUES));
-            }
+            shape.accept(new SetterVisitor(VALUES));
             return null;
         }
 

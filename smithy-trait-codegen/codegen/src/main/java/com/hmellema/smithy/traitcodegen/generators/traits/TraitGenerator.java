@@ -2,7 +2,6 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
-import com.hmellema.smithy.traitcodegen.generators.common.PropertiesGenerator;
 import com.hmellema.smithy.traitcodegen.sections.ClassSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import java.util.function.Consumer;
@@ -33,14 +32,16 @@ public abstract class TraitGenerator implements Consumer<GenerateTraitDirective>
             writer.openBlock(getClassDefinition(), "}", directive.traitSymbol(), () -> {
                 writer.write(TRAIT_ID_TEMPLATE, directive.shape().getId());
                 writer.newLine();
-                new PropertiesGenerator(writer, directive.shape(), directive.symbolProvider()).run();
                 writeTraitBody(writer, directive);
-                new ProviderGenerator(writer, directive.shape(),
-                        directive.traitSymbol(), directive.symbolProvider()).run();
+                writeProvider(writer, directive);
             });
             writer.popState();
         });
         addSpiTraitProvider(directive.context(), directive.traitSymbol());
+    }
+
+    protected void writeProvider(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new ProviderGenerator(writer, directive.shape(), directive.traitSymbol()).run();
     }
 
     protected abstract void imports(TraitCodegenWriter writer);

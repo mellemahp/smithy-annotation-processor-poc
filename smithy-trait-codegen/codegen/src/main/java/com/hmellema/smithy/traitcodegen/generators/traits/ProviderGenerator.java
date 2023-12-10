@@ -2,10 +2,8 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.sections.ProviderSection;
-import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
-import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
@@ -26,7 +24,6 @@ import software.amazon.smithy.model.shapes.ShortShape;
 import software.amazon.smithy.model.shapes.StringShape;
 import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.AnnotationTrait;
-import software.amazon.smithy.model.traits.StringListTrait;
 import software.amazon.smithy.model.traits.StringTrait;
 import software.amazon.smithy.model.traits.Trait;
 
@@ -41,13 +38,11 @@ final class ProviderGenerator implements Runnable {
     private final TraitCodegenWriter writer;
     private final Shape shape;
     private final Symbol traitSymbol;
-    private final SymbolProvider symbolProvider;
 
-    ProviderGenerator(TraitCodegenWriter writer, Shape shape, Symbol traitSymbol, SymbolProvider symbolProvider) {
+    ProviderGenerator(TraitCodegenWriter writer, Shape shape, Symbol traitSymbol) {
         this.writer = writer;
         this.shape = shape;
         this.traitSymbol = traitSymbol;
-        this.symbolProvider = symbolProvider;
     }
 
     @Override
@@ -155,10 +150,6 @@ final class ProviderGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            if (SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getMember()))) {
-                generateSimpleProvider(StringListTrait.class);
-                return null;
-            }
             generateAbstractTraitProvider();
             return null;
         }

@@ -28,6 +28,12 @@ public class UniqueItemDecoratorIntegration implements TraitCodegenIntegration {
     }
 
     @Override
+    public byte priority() {
+        // Run before other integrations to make sure symbol changes are picked up
+        return 127;
+    }
+
+    @Override
     public SymbolProvider decorateSymbolProvider(Model model, TraitCodegenSettings settings,
                                                  SymbolProvider symbolProvider) {
         return shape -> provideSymbol(shape, symbolProvider, model);

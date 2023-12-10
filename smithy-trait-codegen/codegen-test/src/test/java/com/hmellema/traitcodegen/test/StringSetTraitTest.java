@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import com.example.traits.StringListTraitTrait;
+import com.example.traits.StringSetTraitTrait;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
@@ -14,18 +15,19 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
 import software.amazon.smithy.utils.ListUtils;
+import software.amazon.smithy.utils.SetUtils;
 
-class StringListTraitTest {
+class StringSetTraitTest {
     @Test
     void loadsFromModel() {
         Model result = Model.assembler()
                 .discoverModels(getClass().getClassLoader())
-                .addImport(Objects.requireNonNull(getClass().getResource("string-list-trait.smithy")))
+                .addImport(Objects.requireNonNull(getClass().getResource("string-set-trait.smithy")))
                 .assemble()
                 .unwrap();
         Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
-        StringListTraitTrait trait = shape.expectTrait(StringListTraitTrait.class);
-        assertIterableEquals(ListUtils.of("a", "b", "c", "d"), trait.getValues());
+        StringSetTraitTrait trait = shape.expectTrait(StringSetTraitTrait.class);
+        assertEquals(SetUtils.of("a", "b", "c", "d"), trait.getValues());
     }
 
     @Test
@@ -33,10 +35,10 @@ class StringListTraitTest {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
         ArrayNode input = ArrayNode.fromStrings("a", "b", "c");
-        Trait trait = provider.createTrait(StringListTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
-        StringListTraitTrait annotation = (StringListTraitTrait) trait;
+        Trait trait = provider.createTrait(StringSetTraitTrait.ID, id, input).orElseThrow(RuntimeException::new);
+        StringSetTraitTrait annotation = (StringSetTraitTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
         assertEquals(trait,
-                provider.createTrait(StringListTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
+                provider.createTrait(StringSetTraitTrait.ID, id, trait.toNode()).orElseThrow(RuntimeException::new));
     }
 }

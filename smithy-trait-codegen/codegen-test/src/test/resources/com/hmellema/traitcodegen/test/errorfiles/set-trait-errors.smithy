@@ -6,3 +6,7 @@ namespace test.smithy.traitcodegen
 @NumberSetTrait([1,1,3,4])
 structure repeatedNumberValues {
 }
+
+@StringSetTrait(["a", "a", "b"])
+structure repeatedStringValues {
+}

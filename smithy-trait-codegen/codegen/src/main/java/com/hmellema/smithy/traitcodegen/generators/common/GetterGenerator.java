@@ -1,7 +1,6 @@
 package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.sections.GetterSection;
-import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import java.util.EnumSet;
 import java.util.Optional;
@@ -88,11 +87,6 @@ public final class GetterGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            // StringListTraits already have a getter.
-            if (SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getMember()))) {
-                return null;
-            }
-
             generateValuesGetter(shape);
             return null;
         }

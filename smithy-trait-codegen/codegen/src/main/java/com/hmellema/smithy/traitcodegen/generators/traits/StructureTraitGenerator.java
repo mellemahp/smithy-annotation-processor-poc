@@ -5,6 +5,7 @@ import com.hmellema.smithy.traitcodegen.generators.common.BuilderGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.ConstructorWithBuilderGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.FromNodeGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.PropertiesGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.ToNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.AbstractTrait;
@@ -26,6 +27,7 @@ public final class StructureTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeTraitBody(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new PropertiesGenerator(writer, directive.shape(), directive.symbolProvider()).run();
         new ConstructorWithBuilderGenerator(writer, directive.traitSymbol(),
                 directive.shape(), directive.symbolProvider(), directive.model()).run();
         new ToNodeGenerator(writer, directive.shape(), directive.symbolProvider(),

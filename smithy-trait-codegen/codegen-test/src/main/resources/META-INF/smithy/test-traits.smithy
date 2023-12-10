@@ -63,6 +63,13 @@ structure listMember {
 // ========================
 // Unique List (set) traits
 // ========================
+
+@trait
+@uniqueItems
+list StringSetTrait {
+    member: String
+}
+
 @trait
 @uniqueItems
 list NumberSetTrait {

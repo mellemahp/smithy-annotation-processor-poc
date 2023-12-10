@@ -2,6 +2,7 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.PropertiesGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.ToNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
@@ -24,6 +25,7 @@ public final class NumberTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeTraitBody(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new PropertiesGenerator(writer, directive.shape(), directive.symbolProvider()).run();
         writeConstructor(writer, directive.traitSymbol(), directive.baseSymbol());
         writeConstructorWithSourceLocation(writer, directive.traitSymbol(), directive.baseSymbol());
         new ToNodeGenerator(writer, directive.shape(), directive.symbolProvider(), directive.model()).run();

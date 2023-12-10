@@ -2,7 +2,6 @@ package com.hmellema.smithy.traitcodegen.generators.common;
 
 import com.hmellema.smithy.traitcodegen.sections.EnumVariantSection;
 import com.hmellema.smithy.traitcodegen.sections.PropertySection;
-import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import java.util.Map;
 import java.util.Set;
@@ -55,10 +54,7 @@ public final class PropertiesGenerator implements Runnable {
 
         @Override
         public Void listShape(ListShape shape) {
-            // Lists that contain only Strings members do not need additional properties
-            if (!SymbolUtil.isJavaString(symbolProvider.toSymbol(shape.getMember()))) {
-                createValuesProperty(shape);
-            }
+            createValuesProperty(shape);
             return null;
         }
 
@@ -149,12 +145,10 @@ public final class PropertiesGenerator implements Runnable {
 
         @Override
         public Void structureShape(StructureShape shape) {
-            if (!shape.members().isEmpty()) {
-                writer.addImports(Set.class, SetUtils.class);
-                writer.putContext("properties", shape.getAllMembers());
-                writer.openBlock("private static final Set<String> PROPERTIES = SetUtils.of(", ");",
-                        () -> writer.write("${#properties}${key:S}${^key.last}, ${/key.last}${/properties}"));
-            }
+            writer.addImports(Set.class, SetUtils.class);
+            writer.putContext("properties", shape.getAllMembers());
+            writer.openBlock("private static final Set<String> PROPERTIES = SetUtils.of(", ");",
+                    () -> writer.write("${#properties}${key:S}${^key.last}, ${/key.last}${/properties}"));
 
             for (MemberShape member : shape.members()) {
                 writer.pushState(new PropertySection(member));

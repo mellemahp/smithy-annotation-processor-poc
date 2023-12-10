@@ -2,6 +2,7 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.GetterGenerator;
+import com.hmellema.smithy.traitcodegen.generators.common.PropertiesGenerator;
 import com.hmellema.smithy.traitcodegen.generators.common.ToNodeGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ public final class IntEnumTraitGenerator extends TraitGenerator {
 
     @Override
     protected void writeTraitBody(TraitCodegenWriter writer, GenerateTraitDirective directive) {
+        new PropertiesGenerator(writer, directive.shape(), directive.symbolProvider()).run();
         writeConstructor(writer, directive.traitSymbol());
         writeConstructorWithSourceLocation(writer, directive.traitSymbol());
         new ToNodeGenerator(writer, directive.shape(), directive.symbolProvider(), directive.model()).run();

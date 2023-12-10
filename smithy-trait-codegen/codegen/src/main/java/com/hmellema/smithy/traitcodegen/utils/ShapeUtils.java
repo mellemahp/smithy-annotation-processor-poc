@@ -17,25 +17,8 @@ public interface ShapeUtils {
         return shape.hasTrait(TraitDefinition.class);
     }
 
-    /**
-     * Checks if shape defines a StringListTrait.
-     * <p>
-     * A StringListTrait is a trait is a list trait that contains only
-     * simple strings.
-     *
-     * @param shape          Shape to check.
-     * @param symbolProvider Symbol provider to use to check the type of the list's member.
-     * @return Returns true if the shape is a StringListShape.
-     */
-    static boolean isStringListTrait(Shape shape, SymbolProvider symbolProvider) {
-        return shape.isListShape()
-                && SymbolUtil.isJavaString(symbolProvider.toSymbol(
-                        shape.asListShape().orElseThrow(RuntimeException::new).getMember()));
-    }
-
 
     // TODO: Figure out why this doesn't just work for the existing symbol provider?
-
     /**
      * Get the name for a member accounting for special naming of list and member members.
      * <p>

@@ -142,10 +142,10 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol listShape(ListShape shape) {
-        return SymbolUtil.fromClass(List.class).toBuilder()
+        Symbol.Builder builder =  SymbolUtil.fromClass(List.class).toBuilder()
                 .addReference(toSymbol(shape.getMember()))
-                .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER, LIST_INITIALIZER)
-                .build();
+                .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER, LIST_INITIALIZER);
+        return builder.build();
     }
 
     @Override
@@ -178,13 +178,13 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol structureShape(StructureShape shape) {
-        return Symbol.builder()
+        Symbol.Builder builder = Symbol.builder()
                 .name(SymbolUtil.getDefaultName(shape))
                 .namespace(packageName, ".")
                 .putProperty(SymbolProperties.TO_NODE_MAPPER, TO_NODE)
                 .putProperty(SymbolProperties.FROM_NODE_MAPPER, SymbolUtil.getDefaultName(shape) + ".fromNode($L)")
-                .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java")
-                .build();
+                .declarationFile(packagePath + "/" + SymbolUtil.getDefaultName(shape) + ".java");
+        return builder.build();
     }
 
     @Override

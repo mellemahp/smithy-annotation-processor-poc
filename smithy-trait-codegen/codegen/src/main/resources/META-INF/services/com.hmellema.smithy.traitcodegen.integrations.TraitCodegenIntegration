@@ -1,3 +1,4 @@
 com.hmellema.smithy.traitcodegen.integrations.core.CoreIntegration
 com.hmellema.smithy.traitcodegen.integrations.idref.IdRefDecoratorIntegration
 com.hmellema.smithy.traitcodegen.integrations.uniqueitems.UniqueItemDecoratorIntegration
+com.hmellema.smithy.traitcodegen.integrations.strList.StringListIntegration
