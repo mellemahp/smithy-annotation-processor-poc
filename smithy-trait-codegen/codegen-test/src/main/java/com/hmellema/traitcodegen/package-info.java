@@ -8,7 +8,7 @@
                 "Header line Two"
         },
         excludeTags = {
-              "exclude"
+                "exclude"
         })
 package com.hmellema.traitcodegen;
 

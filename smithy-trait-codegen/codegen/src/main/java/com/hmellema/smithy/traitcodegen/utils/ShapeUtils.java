@@ -19,6 +19,7 @@ public interface ShapeUtils {
 
 
     // TODO: Figure out why this doesn't just work for the existing symbol provider?
+
     /**
      * Get the name for a member accounting for special naming of list and member members.
      * <p>

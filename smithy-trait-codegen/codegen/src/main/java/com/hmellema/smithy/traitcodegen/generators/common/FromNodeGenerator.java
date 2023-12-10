@@ -130,7 +130,7 @@ public final class FromNodeGenerator implements Runnable {
         @Override
         public Void bigDecimalShape(BigDecimalShape shape) {
             writer.writeInline("${memberPrefix:L}Member($1S, n -> n.expectNumberNode().asBigDecimal().get(), "
-                            + "builder::$1L)", symbolProvider.toMemberName(member));
+                    + "builder::$1L)", symbolProvider.toMemberName(member));
             return null;
         }
 

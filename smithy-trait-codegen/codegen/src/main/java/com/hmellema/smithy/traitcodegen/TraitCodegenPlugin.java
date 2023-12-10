@@ -18,6 +18,16 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
     private final CodegenDirector<TraitCodegenWriter, TraitCodegenIntegration, TraitCodegenContext,
             TraitCodegenSettings> runner = new CodegenDirector<>();
 
+    private static Model removeTraitsWithTags(Model model, List<String> tags) {
+        if (tags.isEmpty()) {
+            return model;
+        }
+        return new ExcludeTraitsByTag().transform(TransformContext.builder()
+                .model(model)
+                .settings(Node.objectNode().withMember("tags", Node.fromStrings(tags)))
+                .build());
+    }
+
     @Override
     public String getName() {
         return NAME;
@@ -37,15 +47,5 @@ public class TraitCodegenPlugin implements SmithyBuildPlugin {
         LOGGER.info("Plugin Initialized. Executing Trait Codegen Plugin.");
         runner.run();
         LOGGER.info("Trait Codegen plugin executed successfully.");
-    }
-
-    private static Model removeTraitsWithTags(Model model, List<String> tags) {
-        if (tags.isEmpty()) {
-            return model;
-        }
-        return new ExcludeTraitsByTag().transform(TransformContext.builder()
-                .model(model)
-                .settings(Node.objectNode().withMember("tags", Node.fromStrings(tags)))
-                .build());
     }
 }

@@ -142,7 +142,7 @@ final class BaseJavaSymbolProvider extends ShapeVisitor.Default<Symbol> implemen
 
     @Override
     public Symbol listShape(ListShape shape) {
-        Symbol.Builder builder =  SymbolUtil.fromClass(List.class).toBuilder()
+        Symbol.Builder builder = SymbolUtil.fromClass(List.class).toBuilder()
                 .addReference(toSymbol(shape.getMember()))
                 .putProperty(SymbolProperties.BUILDER_REF_INITIALIZER, LIST_INITIALIZER);
         return builder.build();

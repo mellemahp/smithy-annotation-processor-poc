@@ -1,9 +1,7 @@
 package com.hmellema.traitcodegen.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-import com.example.traits.StringListTraitTrait;
 import com.example.traits.StringSetTraitTrait;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,6 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
-import software.amazon.smithy.utils.ListUtils;
 import software.amazon.smithy.utils.SetUtils;
 
 class StringSetTraitTest {

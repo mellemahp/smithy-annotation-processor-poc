@@ -3,7 +3,6 @@ package com.hmellema.traitcodegen.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.traits.HttpCodeBigDecimalTrait;
-import com.example.traits.HttpCodeByteTrait;
 import java.math.BigDecimal;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,8 @@ class BigDecimalTraitTest {
     void createsTrait() {
         ShapeId id = ShapeId.from("ns.foo#foo");
         TraitFactory provider = TraitFactory.createServiceFactory();
-        Trait trait = provider.createTrait(HttpCodeBigDecimalTrait.ID, id, Node.from(1)).orElseThrow(RuntimeException::new);
+        Trait trait =
+                provider.createTrait(HttpCodeBigDecimalTrait.ID, id, Node.from(1)).orElseThrow(RuntimeException::new);
         HttpCodeBigDecimalTrait annotation = (HttpCodeBigDecimalTrait) trait;
         assertEquals(SourceLocation.NONE, annotation.getSourceLocation());
         assertEquals(trait,

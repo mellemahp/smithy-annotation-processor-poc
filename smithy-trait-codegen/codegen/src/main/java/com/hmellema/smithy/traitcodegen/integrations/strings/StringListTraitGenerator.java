@@ -21,7 +21,7 @@ final class StringListTraitGenerator extends TraitGenerator {
     protected void writeProvider(TraitCodegenWriter writer, GenerateTraitDirective directive) {
         writer.addImport(StringListTrait.class);
         writer.openBlock("public static final class Provider extends StringListTrait.Provider<$T> {", "}",
-                 directive.traitSymbol(), () -> writer.openBlock("public Provider() {", "}",
+                directive.traitSymbol(), () -> writer.openBlock("public Provider() {", "}",
                         () -> writer.write("super(ID, $T::new);", directive.traitSymbol())));
     }
 
@@ -65,16 +65,15 @@ final class StringListTraitGenerator extends TraitGenerator {
         writer.addImport(StringListTrait.class);
         writer.openBlock("public static final class Builder extends StringListTrait.Builder<$T, Builder> {", "}",
                 symbol, () -> {
-            writer.write("private Builder() {}");
-            writer.newLine();
-            writer.override();
-            writer.openBlock("public $T build() {", "}", symbol,
-                    () ->  writer.write("return new $T(getValues(), getSourceLocation());", symbol));
-        });
+                    writer.write("private Builder() {}");
+                    writer.newLine();
+                    writer.override();
+                    writer.openBlock("public $T build() {", "}", symbol,
+                            () -> writer.write("return new $T(getValues(), getSourceLocation());", symbol));
+                });
         writer.popState();
         writer.newLine();
     }
-
 
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol traitSymbol, Symbol baseSymbol) {

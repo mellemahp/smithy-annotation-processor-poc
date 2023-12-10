@@ -124,7 +124,7 @@ final class ProviderGenerator implements Runnable {
                 writer.override();
                 writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
                         () -> writer.write("return new $T(value.expectNumberNode().asBigDecimal().get(), value"
-                                        + ".getSourceLocation());", traitSymbol));
+                                + ".getSourceLocation());", traitSymbol));
             });
             return null;
         }
