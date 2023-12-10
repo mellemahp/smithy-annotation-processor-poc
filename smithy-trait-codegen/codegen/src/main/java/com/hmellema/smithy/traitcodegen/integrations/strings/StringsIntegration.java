@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.integrations.strList;
+package com.hmellema.smithy.traitcodegen.integrations.strings;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
 import com.hmellema.smithy.traitcodegen.TraitGeneratorProvider;
@@ -9,13 +9,13 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.traits.UniqueItemsTrait;
 
 /**
- * Handles the special case where a List has only string members.
+ * Handles the special cases related to the use of strings.
  *
  * <p>
  * NOTE: Must be run after all other integrations to ensure any symbol changes
  * applied by other integrations are picked up
  */
-public class StringListIntegration implements TraitCodegenIntegration {
+public class StringsIntegration implements TraitCodegenIntegration {
     private static final String INTEGRATION_NAME = "string-list-integration";
 
     @Override
@@ -35,7 +35,12 @@ public class StringListIntegration implements TraitCodegenIntegration {
                     && hasJavaStringMember(shape, context.symbolProvider())
             ) {
                 return new StringListTraitGenerator();
+            } else if (shape.isStringShape()
+                    && SymbolUtil.isJavaString(context.symbolProvider().toSymbol(shape))
+            ) {
+                return new StringTraitGenerator();
             }
+
             return provider.getGenerator(shape);
         };
     }

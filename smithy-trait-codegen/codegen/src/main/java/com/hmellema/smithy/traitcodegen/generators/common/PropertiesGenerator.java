@@ -128,7 +128,7 @@ public final class PropertiesGenerator implements Runnable {
 
         @Override
         public Void stringShape(StringShape shape) {
-            // String Traits do not need any additional properties.
+            createValueProperty(shape);
             return null;
         }
 

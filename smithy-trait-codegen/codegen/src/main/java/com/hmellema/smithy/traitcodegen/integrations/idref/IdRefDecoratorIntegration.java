@@ -20,6 +20,7 @@ public class IdRefDecoratorIntegration implements TraitCodegenIntegration {
     private static final Symbol SHAPE_ID_SYMBOL = SymbolUtil.fromClass(ShapeId.class).toBuilder()
             .putProperty(SymbolProperties.TO_NODE_MAPPER, "Node.from($L.toString())")
             .putProperty(SymbolProperties.FROM_NODE_MAPPER, "ShapeId.fromNode($L)")
+            .putProperty(SymbolProperties.VALUE_GETTER, "ShapeId.from($L)")
             .build();
 
     @Override

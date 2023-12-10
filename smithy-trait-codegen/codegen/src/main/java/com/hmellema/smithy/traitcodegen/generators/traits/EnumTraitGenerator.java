@@ -2,6 +2,7 @@ package com.hmellema.smithy.traitcodegen.generators.traits;
 
 import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.common.PropertiesGenerator;
+import com.hmellema.smithy.traitcodegen.integrations.strings.StringTraitGenerator;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import java.util.Arrays;
 import java.util.stream.Collectors;

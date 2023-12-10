@@ -20,6 +20,7 @@ import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeType;
 import software.amazon.smithy.model.shapes.ShapeVisitor;
 import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
 import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.utils.StringUtils;
 
@@ -103,6 +104,11 @@ public final class GetterGenerator implements Runnable {
             return null;
         }
 
+        @Override
+        public Void stringShape(StringShape shape) {
+            generateValueGetter(shape);
+            return null;
+        }
 
         @Override
         public Void intEnumShape(IntEnumShape shape) {

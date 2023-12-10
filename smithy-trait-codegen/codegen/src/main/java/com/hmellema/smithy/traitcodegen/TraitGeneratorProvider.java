@@ -5,10 +5,9 @@ import com.hmellema.smithy.traitcodegen.generators.traits.CollectionTraitGenerat
 import com.hmellema.smithy.traitcodegen.generators.traits.DocumentTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.EnumTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.IntEnumTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.NumberTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.StringTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.StructureTraitGenerator;
 import com.hmellema.smithy.traitcodegen.generators.traits.TraitGenerator;
+import com.hmellema.smithy.traitcodegen.generators.traits.ValueTraitGenerator;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BooleanShape;
 import software.amazon.smithy.model.shapes.ByteShape;
@@ -58,7 +57,7 @@ TraitGeneratorProvider {
 
         @Override
         public TraitGenerator stringShape(StringShape shape) {
-            return new StringTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
@@ -73,27 +72,27 @@ TraitGeneratorProvider {
 
         @Override
         public TraitGenerator byteShape(ByteShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
         public TraitGenerator shortShape(ShortShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
         public TraitGenerator integerShape(IntegerShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
         public TraitGenerator longShape(LongShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
         public TraitGenerator floatShape(FloatShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
@@ -103,12 +102,12 @@ TraitGeneratorProvider {
 
         @Override
         public TraitGenerator doubleShape(DoubleShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override
         public TraitGenerator bigDecimalShape(BigDecimalShape shape) {
-            return new NumberTraitGenerator();
+            return new ValueTraitGenerator();
         }
 
         @Override

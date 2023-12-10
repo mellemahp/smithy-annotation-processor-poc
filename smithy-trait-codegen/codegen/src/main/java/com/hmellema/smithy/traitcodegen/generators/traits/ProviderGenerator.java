@@ -4,6 +4,7 @@ import com.hmellema.smithy.traitcodegen.SymbolProperties;
 import com.hmellema.smithy.traitcodegen.sections.ProviderSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.codegen.core.Symbol;
+import software.amazon.smithy.codegen.core.SymbolProvider;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
@@ -39,10 +40,13 @@ final class ProviderGenerator implements Runnable {
     private final Shape shape;
     private final Symbol traitSymbol;
 
-    ProviderGenerator(TraitCodegenWriter writer, Shape shape, Symbol traitSymbol) {
+    private final SymbolProvider symbolProvider;
+
+    ProviderGenerator(TraitCodegenWriter writer, Shape shape, Symbol traitSymbol, SymbolProvider symbolProvider) {
         this.writer = writer;
         this.shape = shape;
         this.traitSymbol = traitSymbol;
+        this.symbolProvider = symbolProvider;
     }
 
     @Override
@@ -147,7 +151,6 @@ final class ProviderGenerator implements Runnable {
             });
         }
 
-
         @Override
         public Void listShape(ListShape shape) {
             generateAbstractTraitProvider();
@@ -162,7 +165,19 @@ final class ProviderGenerator implements Runnable {
 
         @Override
         public Void stringShape(StringShape shape) {
-            generateSimpleProvider(StringTrait.class);
+            writer.openBlock("public static final class Provider extends AbstractTrait.Provider {", "}", () -> {
+                // Basic constructor
+                generateProviderConstructor();
+                writer.newLine();
+
+                // Provider method
+                writer.addImports(Trait.class, ShapeId.class, Node.class);
+                writer.override();
+                writer.openBlock("public Trait createTrait(ShapeId target, Node value) {", "}",
+                        () -> writer.write("return new $T("
+                                + symbolProvider.toSymbol(shape).expectProperty(SymbolProperties.VALUE_GETTER)
+                                + ", value.getSourceLocation());", traitSymbol, "value.expectStringNode().getValue()"));
+            });
             return null;
         }
 

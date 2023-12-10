@@ -1,4 +1,4 @@
-package com.hmellema.smithy.traitcodegen.integrations.strList;
+package com.hmellema.smithy.traitcodegen.integrations.strings;
 
 import com.hmellema.smithy.traitcodegen.GenerateTraitDirective;
 import com.hmellema.smithy.traitcodegen.generators.traits.TraitGenerator;

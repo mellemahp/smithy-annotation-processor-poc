@@ -13,6 +13,7 @@ import software.amazon.smithy.model.node.ArrayNode;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.NumberNode;
 import software.amazon.smithy.model.node.ObjectNode;
+import software.amazon.smithy.model.node.StringNode;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.ByteShape;
 import software.amazon.smithy.model.shapes.DocumentShape;
@@ -27,6 +28,7 @@ import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeVisitor;
 import software.amazon.smithy.model.shapes.ShortShape;
+import software.amazon.smithy.model.shapes.StringShape;
 import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.TraitDefinition;
 import software.amazon.smithy.utils.StringUtils;
@@ -159,6 +161,13 @@ public final class ToNodeGenerator implements Runnable {
                     .write(".collect(ObjectNode.collect(Map.Entry::getKey, Map.Entry::getValue))")
                     .write(".toBuilder().sourceLocation(getSourceLocation()).build();")
                     .dedent();
+            return null;
+        }
+
+        @Override
+        public Void stringShape(StringShape shape) {
+            writer.addImport(StringNode.class);
+            writer.write("return new StringNode(value.toString(), getSourceLocation());");
             return null;
         }
 

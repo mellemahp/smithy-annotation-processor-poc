@@ -29,6 +29,10 @@ class IdRefTest {
                 .unwrap();
         Shape shape = result.expectShape(ShapeId.from("test.smithy.traitcodegen#myStruct"));
 
+        // Single string representing an IdRef
+        IdRefStringTrait idRefStringTrait = shape.expectTrait(IdRefStringTrait.class);
+        assertEquals(TARGET_ONE, idRefStringTrait.getValue());
+
         // List of ShapeIDs
         IdRefListTrait idRefListTrait = shape.expectTrait(IdRefListTrait.class);
         assertIterableEquals(ListUtils.of(TARGET_ONE, TARGET_TWO), idRefListTrait.getValues());
