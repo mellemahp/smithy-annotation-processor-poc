@@ -68,8 +68,8 @@ abstract class AbstractEnumGenerator<T> implements Consumer<T> {
     }
 
     private void writeConstructor(Symbol enumSymbol, TraitCodegenWriter writer) {
-        writer.openBlock("$L($T value) {", "}",
-                enumSymbol.getName(), getValueType(), () -> writer.write("this.value = value;"));
+        writer.openBlock("$T($T value) {", "}",
+                enumSymbol, getValueType(), () -> writer.write("this.value = value;"));
         writer.newLine();
     }
 }

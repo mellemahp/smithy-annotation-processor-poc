@@ -7,7 +7,7 @@ import software.amazon.smithy.codegen.core.Symbol;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.traits.AbstractTrait;
 
-public class DocumentTraitGenerator extends TraitGenerator {
+final class DocumentTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $T extends AbstractTrait {";
 
     @Override

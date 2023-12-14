@@ -1,7 +1,7 @@
 package com.hmellema.smithy.traitcodegen.integrations.strings;
 
 import com.hmellema.smithy.traitcodegen.TraitCodegenContext;
-import com.hmellema.smithy.traitcodegen.TraitGeneratorProvider;
+import com.hmellema.smithy.traitcodegen.generators.traits.TraitGeneratorProvider;
 import com.hmellema.smithy.traitcodegen.integrations.TraitCodegenIntegration;
 import com.hmellema.smithy.traitcodegen.utils.SymbolUtil;
 import software.amazon.smithy.codegen.core.SymbolProvider;

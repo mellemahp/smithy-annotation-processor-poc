@@ -1,13 +1,5 @@
-package com.hmellema.smithy.traitcodegen;
+package com.hmellema.smithy.traitcodegen.generators.traits;
 
-import com.hmellema.smithy.traitcodegen.generators.traits.AnnotationTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.CollectionTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.DocumentTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.EnumTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.IntEnumTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.StructureTraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.TraitGenerator;
-import com.hmellema.smithy.traitcodegen.generators.traits.ValueTraitGenerator;
 import software.amazon.smithy.model.shapes.BigDecimalShape;
 import software.amazon.smithy.model.shapes.BooleanShape;
 import software.amazon.smithy.model.shapes.ByteShape;
@@ -26,8 +18,7 @@ import software.amazon.smithy.model.shapes.ShortShape;
 import software.amazon.smithy.model.shapes.StringShape;
 import software.amazon.smithy.model.shapes.StructureShape;
 
-public interface
-TraitGeneratorProvider {
+public interface TraitGeneratorProvider {
     TraitGeneratorProvider DEFAULT = new DefaultProvider();
 
     TraitGenerator getGenerator(Shape shape);
@@ -120,7 +111,7 @@ TraitGeneratorProvider {
             if (shape.getAllMembers().isEmpty()) {
                 return new AnnotationTraitGenerator();
             }
-            return new StructureTraitGenerator();
+            return new CollectionTraitGenerator();
         }
     }
 }

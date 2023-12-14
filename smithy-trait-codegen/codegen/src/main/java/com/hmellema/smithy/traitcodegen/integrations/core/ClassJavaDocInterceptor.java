@@ -6,7 +6,7 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.DocumentationTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class ClassJavaDocInterceptor implements CodeInterceptor.Prepender<ClassSection, TraitCodegenWriter> {
+final class ClassJavaDocInterceptor implements CodeInterceptor.Prepender<ClassSection, TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, ClassSection section) {
         writer.openDocstring();

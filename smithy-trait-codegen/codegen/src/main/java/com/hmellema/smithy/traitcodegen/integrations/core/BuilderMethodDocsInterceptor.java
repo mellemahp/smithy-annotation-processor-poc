@@ -4,7 +4,7 @@ import com.hmellema.smithy.traitcodegen.sections.ToBuilderSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class BuilderMethodDocsInterceptor implements CodeInterceptor.Prepender<ToBuilderSection, TraitCodegenWriter> {
+final class BuilderMethodDocsInterceptor implements CodeInterceptor.Prepender<ToBuilderSection, TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, ToBuilderSection section) {
         writer.openDocstring();

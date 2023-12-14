@@ -6,7 +6,7 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.DocumentationTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class GetterJavaDocInterceptor implements CodeInterceptor.Prepender<GetterSection, TraitCodegenWriter> {
+final class GetterJavaDocInterceptor implements CodeInterceptor.Prepender<GetterSection, TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, GetterSection section) {
         DocumentationTrait trait = section.shape().expectTrait(DocumentationTrait.class);

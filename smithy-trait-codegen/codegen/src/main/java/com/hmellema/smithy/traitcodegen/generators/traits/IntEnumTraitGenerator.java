@@ -14,7 +14,7 @@ import software.amazon.smithy.model.shapes.IntEnumShape;
 import software.amazon.smithy.model.traits.AbstractTrait;
 import software.amazon.smithy.utils.StringUtils;
 
-public final class IntEnumTraitGenerator extends TraitGenerator {
+final class IntEnumTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $T extends AbstractTrait {";
 
     @Override

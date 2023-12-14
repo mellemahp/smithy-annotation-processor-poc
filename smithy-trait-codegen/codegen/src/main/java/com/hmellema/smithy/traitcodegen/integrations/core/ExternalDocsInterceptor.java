@@ -6,7 +6,7 @@ import java.util.Map;
 import software.amazon.smithy.model.traits.ExternalDocumentationTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class ExternalDocsInterceptor implements CodeInterceptor.Appender<JavaDocSection, TraitCodegenWriter> {
+final class ExternalDocsInterceptor implements CodeInterceptor.Appender<JavaDocSection, TraitCodegenWriter> {
     @Override
     public void append(TraitCodegenWriter writer, JavaDocSection section) {
         ExternalDocumentationTrait trait = section.shape().expectTrait(ExternalDocumentationTrait.class);

@@ -2,23 +2,19 @@ package com.hmellema.smithy.traitcodegen.integrations.core;
 
 import com.hmellema.smithy.traitcodegen.sections.ClassSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
-import software.amazon.smithy.model.traits.DeprecatedTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
+import software.amazon.smithy.utils.SmithyGenerated;
 
-final class DeprecatedAnnotationClassInterceptor implements CodeInterceptor.Prepender<ClassSection,
+final class GeneratedAnnotationInterceptor implements CodeInterceptor.Prepender<ClassSection,
         TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, ClassSection section) {
-        writer.write("@Deprecated");
+        writer.addImport(SmithyGenerated.class);
+        writer.write("@SmithyGenerated");
     }
 
     @Override
     public Class<ClassSection> sectionType() {
         return ClassSection.class;
-    }
-
-    @Override
-    public boolean isIntercepted(ClassSection section) {
-        return section.shape().hasTrait(DeprecatedTrait.class);
     }
 }

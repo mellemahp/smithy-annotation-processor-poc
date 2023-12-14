@@ -120,7 +120,7 @@ public abstract class SmithyProcessor<A extends Annotation> extends AbstractProc
                     writer.write(IoUtils.readUtf8File(path));
                 }
                 // All other files are written to the source output
-            } else {
+            } else if (outputPath.endsWith(".java")) {
                 outputPath = outputPath.replace("/", ".").substring(0, outputPath.lastIndexOf(".java"));
                 try (Writer writer = filer.createSourceFile(outputPath).openWriter()) {
                     writer.write(IoUtils.readUtf8File(path));

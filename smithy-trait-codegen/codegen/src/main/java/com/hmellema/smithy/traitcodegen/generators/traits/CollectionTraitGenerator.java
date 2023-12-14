@@ -11,8 +11,7 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.AbstractTrait;
 import software.amazon.smithy.utils.ToSmithyBuilder;
 
-
-public final class CollectionTraitGenerator extends TraitGenerator {
+final class CollectionTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $1T extends AbstractTrait implements "
             + "ToSmithyBuilder<$1T> {";
 

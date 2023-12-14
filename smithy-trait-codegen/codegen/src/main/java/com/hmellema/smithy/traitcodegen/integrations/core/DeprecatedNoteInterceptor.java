@@ -5,7 +5,7 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.DeprecatedTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class DeprecatedNoteInterceptor implements CodeInterceptor.Appender<JavaDocSection, TraitCodegenWriter> {
+final class DeprecatedNoteInterceptor implements CodeInterceptor.Appender<JavaDocSection, TraitCodegenWriter> {
     @Override
     public void append(TraitCodegenWriter writer, JavaDocSection section) {
         DeprecatedTrait trait = section.shape().expectTrait(DeprecatedTrait.class);

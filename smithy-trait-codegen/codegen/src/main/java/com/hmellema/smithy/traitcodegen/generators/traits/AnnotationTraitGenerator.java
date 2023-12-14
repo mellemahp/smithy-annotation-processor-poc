@@ -10,8 +10,7 @@ import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.traits.AnnotationTrait;
 import software.amazon.smithy.utils.MapUtils;
 
-
-public final class AnnotationTraitGenerator extends TraitGenerator {
+final class AnnotationTraitGenerator extends TraitGenerator {
     private static final String CLASS_TEMPLATE = "public final class $T extends AnnotationTrait {";
 
     @Override
@@ -34,21 +33,21 @@ public final class AnnotationTraitGenerator extends TraitGenerator {
 
     private void writeConstructor(TraitCodegenWriter writer, Symbol symbol) {
         writer.addImport(ObjectNode.class);
-        writer.openBlock("public $L(ObjectNode node) {", "}", symbol.getName(),
+        writer.openBlock("public $T(ObjectNode node) {", "}", symbol,
                 () -> writer.write("super(ID, node);"));
         writer.newLine();
     }
 
     private void writeEmptyConstructor(TraitCodegenWriter writer, Symbol symbol) {
         writer.addImport(Node.class);
-        writer.openBlock("public $L() {", "}", symbol.getName(),
+        writer.openBlock("public $T() {", "}", symbol,
                 () -> writer.write("super(ID, Node.objectNode());"));
         writer.newLine();
     }
 
     private void writeConstructorWithSourceLocation(TraitCodegenWriter writer, Symbol symbol) {
         writer.addImports(SourceLocation.class, ObjectNode.class, MapUtils.class);
-        writer.openBlock("public $L(SourceLocation sourceLocation) {", "}", symbol.getName(),
+        writer.openBlock("public $T(SourceLocation sourceLocation) {", "}", symbol,
                 () -> writer.write("this(new ObjectNode(MapUtils.of(), sourceLocation));"));
         writer.newLine();
     }

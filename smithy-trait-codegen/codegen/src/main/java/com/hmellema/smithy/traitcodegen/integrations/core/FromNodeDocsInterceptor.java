@@ -4,7 +4,7 @@ import com.hmellema.smithy.traitcodegen.sections.FromNodeSection;
 import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class FromNodeDocsInterceptor
+final class FromNodeDocsInterceptor
         implements CodeInterceptor.Prepender<FromNodeSection, TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, FromNodeSection section) {

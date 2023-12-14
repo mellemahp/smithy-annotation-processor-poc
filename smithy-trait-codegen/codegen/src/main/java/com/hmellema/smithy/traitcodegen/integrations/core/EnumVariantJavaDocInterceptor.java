@@ -6,7 +6,7 @@ import com.hmellema.smithy.traitcodegen.writer.TraitCodegenWriter;
 import software.amazon.smithy.model.traits.DocumentationTrait;
 import software.amazon.smithy.utils.CodeInterceptor;
 
-public class EnumVariantJavaDocInterceptor implements CodeInterceptor.Prepender<EnumVariantSection,
+final class EnumVariantJavaDocInterceptor implements CodeInterceptor.Prepender<EnumVariantSection,
         TraitCodegenWriter> {
     @Override
     public void prepend(TraitCodegenWriter writer, EnumVariantSection section) {
